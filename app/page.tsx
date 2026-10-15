@@ -3,10 +3,11 @@
 import React, { useState } from 'react';
 import ApplicantPortal from '@/components/ApplicantPortal';
 import ReviewerDashboard from '@/components/ReviewerDashboard';
+import CommitteeLoginGate from '@/components/CommitteeLoginGate';
 import RubricInfoModal from '@/components/RubricInfoModal';
 import { ScholarshipApplication } from '@/types/scholarship';
 import { getStoredApplications } from '@/lib/storage';
-import { FileText, ShieldCheck, Sparkles } from 'lucide-react';
+import { FileText, ShieldCheck, Sparkles, Lock } from 'lucide-react';
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState<'applicant' | 'reviewer'>('applicant');
@@ -14,10 +15,23 @@ export default function Home() {
     return getStoredApplications();
   });
   const [isRubricModalOpen, setIsRubricModalOpen] = useState(false);
+  const [isCommitteeAuthenticated, setIsCommitteeAuthenticated] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return sessionStorage.getItem('mc_committee_auth') === 'true';
+    }
+    return false;
+  });
 
   const handleSuccessSubmit = (newApp: ScholarshipApplication) => {
     const updated = [newApp, ...applications.filter((a) => a.id !== newApp.id)];
     setApplications(updated);
+  };
+
+  const handleLogout = () => {
+    setIsCommitteeAuthenticated(false);
+    if (typeof window !== 'undefined') {
+      sessionStorage.removeItem('mc_committee_auth');
+    }
   };
 
   return (
@@ -39,6 +53,7 @@ export default function Home() {
               <FileText className="h-4 w-4" />
               <span>Apply Now</span>
             </button>
+
             <button
               id="tab-reviewer-portal"
               onClick={() => setActiveTab('reviewer')}
@@ -48,9 +63,13 @@ export default function Home() {
                   : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
               }`}
             >
-              <ShieldCheck className="h-4 w-4" />
+              {isCommitteeAuthenticated ? (
+                <ShieldCheck className="h-4 w-4 text-emerald-400" />
+              ) : (
+                <Lock className="h-3.5 w-3.5 text-amber-400" />
+              )}
               <span>Reviewer Portal</span>
-              {applications.length > 0 && (
+              {applications.length > 0 && isCommitteeAuthenticated && (
                 <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-blue-400/20 px-1.5 text-xs font-bold text-blue-300">
                   {applications.length}
                 </span>
@@ -73,11 +92,17 @@ export default function Home() {
       <main className="flex-1 pb-10">
         {activeTab === 'applicant' ? (
           <ApplicantPortal onSuccessSubmit={handleSuccessSubmit} />
+        ) : !isCommitteeAuthenticated ? (
+          <CommitteeLoginGate
+            onAuthenticated={() => setIsCommitteeAuthenticated(true)}
+            onBackToApplication={() => setActiveTab('applicant')}
+          />
         ) : (
           <ReviewerDashboard
             applications={applications}
             onRefreshApplications={setApplications}
             onOpenRubricInfo={() => setIsRubricModalOpen(true)}
+            onLogout={handleLogout}
           />
         )}
       </main>
