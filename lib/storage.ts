@@ -4,7 +4,7 @@ import { ScholarshipApplication } from '@/types/scholarship';
 import { sampleApplications } from './sampleData';
 import { evaluateApplicationWithAI } from './aiScoring';
 
-const STORAGE_KEY = 'monday_club_scholarship_applications_v1';
+const STORAGE_KEY = 'monday_club_scholarship_applications_v2';
 
 export function getStoredApplications(): ScholarshipApplication[] {
   if (typeof window === 'undefined') {
@@ -89,6 +89,15 @@ export function updateCommitteeReview(
     return app;
   });
 
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+  }
+  return updated;
+}
+
+export function deleteApplication(applicationId: string): ScholarshipApplication[] {
+  const existing = getStoredApplications();
+  const updated = existing.filter((app) => app.id !== applicationId);
   if (typeof window !== 'undefined') {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
   }
