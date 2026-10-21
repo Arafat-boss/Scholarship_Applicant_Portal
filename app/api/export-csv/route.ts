@@ -6,8 +6,7 @@ export async function GET(req: NextRequest) {
   try {
     const csvData = convertApplicationsToCSV(sampleApplications);
     const fileName = `Monday_Club_Scholarship_Applications_${new Date().toISOString().split('T')[0]}.csv`;
-    const url = new URL(req.url);
-    const isRaw = url.searchParams.get('raw') === 'true';
+    const isRaw = req.nextUrl.searchParams.get('raw') === 'true';
 
     // If explicit raw download requested
     if (isRaw) {
@@ -183,7 +182,16 @@ export async function GET(req: NextRequest) {
         'Content-Type': 'text/html; charset=utf-8',
       },
     });
-  } catch (error) {
+  } catch (error: unknown) {
+    if (
+      typeof error === 'object' &&
+      error !== null &&
+      'digest' in error &&
+      typeof (error as { digest?: string }).digest === 'string' &&
+      (error as { digest: string }).digest.startsWith('NEXT_')
+    ) {
+      throw error;
+    }
     console.error('CSV Export Error:', error);
     return NextResponse.json({ error: 'Failed to generate CSV export' }, { status: 500 });
   }
