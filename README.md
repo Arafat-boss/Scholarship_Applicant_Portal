@@ -17,6 +17,7 @@ Official **The Monday Club Scholarship Portal** — Custom Full-Stack Web Applic
   - Automatically analyzes application data against 10 specific criteria (0–5 pts each, 50 pts total)
   - Provides clear evaluation summary, strengths, and flags to assist the selection committee.
 - **Reviewer & Committee Dashboard**:
+  - **Passcode Protection**: Restricted committee access gate (default demo passcode: `monday2026`) with session persistence and quick session-locking.
   - Real-time KPI metrics (Total Applications, Under Review, Approved, Avg GPA, Avg AI Score)
   - Search by Name, High School, or Email
   - Filter by Status and AI Tier
