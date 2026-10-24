@@ -70,7 +70,7 @@ export default function Home() {
   };
 
   return (
-    <div className="w-full flex flex-col bg-[#090d16] text-slate-100 min-h-0">
+    <div className="w-full flex flex-col bg-[#090d16] text-slate-100 min-h-0 overflow-x-hidden">
       {/* Inline Section Tab Switcher (Replaces Navbar for Seamless Wix Embedding) */}
       <section className="pt-4 sm:pt-6 pb-2 px-3 sm:px-6 w-full">
         <div className="mx-auto flex flex-wrap items-center justify-center gap-2 sm:gap-3">

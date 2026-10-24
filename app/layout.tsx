@@ -27,8 +27,12 @@ export default function RootLayout({
     <html
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} dark antialiased`}
+      style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
     >
-      <body className="w-full bg-[#090d16] text-slate-100 selection:bg-blue-600 selection:text-white">
+      <body
+        className="w-full bg-[#090d16] text-slate-100 selection:bg-blue-600 selection:text-white"
+        style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+      >
         {children}
       </body>
     </html>
