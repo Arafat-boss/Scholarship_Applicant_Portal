@@ -129,19 +129,19 @@ export default function ReviewerDashboard({
     : 0;
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+    <div className="mx-auto max-w-7xl px-3 py-6 sm:px-6 sm:py-8 lg:px-8">
       {/* Committee Portal Banner */}
-      <div className="mb-6 rounded-2xl border border-slate-800 bg-gradient-to-r from-[#131b2e] via-[#0f172a] to-[#111827] p-6 shadow-xl text-slate-100">
+      <div className="mb-6 rounded-2xl border border-slate-800 bg-gradient-to-r from-[#131b2e] via-[#0f172a] to-[#111827] p-4 sm:p-6 shadow-xl text-slate-100">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
             <div className="inline-flex items-center gap-2 rounded-full bg-blue-950 px-3 py-1 text-xs font-semibold text-blue-400 border border-blue-800/60 mb-2">
               <ShieldCheck className="h-3.5 w-3.5 text-blue-400" />
               <span>Reviewer & Committee Dashboard</span>
             </div>
-            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
+            <h2 className="text-xl sm:text-3xl font-extrabold tracking-tight text-white">
               Application & AI Rubric Scoring Queue
             </h2>
-            <p className="mt-1 text-xs sm:text-sm text-slate-400">
+            <p className="mt-1 text-xs sm:text-sm text-slate-400 leading-relaxed">
               Inspect applicant records, analyze AI 10-criterion rubrics (0–50 pts), input committee overrides, and export CSV reports.
             </p>
           </div>
@@ -149,7 +149,7 @@ export default function ReviewerDashboard({
           <div className="flex flex-wrap items-center gap-2 sm:gap-3">
             <button
               onClick={() => setIsExportModalOpen(true)}
-              className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-xs font-bold text-white shadow-md shadow-emerald-600/20 hover:bg-emerald-500 transition cursor-pointer"
+              className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-3.5 py-2 text-xs font-bold text-white shadow-md shadow-emerald-600/20 hover:bg-emerald-500 transition cursor-pointer"
               title="Download entire queue as CSV"
             >
               <FileSpreadsheet className="h-4 w-4" />
@@ -157,14 +157,14 @@ export default function ReviewerDashboard({
             </button>
             <button
               onClick={onOpenRubricInfo}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-800/80 px-3.5 py-2 text-xs font-semibold text-slate-200 hover:bg-slate-700 transition"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-800/80 px-3.5 py-2 text-xs font-semibold text-slate-200 hover:bg-slate-700 transition cursor-pointer"
             >
               <Sparkles className="h-3.5 w-3.5 text-amber-400" />
               <span>Rubric Guide</span>
             </button>
             <button
               onClick={handleReset}
-              className="p-2 rounded-lg border border-slate-800 text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition"
+              className="p-2 rounded-lg border border-slate-800 text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition cursor-pointer"
               title="Reset to sample data"
             >
               <RotateCcw className="h-4 w-4" />
@@ -172,7 +172,7 @@ export default function ReviewerDashboard({
             {onLogout && (
               <button
                 onClick={onLogout}
-                className="inline-flex items-center gap-1.5 rounded-lg border border-red-900/60 bg-red-950/30 px-3 py-2 text-xs font-semibold text-red-300 hover:bg-red-900/50 hover:text-white transition"
+                className="inline-flex items-center gap-1.5 rounded-lg border border-red-900/60 bg-red-950/30 px-3 py-2 text-xs font-semibold text-red-300 hover:bg-red-900/50 hover:text-white transition cursor-pointer"
                 title="Lock Reviewer Portal (Require Passcode)"
               >
                 <Lock className="h-3.5 w-3.5" />
@@ -183,32 +183,32 @@ export default function ReviewerDashboard({
         </div>
 
         {/* KPI Cards Grid */}
-        <div className="mt-6 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-          <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-3.5">
-            <span className="text-[11px] font-medium text-slate-400 uppercase tracking-wider">Total Received</span>
-            <div className="mt-1 text-2xl font-black text-white">{totalCount}</div>
+        <div className="mt-6 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 sm:gap-3">
+          <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-3 sm:p-3.5">
+            <span className="text-[10px] sm:text-[11px] font-medium text-slate-400 uppercase tracking-wider">Total Received</span>
+            <div className="mt-1 text-xl sm:text-2xl font-black text-white">{totalCount}</div>
           </div>
-          <div className="rounded-xl border border-blue-900/40 bg-blue-950/20 p-3.5">
-            <span className="text-[11px] font-medium text-blue-300 uppercase tracking-wider">Under Review</span>
-            <div className="mt-1 text-2xl font-black text-blue-400">{underReviewCount}</div>
+          <div className="rounded-xl border border-blue-900/40 bg-blue-950/20 p-3 sm:p-3.5">
+            <span className="text-[10px] sm:text-[11px] font-medium text-blue-300 uppercase tracking-wider">Under Review</span>
+            <div className="mt-1 text-xl sm:text-2xl font-black text-blue-400">{underReviewCount}</div>
           </div>
-          <div className="rounded-xl border border-emerald-900/40 bg-emerald-950/20 p-3.5">
-            <span className="text-[11px] font-medium text-emerald-300 uppercase tracking-wider">Shortlisted / Approved</span>
-            <div className="mt-1 text-2xl font-black text-emerald-400">{approvedCount + shortlistedCount}</div>
+          <div className="rounded-xl border border-emerald-900/40 bg-emerald-950/20 p-3 sm:p-3.5">
+            <span className="text-[10px] sm:text-[11px] font-medium text-emerald-300 uppercase tracking-wider">Shortlisted / Approved</span>
+            <div className="mt-1 text-xl sm:text-2xl font-black text-emerald-400">{approvedCount + shortlistedCount}</div>
           </div>
-          <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-3.5">
-            <span className="text-[11px] font-medium text-slate-400 uppercase tracking-wider">Average GPA</span>
-            <div className="mt-1 text-2xl font-black text-white">{avgGpa}</div>
+          <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-3 sm:p-3.5">
+            <span className="text-[10px] sm:text-[11px] font-medium text-slate-400 uppercase tracking-wider">Average GPA</span>
+            <div className="mt-1 text-xl sm:text-2xl font-black text-white">{avgGpa}</div>
           </div>
-          <div className="rounded-xl border border-amber-900/40 bg-amber-950/20 p-3.5 col-span-2 sm:col-span-1">
-            <span className="text-[11px] font-medium text-amber-300 uppercase tracking-wider">Average AI Score</span>
-            <div className="mt-1 text-2xl font-black text-amber-400">{avgAiScore} <span className="text-xs font-normal text-slate-400">/ 50</span></div>
+          <div className="rounded-xl border border-amber-900/40 bg-amber-950/20 p-3 sm:p-3.5 col-span-2 sm:col-span-1">
+            <span className="text-[10px] sm:text-[11px] font-medium text-amber-300 uppercase tracking-wider">Average AI Score</span>
+            <div className="mt-1 text-xl sm:text-2xl font-black text-amber-400">{avgAiScore} <span className="text-xs font-normal text-slate-400">/ 50</span></div>
           </div>
         </div>
       </div>
 
       {/* Filter & Search Bar */}
-      <div className="mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-xl border border-slate-800 bg-[#0f172a] p-3.5">
+      <div className="mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-xl border border-slate-800 bg-[#0f172a] p-3 sm:p-3.5">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-500" />
           <input
@@ -216,16 +216,16 @@ export default function ReviewerDashboard({
             placeholder="Search by student name, high school, or email..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full rounded-lg bg-slate-900 pl-9 pr-4 py-1.5 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none"
+            className="w-full rounded-lg bg-slate-900 pl-9 pr-4 py-2 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none"
           />
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="grid grid-cols-2 sm:flex sm:items-center gap-2 w-full sm:w-auto">
           {/* Status filter */}
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="rounded-lg bg-slate-900 px-3 py-1.5 text-xs text-slate-300 border border-slate-800"
+            className="w-full sm:w-auto rounded-lg bg-slate-900 px-2.5 py-2 text-xs text-slate-300 border border-slate-800"
           >
             <option value="ALL">All Statuses</option>
             <option value="Under Review">Under Review</option>
@@ -239,7 +239,7 @@ export default function ReviewerDashboard({
           <select
             value={tierFilter}
             onChange={(e) => setTierFilter(e.target.value)}
-            className="rounded-lg bg-slate-900 px-3 py-1.5 text-xs text-slate-300 border border-slate-800"
+            className="w-full sm:w-auto rounded-lg bg-slate-900 px-2.5 py-2 text-xs text-slate-300 border border-slate-800"
           >
             <option value="ALL">All AI Tiers</option>
             <option value="Exceptional">Exceptional (44–50)</option>
@@ -253,8 +253,12 @@ export default function ReviewerDashboard({
 
       {/* Applications Table */}
       <div className="overflow-hidden rounded-xl border border-slate-800 bg-[#0f172a] shadow-md">
+        <div className="sm:hidden px-3.5 py-2 text-[11px] text-slate-400 bg-slate-900/60 border-b border-slate-800 flex items-center justify-between">
+          <span>👉 Swipe table left/right to view details</span>
+          <span className="font-mono text-blue-400 font-bold">{filteredApplications.length} records</span>
+        </div>
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs sm:text-sm text-slate-300">
+          <table className="min-w-[720px] w-full text-left text-xs sm:text-sm text-slate-300">
             <thead className="border-b border-slate-800 bg-slate-900/80 text-[11px] uppercase tracking-wider text-slate-400">
               <tr>
                 <th className="px-4 py-3">ID & Date</th>
@@ -364,12 +368,12 @@ export default function ReviewerDashboard({
       {/* FULL APPLICATION REVIEW MODAL */}
       {/* ======================================================== */}
       {selectedApp && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/85 backdrop-blur-md animate-in fade-in">
-          <div className="relative w-full max-w-5xl max-h-[92vh] overflow-y-auto rounded-2xl border border-slate-700 bg-[#0f172a] shadow-2xl text-slate-100 p-5 sm:p-8">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-2.5 sm:p-5 bg-black/85 backdrop-blur-md animate-in fade-in">
+          <div className="relative w-full max-w-5xl max-h-[92vh] overflow-y-auto rounded-2xl border border-slate-700 bg-[#0f172a] shadow-2xl text-slate-100 p-4 sm:p-8">
             {/* Close Button */}
             <button
               onClick={() => setSelectedApp(null)}
-              className="absolute top-5 right-5 p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition"
+              className="absolute top-4 right-4 sm:top-5 sm:right-5 p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition cursor-pointer"
             >
               <X className="h-5 w-5" />
             </button>
@@ -411,7 +415,7 @@ export default function ReviewerDashboard({
                     <MapPin className="h-4 w-4" />
                     <span>Applicant & Guardian Details</span>
                   </h3>
-                  <div className="grid grid-cols-2 gap-3 text-xs">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
                     <div>
                       <span className="text-slate-400">Address:</span>
                       <p className="text-white mt-0.5">{selectedApp.applicant.streetAddress}, {selectedApp.applicant.city}, {selectedApp.applicant.state} {selectedApp.applicant.zip}</p>
@@ -423,12 +427,12 @@ export default function ReviewerDashboard({
                     <div>
                       <span className="text-slate-400">Phone & Email:</span>
                       <p className="text-white mt-0.5">{selectedApp.applicant.telephone}</p>
-                      <p className="text-blue-400">{selectedApp.applicant.email}</p>
+                      <p className="text-blue-400 break-all">{selectedApp.applicant.email}</p>
                     </div>
                     <div>
                       <span className="text-slate-400">Parent / Guardian:</span>
                       <p className="text-white mt-0.5">{selectedApp.parentGuardian.fullName}</p>
-                      <p className="text-slate-400">{selectedApp.parentGuardian.phone} &bull; {selectedApp.parentGuardian.email}</p>
+                      <p className="text-slate-400 break-all">{selectedApp.parentGuardian.phone} &bull; {selectedApp.parentGuardian.email}</p>
                     </div>
                   </div>
                 </div>
@@ -439,7 +443,7 @@ export default function ReviewerDashboard({
                     <GraduationCap className="h-4 w-4" />
                     <span>School & Family Context</span>
                   </h3>
-                  <div className="grid grid-cols-3 gap-3 text-xs">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
                     <div>
                       <span className="text-slate-400">High School GPA:</span>
                       <p className="text-base font-bold text-emerald-400 mt-0.5">{selectedApp.schoolFamily.gpa}</p>
@@ -683,11 +687,11 @@ export default function ReviewerDashboard({
       {/* EXPORT CSV MODAL (Works inside all iframes & Wix) */}
       {/* ======================================================== */}
       {isExportModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
-          <div className="relative w-full max-w-lg rounded-2xl border border-slate-700 bg-[#0f172a] p-6 shadow-2xl text-slate-100">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
+          <div className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-2xl border border-slate-700 bg-[#0f172a] p-4 sm:p-6 shadow-2xl text-slate-100">
             <button
               onClick={() => setIsExportModalOpen(false)}
-              className="absolute top-4 right-4 p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition"
+              className="absolute top-4 right-4 p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition cursor-pointer"
             >
               <X className="h-5 w-5" />
             </button>

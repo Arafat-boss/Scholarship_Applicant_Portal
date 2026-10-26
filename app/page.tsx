@@ -72,34 +72,34 @@ export default function Home() {
   return (
     <div className="w-full flex flex-col bg-[#090d16] text-slate-100 min-h-0">
       {/* Inline Section Tab Switcher (Replaces Navbar for Seamless Wix Embedding) */}
-      <section className="pt-6 pb-2 px-4 sm:px-6 w-full">
-        <div className="mx-auto flex flex-wrap items-center justify-center gap-3">
+      <section className="pt-4 sm:pt-6 pb-2 px-3 sm:px-6 w-full">
+        <div className="mx-auto flex flex-wrap items-center justify-center gap-2 sm:gap-3">
           {/* Main Tabs Container */}
-          <div className="flex rounded-xl bg-slate-900/90 p-1.5 border border-slate-800 shadow-xl">
+          <div className="flex rounded-xl bg-slate-900/90 p-1 sm:p-1.5 border border-slate-800 shadow-xl">
             <button
               id="tab-apply-now"
               onClick={() => setActiveTab('applicant')}
-              className={`flex items-center gap-2 rounded-lg px-4 py-2 text-xs sm:text-sm font-semibold transition-all ${
+              className={`flex items-center gap-1.5 sm:gap-2 rounded-lg px-3 sm:px-4 py-2 text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
                 activeTab === 'applicant'
                   ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30'
                   : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
               }`}
             >
-              <FileText className="h-4 w-4" />
+              <FileText className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
               <span>Apply Now</span>
             </button>
 
             <button
               id="tab-reviewer-portal"
               onClick={() => setActiveTab('reviewer')}
-              className={`flex items-center gap-2 rounded-lg px-4 py-2 text-xs sm:text-sm font-semibold transition-all ${
+              className={`flex items-center gap-1.5 sm:gap-2 rounded-lg px-3 sm:px-4 py-2 text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
                 activeTab === 'reviewer'
                   ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30'
                   : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
               }`}
             >
               {isCommitteeAuthenticated ? (
-                <ShieldCheck className="h-4 w-4 text-emerald-400" />
+                <ShieldCheck className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-emerald-400" />
               ) : (
                 <Lock className="h-3.5 w-3.5 text-amber-400" />
               )}
@@ -115,9 +115,9 @@ export default function Home() {
           {/* AI Rubric Explainer Trigger Button */}
           <button
             onClick={() => setIsRubricModalOpen(true)}
-            className="flex items-center gap-2 rounded-xl border border-slate-800 bg-slate-900/90 px-4 py-2.5 text-xs sm:text-sm font-semibold text-slate-300 shadow-xl hover:border-slate-700 hover:bg-slate-800 hover:text-white transition"
+            className="flex items-center gap-1.5 sm:gap-2 rounded-xl border border-slate-800 bg-slate-900/90 px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-semibold text-slate-300 shadow-xl hover:border-slate-700 hover:bg-slate-800 hover:text-white transition cursor-pointer"
           >
-            <Sparkles className="h-4 w-4 text-amber-400" />
+            <Sparkles className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-amber-400" />
             <span>AI Rubric (50 pts)</span>
           </button>
         </div>

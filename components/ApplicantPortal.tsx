@@ -333,19 +333,19 @@ export default function ApplicantPortal({
   };
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6">
+    <div className="mx-auto max-w-4xl px-3 sm:px-6 py-6 sm:py-8">
       {/* Title & Organization Header matching Client Mockup */}
-      <div className="mb-6 rounded-2xl border border-slate-800 bg-gradient-to-b from-[#131b2e] to-[#0f172a] p-6 shadow-xl text-slate-100">
+      <div className="mb-6 rounded-2xl border border-slate-800 bg-gradient-to-b from-[#131b2e] to-[#0f172a] p-4 sm:p-6 shadow-xl text-slate-100">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <div className="inline-flex items-center gap-2 rounded-full bg-blue-950 px-3 py-1 text-xs font-semibold text-blue-400 border border-blue-800/60 mb-2">
               <Sparkles className="h-3.5 w-3.5 text-blue-400" />
               <span>Official 2026 Application Form</span>
             </div>
-            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
+            <h2 className="text-xl sm:text-3xl font-extrabold tracking-tight text-white">
               The Monday Club Scholarship
             </h2>
-            <p className="mt-1 text-xs sm:text-sm text-slate-400">
+            <p className="mt-1 text-xs sm:text-sm text-slate-400 leading-relaxed">
               Holloway St. / Dr. Woodrow Wilson / James H. Sills, Jr. / Delaware State University
             </p>
           </div>
@@ -354,9 +354,9 @@ export default function ApplicantPortal({
             <button
               type="button"
               onClick={handleAutofill}
-              className="flex items-center gap-1.5 rounded-lg border border-blue-600/40 bg-blue-950/60 px-3.5 py-2 text-xs font-semibold text-blue-300 hover:bg-blue-900/60 hover:text-white transition shadow-sm"
+              className="w-full sm:w-auto flex items-center justify-center gap-1.5 rounded-lg border border-blue-600/40 bg-blue-950/60 px-3.5 py-2 text-xs font-semibold text-blue-300 hover:bg-blue-900/60 hover:text-white transition shadow-sm cursor-pointer"
             >
-              <Sparkles className="h-3.5 w-3.5 text-amber-400" />
+              <Sparkles className="h-3.5 w-3.5 text-amber-400 shrink-0" />
               <span>Pre-fill Sample Data</span>
             </button>
           </div>
@@ -368,9 +368,9 @@ export default function ApplicantPortal({
         {/* ======================================================== */}
         {/* 1. ELIGIBILITY */}
         {/* ======================================================== */}
-        <div className="rounded-xl border border-slate-800 bg-[#0f172a] p-5 sm:p-6 shadow-md">
+        <div className="rounded-xl border border-slate-800 bg-[#0f172a] p-4 sm:p-6 shadow-md">
           <h3 className="text-base font-bold text-white mb-4 flex items-center gap-2">
-            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-600/20 text-xs font-bold text-blue-400 border border-blue-500/30">
+            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-600/20 text-xs font-bold text-blue-400 border border-blue-500/30 shrink-0">
               1
             </span>
             <span>Eligibility</span>
@@ -383,9 +383,9 @@ export default function ApplicantPortal({
                 type="checkbox"
                 checked={isDelawareSenior}
                 onChange={(e) => setIsDelawareSenior(e.target.checked)}
-                className="mt-0.5 h-4 w-4 rounded border-slate-700 bg-slate-900 text-blue-600 focus:ring-blue-500"
+                className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-700 bg-slate-900 text-blue-600 focus:ring-blue-500"
               />
-              <span>
+              <span className="leading-relaxed">
                 I am a senior at a high school in Delaware and am admitted to, or seeking admission to, a four-year college or university.
               </span>
             </label>
@@ -396,9 +396,9 @@ export default function ApplicantPortal({
                 type="checkbox"
                 checked={isEligibleDescent}
                 onChange={(e) => setIsEligibleDescent(e.target.checked)}
-                className="mt-0.5 h-4 w-4 rounded border-slate-700 bg-slate-900 text-blue-600 focus:ring-blue-500"
+                className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-700 bg-slate-900 text-blue-600 focus:ring-blue-500"
               />
-              <span>
+              <span className="leading-relaxed">
                 I am of African-American, Hispanic or Native American descent.
               </span>
             </label>
@@ -409,9 +409,9 @@ export default function ApplicantPortal({
                 type="checkbox"
                 checked={isMinGpa}
                 onChange={(e) => setIsMinGpa(e.target.checked)}
-                className="mt-0.5 h-4 w-4 rounded border-slate-700 bg-slate-900 text-blue-600 focus:ring-blue-500"
+                className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-700 bg-slate-900 text-blue-600 focus:ring-blue-500"
               />
-              <span>
+              <span className="leading-relaxed">
                 My cumulative GPA is at least 2.75 on a 4.00 scale.
               </span>
             </label>
@@ -421,9 +421,9 @@ export default function ApplicantPortal({
         {/* ======================================================== */}
         {/* 2. APPLICANT */}
         {/* ======================================================== */}
-        <div className="rounded-xl border border-slate-800 bg-[#0f172a] p-5 sm:p-6 shadow-md">
+        <div className="rounded-xl border border-slate-800 bg-[#0f172a] p-4 sm:p-6 shadow-md">
           <h3 className="text-base font-bold text-white mb-4 flex items-center gap-2">
-            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-600/20 text-xs font-bold text-blue-400 border border-blue-500/30">
+            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-600/20 text-xs font-bold text-blue-400 border border-blue-500/30 shrink-0">
               2
             </span>
             <span>Applicant</span>
@@ -469,14 +469,14 @@ export default function ApplicantPortal({
             </div>
             <div>
               <label className="block text-slate-400 font-medium mb-1.5">City, State, Zip</label>
-              <div className="grid grid-cols-3 gap-2">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                 <input
                   id="applicant-city"
                   type="text"
                   value={city}
                   onChange={(e) => setCity(e.target.value)}
                   placeholder="City"
-                  className="w-full rounded-lg px-3 py-2 text-sm text-white col-span-1"
+                  className="w-full rounded-lg px-3 py-2 text-sm text-white"
                   required
                 />
                 <input
@@ -485,7 +485,7 @@ export default function ApplicantPortal({
                   value={stateVal}
                   onChange={(e) => setStateVal(e.target.value)}
                   placeholder="State (e.g. DE)"
-                  className="w-full rounded-lg px-3 py-2 text-sm text-white col-span-1"
+                  className="w-full rounded-lg px-3 py-2 text-sm text-white"
                   required
                 />
                 <input
@@ -493,8 +493,8 @@ export default function ApplicantPortal({
                   type="text"
                   value={zip}
                   onChange={(e) => setZip(e.target.value)}
-                  placeholder="Zip"
-                  className="w-full rounded-lg px-3 py-2 text-sm text-white col-span-1"
+                  placeholder="Zip code"
+                  className="w-full rounded-lg px-3 py-2 text-sm text-white"
                   required
                 />
               </div>
@@ -688,52 +688,61 @@ export default function ApplicantPortal({
             <label className="block text-xs sm:text-sm font-semibold text-slate-300 mb-2">
               School clubs & activities (include leadership positions)
             </label>
-            <div className="space-y-2">
+            <div className="space-y-3">
               {activities.map((item, index) => (
-                <div key={item.id} className="flex items-center gap-2">
-                  <input
-                    type="text"
-                    placeholder="Activity / club"
-                    value={item.activity}
-                    onChange={(e) => {
-                      const updated = [...activities];
-                      updated[index].activity = e.target.value;
-                      setActivities(updated);
-                    }}
-                    className="flex-1 rounded-lg px-3 py-2 text-xs sm:text-sm text-white"
-                  />
-                  <input
-                    type="text"
-                    placeholder="Leadership role (if any)"
-                    value={item.role}
-                    onChange={(e) => {
-                      const updated = [...activities];
-                      updated[index].role = e.target.value;
-                      setActivities(updated);
-                    }}
-                    className="flex-1 rounded-lg px-3 py-2 text-xs sm:text-sm text-white"
-                  />
-                  <input
-                    type="text"
-                    placeholder="Years (e.g. 9-12)"
-                    value={item.years}
-                    onChange={(e) => {
-                      const updated = [...activities];
-                      updated[index].years = e.target.value;
-                      setActivities(updated);
-                    }}
-                    className="w-28 rounded-lg px-3 py-2 text-xs sm:text-sm text-white"
-                  />
-                  {activities.length > 1 && (
-                    <button
-                      type="button"
-                      onClick={() => setActivities(activities.filter((_, i) => i !== index))}
-                      className="p-2 rounded-lg text-slate-400 hover:text-red-400 hover:bg-slate-800 transition"
-                      title="Remove line"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
-                  )}
+                <div
+                  key={item.id}
+                  className="grid grid-cols-1 sm:grid-cols-12 gap-2 p-2.5 sm:p-0 rounded-xl sm:rounded-none bg-slate-900/60 sm:bg-transparent border border-slate-800/80 sm:border-0"
+                >
+                  <div className="sm:col-span-5">
+                    <input
+                      type="text"
+                      placeholder="Activity / club"
+                      value={item.activity}
+                      onChange={(e) => {
+                        const updated = [...activities];
+                        updated[index].activity = e.target.value;
+                        setActivities(updated);
+                      }}
+                      className="w-full rounded-lg px-3 py-2 text-xs sm:text-sm text-white"
+                    />
+                  </div>
+                  <div className="sm:col-span-4">
+                    <input
+                      type="text"
+                      placeholder="Leadership role (if any)"
+                      value={item.role}
+                      onChange={(e) => {
+                        const updated = [...activities];
+                        updated[index].role = e.target.value;
+                        setActivities(updated);
+                      }}
+                      className="w-full rounded-lg px-3 py-2 text-xs sm:text-sm text-white"
+                    />
+                  </div>
+                  <div className="flex items-center gap-2 sm:col-span-3">
+                    <input
+                      type="text"
+                      placeholder="Years (e.g. 9-12)"
+                      value={item.years}
+                      onChange={(e) => {
+                        const updated = [...activities];
+                        updated[index].years = e.target.value;
+                        setActivities(updated);
+                      }}
+                      className="w-full rounded-lg px-3 py-2 text-xs sm:text-sm text-white"
+                    />
+                    {activities.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => setActivities(activities.filter((_, i) => i !== index))}
+                        className="p-2 shrink-0 rounded-lg text-slate-400 hover:text-red-400 hover:bg-slate-800 transition cursor-pointer"
+                        title="Remove line"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
@@ -742,7 +751,7 @@ export default function ApplicantPortal({
               onClick={() =>
                 setActivities([...activities, { id: String(Date.now()), activity: '', role: '', years: '' }])
               }
-              className="mt-2.5 inline-flex items-center gap-1.5 text-xs font-semibold text-blue-400 hover:text-blue-300 px-2 py-1 rounded hover:bg-slate-800 transition"
+              className="mt-2.5 inline-flex items-center gap-1.5 text-xs font-semibold text-blue-400 hover:text-blue-300 px-2 py-1 rounded hover:bg-slate-800 transition cursor-pointer"
             >
               <Plus className="h-3.5 w-3.5" />
               <span>Add activity</span>
@@ -754,52 +763,61 @@ export default function ApplicantPortal({
             <label className="block text-xs sm:text-sm font-semibold text-slate-300 mb-2">
               Community service, church & volunteering
             </label>
-            <div className="space-y-2">
+            <div className="space-y-3">
               {communityService.map((item, index) => (
-                <div key={item.id} className="flex items-center gap-2">
-                  <input
-                    type="text"
-                    placeholder="Organization / church"
-                    value={item.organization}
-                    onChange={(e) => {
-                      const updated = [...communityService];
-                      updated[index].organization = e.target.value;
-                      setCommunityService(updated);
-                    }}
-                    className="flex-1 rounded-lg px-3 py-2 text-xs sm:text-sm text-white"
-                  />
-                  <input
-                    type="text"
-                    placeholder="What you did"
-                    value={item.description}
-                    onChange={(e) => {
-                      const updated = [...communityService];
-                      updated[index].description = e.target.value;
-                      setCommunityService(updated);
-                    }}
-                    className="flex-1 rounded-lg px-3 py-2 text-xs sm:text-sm text-white"
-                  />
-                  <input
-                    type="number"
-                    placeholder="Total hours"
-                    value={item.totalHours}
-                    onChange={(e) => {
-                      const updated = [...communityService];
-                      updated[index].totalHours = e.target.value;
-                      setCommunityService(updated);
-                    }}
-                    className="w-28 rounded-lg px-3 py-2 text-xs sm:text-sm text-white"
-                  />
-                  {communityService.length > 1 && (
-                    <button
-                      type="button"
-                      onClick={() => setCommunityService(communityService.filter((_, i) => i !== index))}
-                      className="p-2 rounded-lg text-slate-400 hover:text-red-400 hover:bg-slate-800 transition"
-                      title="Remove line"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
-                  )}
+                <div
+                  key={item.id}
+                  className="grid grid-cols-1 sm:grid-cols-12 gap-2 p-2.5 sm:p-0 rounded-xl sm:rounded-none bg-slate-900/60 sm:bg-transparent border border-slate-800/80 sm:border-0"
+                >
+                  <div className="sm:col-span-5">
+                    <input
+                      type="text"
+                      placeholder="Organization / church"
+                      value={item.organization}
+                      onChange={(e) => {
+                        const updated = [...communityService];
+                        updated[index].organization = e.target.value;
+                        setCommunityService(updated);
+                      }}
+                      className="w-full rounded-lg px-3 py-2 text-xs sm:text-sm text-white"
+                    />
+                  </div>
+                  <div className="sm:col-span-4">
+                    <input
+                      type="text"
+                      placeholder="What you did"
+                      value={item.description}
+                      onChange={(e) => {
+                        const updated = [...communityService];
+                        updated[index].description = e.target.value;
+                        setCommunityService(updated);
+                      }}
+                      className="w-full rounded-lg px-3 py-2 text-xs sm:text-sm text-white"
+                    />
+                  </div>
+                  <div className="flex items-center gap-2 sm:col-span-3">
+                    <input
+                      type="number"
+                      placeholder="Total hours"
+                      value={item.totalHours}
+                      onChange={(e) => {
+                        const updated = [...communityService];
+                        updated[index].totalHours = e.target.value;
+                        setCommunityService(updated);
+                      }}
+                      className="w-full rounded-lg px-3 py-2 text-xs sm:text-sm text-white"
+                    />
+                    {communityService.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => setCommunityService(communityService.filter((_, i) => i !== index))}
+                        className="p-2 shrink-0 rounded-lg text-slate-400 hover:text-red-400 hover:bg-slate-800 transition cursor-pointer"
+                        title="Remove line"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
@@ -811,7 +829,7 @@ export default function ApplicantPortal({
                   { id: String(Date.now()), organization: '', description: '', totalHours: '' },
                 ])
               }
-              className="mt-2.5 inline-flex items-center gap-1.5 text-xs font-semibold text-blue-400 hover:text-blue-300 px-2 py-1 rounded hover:bg-slate-800 transition"
+              className="mt-2.5 inline-flex items-center gap-1.5 text-xs font-semibold text-blue-400 hover:text-blue-300 px-2 py-1 rounded hover:bg-slate-800 transition cursor-pointer"
             >
               <Plus className="h-3.5 w-3.5" />
               <span>Add service</span>
@@ -823,52 +841,61 @@ export default function ApplicantPortal({
             <label className="block text-xs sm:text-sm font-semibold text-slate-300 mb-2">
               Employment history
             </label>
-            <div className="space-y-2">
+            <div className="space-y-3">
               {employment.map((item, index) => (
-                <div key={item.id} className="flex items-center gap-2">
-                  <input
-                    type="text"
-                    placeholder="Employer"
-                    value={item.employer}
-                    onChange={(e) => {
-                      const updated = [...employment];
-                      updated[index].employer = e.target.value;
-                      setEmployment(updated);
-                    }}
-                    className="flex-1 rounded-lg px-3 py-2 text-xs sm:text-sm text-white"
-                  />
-                  <input
-                    type="text"
-                    placeholder="Position"
-                    value={item.position}
-                    onChange={(e) => {
-                      const updated = [...employment];
-                      updated[index].position = e.target.value;
-                      setEmployment(updated);
-                    }}
-                    className="flex-1 rounded-lg px-3 py-2 text-xs sm:text-sm text-white"
-                  />
-                  <input
-                    type="text"
-                    placeholder="Dates"
-                    value={item.dates}
-                    onChange={(e) => {
-                      const updated = [...employment];
-                      updated[index].dates = e.target.value;
-                      setEmployment(updated);
-                    }}
-                    className="w-36 rounded-lg px-3 py-2 text-xs sm:text-sm text-white"
-                  />
-                  {employment.length > 1 && (
-                    <button
-                      type="button"
-                      onClick={() => setEmployment(employment.filter((_, i) => i !== index))}
-                      className="p-2 rounded-lg text-slate-400 hover:text-red-400 hover:bg-slate-800 transition"
-                      title="Remove line"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
-                  )}
+                <div
+                  key={item.id}
+                  className="grid grid-cols-1 sm:grid-cols-12 gap-2 p-2.5 sm:p-0 rounded-xl sm:rounded-none bg-slate-900/60 sm:bg-transparent border border-slate-800/80 sm:border-0"
+                >
+                  <div className="sm:col-span-5">
+                    <input
+                      type="text"
+                      placeholder="Employer"
+                      value={item.employer}
+                      onChange={(e) => {
+                        const updated = [...employment];
+                        updated[index].employer = e.target.value;
+                        setEmployment(updated);
+                      }}
+                      className="w-full rounded-lg px-3 py-2 text-xs sm:text-sm text-white"
+                    />
+                  </div>
+                  <div className="sm:col-span-4">
+                    <input
+                      type="text"
+                      placeholder="Position"
+                      value={item.position}
+                      onChange={(e) => {
+                        const updated = [...employment];
+                        updated[index].position = e.target.value;
+                        setEmployment(updated);
+                      }}
+                      className="w-full rounded-lg px-3 py-2 text-xs sm:text-sm text-white"
+                    />
+                  </div>
+                  <div className="flex items-center gap-2 sm:col-span-3">
+                    <input
+                      type="text"
+                      placeholder="Dates"
+                      value={item.dates}
+                      onChange={(e) => {
+                        const updated = [...employment];
+                        updated[index].dates = e.target.value;
+                        setEmployment(updated);
+                      }}
+                      className="w-full rounded-lg px-3 py-2 text-xs sm:text-sm text-white"
+                    />
+                    {employment.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => setEmployment(employment.filter((_, i) => i !== index))}
+                        className="p-2 shrink-0 rounded-lg text-slate-400 hover:text-red-400 hover:bg-slate-800 transition cursor-pointer"
+                        title="Remove line"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
@@ -880,7 +907,7 @@ export default function ApplicantPortal({
                   { id: String(Date.now()), employer: '', position: '', dates: '' },
                 ])
               }
-              className="mt-2.5 inline-flex items-center gap-1.5 text-xs font-semibold text-blue-400 hover:text-blue-300 px-2 py-1 rounded hover:bg-slate-800 transition"
+              className="mt-2.5 inline-flex items-center gap-1.5 text-xs font-semibold text-blue-400 hover:text-blue-300 px-2 py-1 rounded hover:bg-slate-800 transition cursor-pointer"
             >
               <Plus className="h-3.5 w-3.5" />
               <span>Add job</span>
@@ -892,54 +919,63 @@ export default function ApplicantPortal({
             <label className="block text-xs sm:text-sm font-semibold text-slate-300 mb-2">
               Colleges & universities (applied, accepted, or waiting)
             </label>
-            <div className="space-y-2">
+            <div className="space-y-3">
               {colleges.map((item, index) => (
-                <div key={item.id} className="flex items-center gap-2">
-                  <input
-                    type="text"
-                    placeholder="College / university"
-                    value={item.college}
-                    onChange={(e) => {
-                      const updated = [...colleges];
-                      updated[index].college = e.target.value;
-                      setColleges(updated);
-                    }}
-                    className="flex-1 rounded-lg px-3 py-2 text-xs sm:text-sm text-white"
-                  />
-                  <input
-                    type="text"
-                    placeholder="City, State"
-                    value={item.cityState}
-                    onChange={(e) => {
-                      const updated = [...colleges];
-                      updated[index].cityState = e.target.value;
-                      setColleges(updated);
-                    }}
-                    className="flex-1 rounded-lg px-3 py-2 text-xs sm:text-sm text-white"
-                  />
-                  <select
-                    value={item.status}
-                    onChange={(e) => {
-                      const updated = [...colleges];
-                      updated[index].status = e.target.value as CollegePlan['status'];
-                      setColleges(updated);
-                    }}
-                    className="w-32 rounded-lg px-3 py-2 text-xs sm:text-sm text-white capitalize"
-                  >
-                    <option value="applied">Applied</option>
-                    <option value="accepted">Accepted</option>
-                    <option value="waiting">Waiting</option>
-                  </select>
-                  {colleges.length > 1 && (
-                    <button
-                      type="button"
-                      onClick={() => setColleges(colleges.filter((_, i) => i !== index))}
-                      className="p-2 rounded-lg text-slate-400 hover:text-red-400 hover:bg-slate-800 transition"
-                      title="Remove line"
+                <div
+                  key={item.id}
+                  className="grid grid-cols-1 sm:grid-cols-12 gap-2 p-2.5 sm:p-0 rounded-xl sm:rounded-none bg-slate-900/60 sm:bg-transparent border border-slate-800/80 sm:border-0"
+                >
+                  <div className="sm:col-span-5">
+                    <input
+                      type="text"
+                      placeholder="College / university"
+                      value={item.college}
+                      onChange={(e) => {
+                        const updated = [...colleges];
+                        updated[index].college = e.target.value;
+                        setColleges(updated);
+                      }}
+                      className="w-full rounded-lg px-3 py-2 text-xs sm:text-sm text-white"
+                    />
+                  </div>
+                  <div className="sm:col-span-4">
+                    <input
+                      type="text"
+                      placeholder="City, State"
+                      value={item.cityState}
+                      onChange={(e) => {
+                        const updated = [...colleges];
+                        updated[index].cityState = e.target.value;
+                        setColleges(updated);
+                      }}
+                      className="w-full rounded-lg px-3 py-2 text-xs sm:text-sm text-white"
+                    />
+                  </div>
+                  <div className="flex items-center gap-2 sm:col-span-3">
+                    <select
+                      value={item.status}
+                      onChange={(e) => {
+                        const updated = [...colleges];
+                        updated[index].status = e.target.value as CollegePlan['status'];
+                        setColleges(updated);
+                      }}
+                      className="w-full rounded-lg px-3 py-2 text-xs sm:text-sm text-white capitalize"
                     >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
-                  )}
+                      <option value="applied">Applied</option>
+                      <option value="accepted">Accepted</option>
+                      <option value="waiting">Waiting</option>
+                    </select>
+                    {colleges.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => setColleges(colleges.filter((_, i) => i !== index))}
+                        className="p-2 shrink-0 rounded-lg text-slate-400 hover:text-red-400 hover:bg-slate-800 transition cursor-pointer"
+                        title="Remove line"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
@@ -1124,9 +1160,9 @@ export default function ApplicantPortal({
                 type="checkbox"
                 checked={isInfoAccurate}
                 onChange={(e) => setIsInfoAccurate(e.target.checked)}
-                className="mt-0.5 h-4 w-4 rounded border-slate-700 bg-slate-900 text-blue-600 focus:ring-blue-500"
+                className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-700 bg-slate-900 text-blue-600 focus:ring-blue-500"
               />
-              <span>The information is accurate and the work is my own.</span>
+              <span className="leading-relaxed">The information is accurate and the work is my own.</span>
             </label>
 
             <label className="flex items-start gap-3 cursor-pointer">
@@ -1135,9 +1171,9 @@ export default function ApplicantPortal({
                 type="checkbox"
                 checked={parentGrantsPermission}
                 onChange={(e) => setParentGrantsPermission(e.target.checked)}
-                className="mt-0.5 h-4 w-4 rounded border-slate-700 bg-slate-900 text-blue-600 focus:ring-blue-500"
+                className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-700 bg-slate-900 text-blue-600 focus:ring-blue-500"
               />
-              <span>
+              <span className="leading-relaxed">
                 Parent/guardian grants permission and understands the decision of the judges is final.
               </span>
             </label>
@@ -1164,7 +1200,7 @@ export default function ApplicantPortal({
               id="btn-submit-application"
               type="submit"
               disabled={isSubmitting}
-              className="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-6 py-2.5 text-sm font-bold text-white shadow-lg shadow-blue-600/30 hover:bg-blue-500 disabled:opacity-50 transition cursor-pointer"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-6 py-2.5 text-sm font-bold text-white shadow-lg shadow-blue-600/30 hover:bg-blue-500 disabled:opacity-50 transition cursor-pointer"
             >
               {isSubmitting ? (
                 <>
@@ -1191,8 +1227,8 @@ export default function ApplicantPortal({
 
       {/* Success Modal with AI Rubric Score teaser */}
       {submittedApp && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-in fade-in">
-          <div className="relative w-full max-w-lg rounded-2xl border border-blue-500/40 bg-[#0f172a] p-6 sm:p-8 text-center text-slate-100 shadow-2xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/85 backdrop-blur-md animate-in fade-in">
+          <div className="relative w-full max-w-lg max-h-[92vh] overflow-y-auto rounded-2xl border border-blue-500/40 bg-[#0f172a] p-4 sm:p-8 text-center text-slate-100 shadow-2xl">
             <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 mb-4">
               <CheckCircle2 className="h-8 w-8" />
             </div>

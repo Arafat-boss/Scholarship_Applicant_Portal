@@ -25,31 +25,31 @@ export default function RubricInfoModal({ isOpen, onClose }: RubricInfoModalProp
   ];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="relative w-full max-w-3xl max-h-[90vh] overflow-y-auto rounded-2xl border border-slate-700 bg-[#0f172a] p-6 sm:p-8 shadow-2xl text-slate-100">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
+      <div className="relative w-full max-w-3xl max-h-[90vh] overflow-y-auto rounded-2xl border border-slate-700 bg-[#0f172a] p-4 sm:p-8 shadow-2xl text-slate-100">
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-5 right-5 p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition"
+          className="absolute top-4 right-4 sm:top-5 sm:right-5 p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition cursor-pointer"
         >
           <X className="h-5 w-5" />
         </button>
 
         {/* Header */}
-        <div className="flex items-start gap-4 mb-6">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-blue-600/20 border border-blue-500/30 text-blue-400">
-            <Sparkles className="h-6 w-6" />
+        <div className="flex items-start gap-3 sm:gap-4 mb-5 sm:mb-6 pr-8">
+          <div className="flex h-10 w-10 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-xl bg-blue-600/20 border border-blue-500/30 text-blue-400">
+            <Sparkles className="h-5 w-5 sm:h-6 sm:w-6" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-xs font-semibold uppercase tracking-wider text-blue-400">
+              <span className="text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-blue-400">
                 Evaluation Standard
               </span>
-              <span className="rounded-full bg-amber-500/10 px-2.5 py-0.5 text-[11px] font-semibold text-amber-300 border border-amber-500/20">
+              <span className="rounded-full bg-amber-500/10 px-2.5 py-0.5 text-[10px] sm:text-[11px] font-semibold text-amber-300 border border-amber-500/20">
                 Total 50 Points
               </span>
             </div>
-            <h2 className="text-xl sm:text-2xl font-bold text-white mt-1">
+            <h2 className="text-lg sm:text-2xl font-bold text-white mt-1">
               AI-Assisted 10-Criterion Rubric Scoring
             </h2>
             <p className="text-xs sm:text-sm text-slate-400 mt-1">

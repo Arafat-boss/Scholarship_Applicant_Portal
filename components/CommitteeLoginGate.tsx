@@ -45,11 +45,11 @@ export default function CommitteeLoginGate({
   };
 
   return (
-    <div className="mx-auto max-w-md px-4 py-6 sm:py-8 sm:px-6">
-      <div className="rounded-2xl border border-slate-800 bg-gradient-to-b from-[#131b2e] to-[#0f172a] p-6 sm:p-8 shadow-2xl text-slate-100 text-center">
+    <div className="mx-auto max-w-md px-3 sm:px-6 py-6 sm:py-8">
+      <div className="rounded-2xl border border-slate-800 bg-gradient-to-b from-[#131b2e] to-[#0f172a] p-4 sm:p-8 shadow-2xl text-slate-100 text-center">
         {/* Lock Icon */}
-        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-600/20 text-blue-400 border border-blue-500/30 mb-4 shadow-lg shadow-blue-500/10">
-          <Lock className="h-7 w-7" />
+        <div className="mx-auto flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-2xl bg-blue-600/20 text-blue-400 border border-blue-500/30 mb-4 shadow-lg shadow-blue-500/10">
+          <Lock className="h-6 w-6 sm:h-7 sm:w-7" />
         </div>
 
         <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-950 px-3 py-1 text-xs font-semibold text-blue-400 border border-blue-800/60 mb-2">
@@ -57,7 +57,7 @@ export default function CommitteeLoginGate({
           <span>Restricted Access</span>
         </span>
 
-        <h2 className="text-xl sm:text-2xl font-black text-white mt-1">
+        <h2 className="text-lg sm:text-2xl font-black text-white mt-1">
           Committee Reviewer Login
         </h2>
         <p className="text-xs sm:text-sm text-slate-400 mt-2 leading-relaxed">
