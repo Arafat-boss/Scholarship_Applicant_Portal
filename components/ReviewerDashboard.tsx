@@ -22,7 +22,7 @@ import {
 } from 'lucide-react';
 import { ScholarshipApplication } from '@/types/scholarship';
 import { updateCommitteeReview, resetToSampleData } from '@/lib/storage';
-import { convertApplicationsToCSV, downloadCSV } from '@/lib/csvExport';
+import { convertApplicationsToCSV, downloadCSV, copyCSVToClipboard } from '@/lib/csvExport';
 
 interface ReviewerDashboardProps {
   applications: ScholarshipApplication[];
@@ -702,7 +702,7 @@ export default function ReviewerDashboard({
               </div>
               <div>
                 <h3 className="text-base font-bold text-white">Export Applications Data</h3>
-                <p className="text-xs text-slate-400">Total {filteredApplications.length} application records ready</p>
+                <p className="text-xs text-slate-400">Total {filteredApplications.length} application records ready • Wix & Embed compatible</p>
               </div>
             </div>
 
@@ -713,7 +713,7 @@ export default function ReviewerDashboard({
             )}
 
             <div className="space-y-2.5 mb-5">
-              {/* Direct Download Button */}
+              {/* Direct Download Button (Iframe-safe server attachment or client blob) */}
               <button
                 onClick={handleExportCSV}
                 className="w-full flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-xs sm:text-sm font-bold text-white shadow-lg shadow-blue-600/30 hover:bg-blue-500 transition cursor-pointer"
@@ -722,13 +722,15 @@ export default function ReviewerDashboard({
                 <span>Download CSV File</span>
               </button>
 
-              {/* Copy to Clipboard Button */}
+              {/* Copy to Clipboard Button (With execCommand fallback for sandboxed iframes) */}
               <button
-                onClick={() => {
+                onClick={async () => {
                   const csv = convertApplicationsToCSV(filteredApplications);
-                  navigator.clipboard.writeText(csv);
-                  setCopiedToast(true);
-                  setTimeout(() => setCopiedToast(false), 4000);
+                  const copied = await copyCSVToClipboard(csv);
+                  if (copied) {
+                    setCopiedToast(true);
+                    setTimeout(() => setCopiedToast(false), 4000);
+                  }
                 }}
                 className="w-full flex items-center justify-center gap-2 rounded-xl border border-slate-700 bg-slate-800/90 px-4 py-2.5 text-xs sm:text-sm font-semibold text-slate-200 hover:bg-slate-700 hover:text-white transition cursor-pointer"
               >
@@ -736,16 +738,18 @@ export default function ReviewerDashboard({
                 <span>Copy to Clipboard (Paste into Excel / Sheets)</span>
               </button>
 
-              {/* Standalone Window Link */}
-              <a
-                href="/api/export-csv"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full flex items-center justify-center gap-2 rounded-xl border border-slate-800 bg-slate-900/60 px-4 py-2 text-xs font-medium text-slate-400 hover:text-white hover:bg-slate-800 transition"
+              {/* Pop-out to full browser tab (Bypasses all iframe restrictions) */}
+              <button
+                onClick={() => {
+                  if (typeof window !== 'undefined') {
+                    window.open(window.location.href, '_blank');
+                  }
+                }}
+                className="w-full flex items-center justify-center gap-2 rounded-xl border border-slate-800 bg-slate-900/60 px-4 py-2 text-xs font-medium text-slate-400 hover:text-white hover:bg-slate-800 transition cursor-pointer"
               >
                 <ExternalLink className="h-3.5 w-3.5" />
-                <span>Open Standalone Export Page</span>
-              </a>
+                <span>Open Dashboard in Full Tab (Outside Wix)</span>
+              </button>
             </div>
 
             <div className="rounded-lg bg-slate-950/80 p-3 border border-slate-800/80">

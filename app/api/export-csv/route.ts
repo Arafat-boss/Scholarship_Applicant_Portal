@@ -196,3 +196,56 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Failed to generate CSV export' }, { status: 500 });
   }
 }
+
+export async function POST(req: NextRequest) {
+  try {
+    let csvData = '';
+    let fileName = `Monday_Club_Scholarship_Applications_${new Date().toISOString().split('T')[0]}.csv`;
+
+    const contentType = req.headers.get('content-type') || '';
+    if (
+      contentType.includes('application/x-www-form-urlencoded') ||
+      contentType.includes('multipart/form-data')
+    ) {
+      const formData = await req.formData();
+      csvData = (formData.get('csv') as string) || '';
+      const customFileName = formData.get('filename') as string;
+      if (customFileName) fileName = customFileName;
+    } else if (contentType.includes('application/json')) {
+      const body = await req.json();
+      csvData = body.csv || '';
+      if (body.filename) fileName = body.filename;
+    } else {
+      csvData = await req.text();
+    }
+
+    if (!csvData) {
+      csvData = convertApplicationsToCSV(sampleApplications);
+    }
+
+    if (!fileName.endsWith('.csv')) {
+      fileName += '.csv';
+    }
+
+    return new NextResponse(csvData, {
+      status: 200,
+      headers: {
+        'Content-Type': 'text/csv; charset=utf-8',
+        'Content-Disposition': `attachment; filename="${fileName}"`,
+        'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+      },
+    });
+  } catch (error: unknown) {
+    if (
+      typeof error === 'object' &&
+      error !== null &&
+      'digest' in error &&
+      typeof (error as { digest?: string }).digest === 'string' &&
+      (error as { digest: string }).digest.startsWith('NEXT_')
+    ) {
+      throw error;
+    }
+    console.error('CSV Export POST Error:', error);
+    return NextResponse.json({ error: 'Failed to generate CSV export' }, { status: 500 });
+  }
+}
