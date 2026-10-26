@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ApplicantPortal from '@/components/ApplicantPortal';
 import ReviewerDashboard from '@/components/ReviewerDashboard';
 import CommitteeLoginGate from '@/components/CommitteeLoginGate';
@@ -22,6 +22,41 @@ export default function Home() {
     return false;
   });
 
+  // Broadcast dynamic height to Wix / parent iframe so container perfectly matches content height
+  useEffect(() => {
+    const notifyParentHeight = () => {
+      if (typeof window === 'undefined') return;
+      const height = document.documentElement.scrollHeight || document.body.scrollHeight;
+
+      // Broadcast to Wix / iframe parent listeners
+      window.parent?.postMessage({ type: 'setHeight', height }, '*');
+      window.parent?.postMessage({ type: 'resize', height }, '*');
+      window.parent?.postMessage({ height }, '*');
+      window.parent?.postMessage(height, '*');
+    };
+
+    // Immediate check
+    notifyParentHeight();
+    const timeout = setTimeout(notifyParentHeight, 150);
+
+    // Observe body resize changes dynamically
+    let resizeObserver: ResizeObserver | null = null;
+    if (typeof ResizeObserver !== 'undefined' && document.body) {
+      resizeObserver = new ResizeObserver(() => {
+        notifyParentHeight();
+      });
+      resizeObserver.observe(document.body);
+    }
+
+    // Scroll to top on tab switch so user doesn't stay scrolled down
+    window.scrollTo({ top: 0, behavior: 'instant' });
+
+    return () => {
+      clearTimeout(timeout);
+      resizeObserver?.disconnect();
+    };
+  }, [activeTab, isCommitteeAuthenticated, applications.length]);
+
   const handleSuccessSubmit = (newApp: ScholarshipApplication) => {
     const updated = [newApp, ...applications.filter((a) => a.id !== newApp.id)];
     setApplications(updated);
@@ -35,7 +70,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#090d16] text-slate-100">
+    <div className="w-full flex flex-col bg-[#090d16] text-slate-100 min-h-0">
       {/* Inline Section Tab Switcher (Replaces Navbar for Seamless Wix Embedding) */}
       <section className="pt-6 pb-2 px-4 sm:px-6 w-full">
         <div className="mx-auto flex flex-wrap items-center justify-center gap-3">
@@ -89,7 +124,7 @@ export default function Home() {
       </section>
 
       {/* Main Content Area without outer header or footer */}
-      <main className="flex-1 pb-10">
+      <main className="w-full pb-6">
         {activeTab === 'applicant' ? (
           <ApplicantPortal onSuccessSubmit={handleSuccessSubmit} />
         ) : !isCommitteeAuthenticated ? (

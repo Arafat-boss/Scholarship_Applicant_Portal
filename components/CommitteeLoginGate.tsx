@@ -45,7 +45,7 @@ export default function CommitteeLoginGate({
   };
 
   return (
-    <div className="mx-auto max-w-md px-4 py-16 sm:px-6">
+    <div className="mx-auto max-w-md px-4 py-6 sm:py-8 sm:px-6">
       <div className="rounded-2xl border border-slate-800 bg-gradient-to-b from-[#131b2e] to-[#0f172a] p-6 sm:p-8 shadow-2xl text-slate-100 text-center">
         {/* Lock Icon */}
         <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-600/20 text-blue-400 border border-blue-500/30 mb-4 shadow-lg shadow-blue-500/10">
