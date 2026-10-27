@@ -19,6 +19,7 @@ import {
   ScholarshipApplication,
 } from '@/types/scholarship';
 import { saveNewApplication } from '@/lib/storage';
+import { sendApplicationToGoogleSheet } from '@/lib/googleSheet';
 
 interface ApplicantPortalProps {
   onSuccessSubmit: (app: ScholarshipApplication) => void;
@@ -295,23 +296,9 @@ export default function ApplicantPortal({
           employment: employment.filter((e) => e.employer.trim()),
           colleges: colleges.filter((c) => c.college.trim()),
           documents: {
-            transcript: transcript || {
-              name: 'Transcript_Document_Attached.pdf',
-              size: 1500000,
-              type: 'application/pdf',
-              uploadedAt: new Date().toISOString(),
-            },
-            studentAidReport: studentAidReport || {
-              name: 'Student_Aid_Report_SAR.pdf',
-              size: 950000,
-              type: 'application/pdf',
-              uploadedAt: new Date().toISOString(),
-            },
-            recommendationLetters: recLetters.length > 0 ? recLetters : [
-              { name: 'Recommendation_Letter_1.pdf', size: 400000, type: 'application/pdf', uploadedAt: new Date().toISOString() },
-              { name: 'Recommendation_Letter_2.pdf', size: 420000, type: 'application/pdf', uploadedAt: new Date().toISOString() },
-              { name: 'Recommendation_Letter_3.pdf', size: 450000, type: 'application/pdf', uploadedAt: new Date().toISOString() },
-            ],
+            transcript: transcript || undefined,
+            studentAidReport: studentAidReport || undefined,
+            recommendationLetters: recLetters,
             extraDocuments: extraDocs,
           },
           certification: {
@@ -324,6 +311,11 @@ export default function ApplicantPortal({
         setIsSubmitting(false);
         setSubmittedApp(saved);
         onSuccessSubmit(saved);
+
+        // Sync application directly to Google Sheet in background
+        sendApplicationToGoogleSheet(saved).catch((err) => {
+          console.warn('Background Google Sheet sync notice:', err);
+        });
       } catch (err) {
         console.error(err);
         setIsSubmitting(false);
