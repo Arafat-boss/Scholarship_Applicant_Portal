@@ -113,44 +113,6 @@ export function isInsideIframe(): boolean {
   }
 }
 
-export function downloadCSVViaServerForm(
-  csvContent: string,
-  fileName = 'Monday_Club_Scholarship_Applications.csv'
-): boolean {
-  if (typeof window === 'undefined') return false;
-  try {
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = '/api/export-csv';
-    form.target = '_blank';
-    form.style.display = 'none';
-
-    const csvInput = document.createElement('input');
-    csvInput.type = 'hidden';
-    csvInput.name = 'csv';
-    csvInput.value = csvContent;
-    form.appendChild(csvInput);
-
-    const filenameInput = document.createElement('input');
-    filenameInput.type = 'hidden';
-    filenameInput.name = 'filename';
-    filenameInput.value = fileName;
-    form.appendChild(filenameInput);
-
-    document.body.appendChild(form);
-    form.submit();
-    setTimeout(() => {
-      if (document.body.contains(form)) {
-        document.body.removeChild(form);
-      }
-    }, 1500);
-    return true;
-  } catch (err) {
-    console.warn('downloadCSVViaServerForm failed:', err);
-    return false;
-  }
-}
-
 export async function copyCSVToClipboard(csvContent: string): Promise<boolean> {
   // 1. Try modern Async Clipboard API
   if (typeof navigator !== 'undefined' && navigator.clipboard && navigator.clipboard.writeText) {
@@ -196,16 +158,6 @@ export async function copyCSVToClipboard(csvContent: string): Promise<boolean> {
 }
 
 export function downloadCSV(csvContent: string, fileName = 'Monday_Club_Scholarship_Applications.csv'): boolean {
-  // When embedded in Wix or another iframe, direct DOM downloads on blob/data URIs
-  // are often blocked by iframe sandbox ('allow-downloads' missing).
-  // Submitting an HTTP POST to /api/export-csv with target="_blank" triggers standard
-  // browser file download headers and completely bypasses iframe sandbox restrictions!
-  if (isInsideIframe()) {
-    const serverTriggered = downloadCSVViaServerForm(csvContent, fileName);
-    if (serverTriggered) return true;
-  }
-
-  // Client-side Blob download (optimal for standalone Vercel page)
   try {
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
@@ -219,26 +171,11 @@ export function downloadCSV(csvContent: string, fileName = 'Monday_Club_Scholars
         document.body.removeChild(link);
       }
       URL.revokeObjectURL(url);
-    }, 500);
+    }, 1000);
     return true;
   } catch (err) {
-    console.warn('Blob download failed, trying data URI:', err);
-    try {
-      const encodedUri = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csvContent);
-      const link = document.createElement('a');
-      link.setAttribute('href', encodedUri);
-      link.setAttribute('download', fileName);
-      document.body.appendChild(link);
-      link.click();
-      setTimeout(() => {
-        if (document.body.contains(link)) {
-          document.body.removeChild(link);
-        }
-      }, 500);
-      return true;
-    } catch (e) {
-      console.warn('Data URI failed, attempting server form fallback:', e);
-      return downloadCSVViaServerForm(csvContent, fileName);
-    }
+    console.error('Blob download failed:', err);
+    return false;
   }
 }
+
