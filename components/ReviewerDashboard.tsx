@@ -405,15 +405,15 @@ export default function ReviewerDashboard({
           <span className="font-mono text-blue-400 font-bold">{filteredApplications.length} records</span>
         </div>
         <div className="overflow-x-auto">
-          <table className="min-w-[820px] w-full text-left text-xs sm:text-sm text-slate-300">
+          <table className="min-w-[1080px] w-full text-left text-xs sm:text-sm text-slate-300">
             <thead className="border-b border-slate-800 bg-slate-900/80 text-[11px] uppercase tracking-wider text-slate-400">
               <tr>
-                <th className="px-4 py-3 w-[110px]">ID &amp; Date</th>
+                <th className="px-4 py-3 w-[110px] min-w-[110px]">ID &amp; Date</th>
                 <th className="px-4 py-3 min-w-[180px]">Applicant Name</th>
                 <th className="px-4 py-3 min-w-[190px]">High School &amp; GPA</th>
-                <th className="px-4 py-3 w-[120px]">Service Hours</th>
-                <th className="px-4 py-3 w-[140px]">AI Rubric (50 pts)</th>
-                <th className="px-4 py-3 w-[130px]">Committee Status</th>
+                <th className="px-4 py-3 w-[110px] min-w-[110px]">Service Hours</th>
+                <th className="px-4 py-3 w-[210px] min-w-[210px]">AI Rubric (50 pts)</th>
+                <th className="px-4 py-3 w-[140px] min-w-[140px]">Committee Status</th>
                 <th className="px-4 py-3 text-right w-[170px] min-w-[170px]">Actions</th>
               </tr>
             </thead>
@@ -445,7 +445,7 @@ export default function ReviewerDashboard({
                         }
                       }}
                     >
-                      <td className="px-4 py-3 font-mono text-xs">
+                      <td className="px-4 py-3 font-mono text-xs whitespace-nowrap w-[110px] min-w-[110px]">
                         <span className="font-bold text-blue-400">{app.applicationNumber}</span>
                         <div className="text-[10px] text-slate-500">
                           {new Date(app.submittedAt).toLocaleDateString()}
@@ -464,34 +464,42 @@ export default function ReviewerDashboard({
                         <div className="text-[11px] text-slate-400">{app.applicant.email}</div>
                       </td>
 
-                      <td className="px-4 py-3">
+                      <td className="px-4 py-3 min-w-[190px]">
                         <div className="text-slate-200 line-clamp-1">{app.schoolFamily.currentHighSchool}</div>
                         <div className="text-[11px] font-mono text-emerald-400">GPA: {app.schoolFamily.gpa}</div>
                       </td>
 
-                      <td className="px-4 py-3 font-mono">
+                      <td className="px-4 py-3 font-mono whitespace-nowrap w-[110px] min-w-[110px]">
                         <span className="text-slate-200 font-semibold">{volunteerHours} hrs</span>
                         <div className="text-[10px] text-slate-500">{app.activities.length} clubs</div>
                       </td>
 
-                      <td className="px-4 py-3">
-                        <div className="flex items-center gap-1.5">
-                          <span className="rounded bg-blue-950 px-2 py-0.5 font-mono text-xs font-black text-blue-300 border border-blue-800/80">
+                      <td className="px-4 py-3 whitespace-nowrap w-[210px] min-w-[210px]">
+                        <div className="flex items-center gap-2 whitespace-nowrap">
+                          <span className="shrink-0 rounded bg-blue-950/90 px-2.5 py-1 font-mono text-xs font-extrabold text-blue-300 border border-blue-800/80 shadow-sm whitespace-nowrap">
                             {app.aiScoring.totalScore} / 50
                           </span>
-                          <span className={`text-[10px] font-semibold uppercase px-1.5 py-0.5 rounded ${
-                            app.aiScoring.ratingCategory === 'Exceptional' ? 'bg-emerald-950 text-emerald-300 border border-emerald-800' :
-                            app.aiScoring.ratingCategory === 'High Merit' ? 'bg-blue-950 text-blue-300 border border-blue-800' :
-                            'bg-slate-800 text-slate-300'
-                          }`}>
+                          <span
+                            className={`shrink-0 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border whitespace-nowrap ${
+                              app.aiScoring.ratingCategory === 'Exceptional'
+                                ? 'bg-emerald-950/90 text-emerald-300 border-emerald-700/80'
+                                : app.aiScoring.ratingCategory === 'High Merit'
+                                ? 'bg-blue-950/90 text-blue-300 border-blue-700/80'
+                                : app.aiScoring.ratingCategory === 'Recommended'
+                                ? 'bg-amber-950/90 text-amber-300 border-amber-700/80'
+                                : app.aiScoring.ratingCategory === 'Competitive'
+                                ? 'bg-purple-950/90 text-purple-300 border-purple-700/80'
+                                : 'bg-slate-800/90 text-slate-300 border-slate-700'
+                            }`}
+                          >
                             {app.aiScoring.ratingCategory}
                           </span>
                         </div>
                       </td>
 
-                      <td className="px-4 py-3">
+                      <td className="px-4 py-3 whitespace-nowrap w-[140px] min-w-[140px]">
                         <span
-                          className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${
+                          className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold whitespace-nowrap ${
                             app.committeeReview.status === 'Approved'
                               ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30'
                               : app.committeeReview.status === 'Shortlisted'
