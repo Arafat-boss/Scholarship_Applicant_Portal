@@ -27,19 +27,37 @@ body {
   -ms-overflow-style: none !important;
 }
 
-/* Hide scrollbars globally across desktop & mobile (clean widget & iframe embed) */
-* {
-  scrollbar-width: none !important;
-  -ms-overflow-style: none !important;
-}
-
-*::-webkit-scrollbar,
+/* Hide outer window scrollbar to prevent double scrollbars on iframe embeds */
 html::-webkit-scrollbar,
 body::-webkit-scrollbar {
   display: none !important;
   width: 0 !important;
   height: 0 !important;
-  background: transparent !important;
+}
+
+/* Custom styled scrollbar for inner scrollable cards like AI Rubric */
+.custom-rubric-scroll {
+  scrollbar-width: thin !important;
+  scrollbar-color: #3b82f6 #0f172a !important;
+}
+
+.custom-rubric-scroll::-webkit-scrollbar {
+  display: block !important;
+  width: 6px !important;
+}
+
+.custom-rubric-scroll::-webkit-scrollbar-track {
+  background: #0f172a !important;
+  border-radius: 9999px !important;
+}
+
+.custom-rubric-scroll::-webkit-scrollbar-thumb {
+  background: #3b82f6 !important;
+  border-radius: 9999px !important;
+}
+
+.custom-rubric-scroll::-webkit-scrollbar-thumb:hover {
+  background: #60a5fa !important;
 }
 
 /* Glassmorphism utility */

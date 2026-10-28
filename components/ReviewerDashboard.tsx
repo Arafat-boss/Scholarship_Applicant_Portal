@@ -26,10 +26,10 @@ import {
 import { ScholarshipApplication } from '@/types/scholarship';
 import {
   updateCommitteeReview,
-  resetToSampleData,
   deleteApplication,
   saveApplicationsToStorage,
 } from '@/lib/storage';
+import { evaluateApplicationWithAI } from '@/lib/aiScoring';
 import {
   GOOGLE_SHEET_URL,
   GOOGLE_APPS_SCRIPT_CODE,
@@ -68,6 +68,15 @@ export default function ReviewerDashboard({
   const [committeeNotes, setCommitteeNotes] = useState('');
   const [saveSuccessMsg, setSaveSuccessMsg] = useState(false);
 
+  // Active Rubric Criteria (guarantees all 10 criteria are displayed and scrollable)
+  const activeCriteria = React.useMemo(() => {
+    if (!selectedApp) return [];
+    if (selectedApp.aiScoring?.criteria && selectedApp.aiScoring.criteria.length >= 10) {
+      return selectedApp.aiScoring.criteria;
+    }
+    const fullScoring = evaluateApplicationWithAI(selectedApp);
+    return fullScoring.criteria;
+  }, [selectedApp]);
 
   // Google Sheet Modal & Sync state
   const [isGoogleSheetModalOpen, setIsGoogleSheetModalOpen] = useState(false);
@@ -258,15 +267,6 @@ export default function ReviewerDashboard({
       });
     }
     setTimeout(() => setSheetSyncResult(null), 8000);
-  };
-
-  // Reset sample applications
-  const handleReset = () => {
-    if (confirm('Reset application queue to initial sample data?')) {
-      const sample = resetToSampleData();
-      onRefreshApplications(sample);
-      setSelectedApp(null);
-    }
   };
 
   // Filter calculations
@@ -545,16 +545,24 @@ export default function ReviewerDashboard({
                 </span>
               </div>
 
-              <p className="text-xs text-slate-300 leading-relaxed mb-4">
+              <p className="text-xs text-slate-300 leading-relaxed mb-3">
                 {selectedApp.aiScoring.summary}
               </p>
 
-              {/* Criteria Items (1 to 10) */}
-              <div className="space-y-2.5 max-h-[380px] overflow-y-auto pr-1">
-                {selectedApp.aiScoring.criteria.map((c) => (
-                  <div key={c.id} className="rounded-lg bg-slate-900/80 p-2.5 border border-slate-800/80">
+              {/* Criteria Header with Scroll Indicator */}
+              <div className="flex items-center justify-between text-[11px] font-semibold text-blue-300/90 mb-2 px-0.5">
+                <span>10 Evaluated Criteria ({activeCriteria.length}):</span>
+                <span className="text-[10px] bg-blue-950/90 text-blue-300 px-2 py-0.5 rounded border border-blue-800/80 font-mono flex items-center gap-1 shadow-sm">
+                  <span>↕</span> Scroll down to inspect all 10
+                </span>
+              </div>
+
+              {/* Criteria Items (1 to 10) - Scrollable */}
+              <div className="space-y-2.5 max-h-[340px] overflow-y-auto pr-2 custom-rubric-scroll">
+                {activeCriteria.map((c) => (
+                  <div key={c.id} className="rounded-lg bg-slate-900/90 p-2.5 border border-slate-800 hover:border-blue-800/60 transition shadow-sm">
                     <div className="flex items-center justify-between text-xs mb-1">
-                      <span className="font-semibold text-white line-clamp-1">{c.title}</span>
+                      <span className="font-semibold text-white">{c.title}</span>
                       <span className="font-mono font-bold text-amber-400 shrink-0 ml-2">
                         {c.score} / 5
                       </span>
@@ -725,13 +733,6 @@ export default function ReviewerDashboard({
             >
               <Sparkles className="h-3.5 w-3.5 text-amber-400" />
               <span>Rubric Guide</span>
-            </button>
-            <button
-              onClick={handleReset}
-              className="p-2 rounded-lg border border-slate-800 text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition cursor-pointer"
-              title="Reset to sample data"
-            >
-              <RotateCcw className="h-4 w-4" />
             </button>
             {onLogout && (
               <button

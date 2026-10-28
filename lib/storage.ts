@@ -1,7 +1,6 @@
 'use client';
 
 import { ScholarshipApplication } from '@/types/scholarship';
-import { sampleApplications } from './sampleData';
 import { evaluateApplicationWithAI } from './aiScoring';
 
 const STORAGE_KEY = 'monday_club_scholarship_applications_v3';
@@ -108,9 +107,9 @@ export function deleteApplication(applicationId: string): ScholarshipApplication
   return updated;
 }
 
-export function resetToSampleData(): ScholarshipApplication[] {
+export function clearAllApplications(): ScholarshipApplication[] {
   if (typeof window !== 'undefined') {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(sampleApplications));
+    localStorage.removeItem(STORAGE_KEY);
   }
-  return sampleApplications;
+  return [];
 }
