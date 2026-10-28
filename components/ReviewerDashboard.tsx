@@ -874,7 +874,22 @@ export default function ReviewerDashboard({
               {filteredApplications.length === 0 ? (
                 <tr>
                   <td colSpan={7} className="px-6 py-12 text-center text-slate-400">
-                    No applications found matching your criteria.
+                    {applications.length === 0 ? (
+                      <div className="flex flex-col items-center justify-center gap-3">
+                        <p className="text-sm text-slate-300 font-medium">No applications found in the portal yet.</p>
+                        <button
+                          type="button"
+                          onClick={handleFetchFromGoogleSheet}
+                          disabled={isFetchingSheet}
+                          className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-xs font-bold text-white hover:bg-emerald-500 transition shadow cursor-pointer disabled:opacity-60"
+                        >
+                          <RotateCcw className={`h-4 w-4 ${isFetchingSheet ? 'animate-spin' : ''}`} />
+                          <span>{isFetchingSheet ? 'Fetching from Google Sheet...' : 'Sync from Google Sheet'}</span>
+                        </button>
+                      </div>
+                    ) : (
+                      'No applications found matching your criteria.'
+                    )}
                   </td>
                 </tr>
               ) : (

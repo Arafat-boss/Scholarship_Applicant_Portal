@@ -4,28 +4,26 @@ import { ScholarshipApplication } from '@/types/scholarship';
 import { sampleApplications } from './sampleData';
 import { evaluateApplicationWithAI } from './aiScoring';
 
-const STORAGE_KEY = 'monday_club_scholarship_applications_v2';
+const STORAGE_KEY = 'monday_club_scholarship_applications_v3';
 
 export function getStoredApplications(): ScholarshipApplication[] {
   if (typeof window === 'undefined') {
-    return sampleApplications;
+    return [];
   }
 
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(sampleApplications));
-      return sampleApplications;
+      return [];
     }
     const parsed = JSON.parse(raw);
     if (Array.isArray(parsed)) {
       return parsed;
     }
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(sampleApplications));
-    return sampleApplications;
+    return [];
   } catch (err) {
     console.error('Failed to read from localStorage:', err);
-    return sampleApplications;
+    return [];
   }
 }
 

@@ -27,7 +27,7 @@ export default function Home() {
     fetch('/api/google-sheet?action=fetch')
       .then((r) => r.json())
       .then((data) => {
-        if (data && data.success && Array.isArray(data.applications) && data.applications.length > 0) {
+        if (data && data.success && Array.isArray(data.applications)) {
           setApplications(data.applications);
           saveApplicationsToStorage(data.applications);
         }
