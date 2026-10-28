@@ -21,6 +21,7 @@ import {
   Trash2,
   AlertTriangle,
   Loader2,
+  ArrowLeft,
 } from 'lucide-react';
 import { ScholarshipApplication } from '@/types/scholarship';
 import { updateCommitteeReview, resetToSampleData, deleteApplication } from '@/lib/storage';
@@ -259,6 +260,388 @@ export default function ReviewerDashboard({
   const avgAiScore = totalCount > 0
     ? Math.round(applications.reduce((sum, a) => sum + a.aiScoring.totalScore, 0) / totalCount)
     : 0;
+
+  // ----------------------------------------------------
+  // DEDICATED FULL APPLICATION REVIEW VIEW
+  // (In-viewport, zero scrolling required on Wix / iframes)
+  // ----------------------------------------------------
+  if (selectedApp) {
+    return (
+      <div ref={reviewModalRef} className="mx-auto max-w-7xl px-3 py-6 sm:px-6 sm:py-8 lg:px-8 text-slate-100 animate-in fade-in duration-200">
+        {/* Navigation & Header Banner */}
+        <div className="flex flex-wrap items-center justify-between gap-3 bg-slate-900/90 p-3 sm:p-4 rounded-2xl border border-slate-800 shadow-xl mb-6">
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => {
+                setSelectedApp(null);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              className="inline-flex items-center gap-2 rounded-xl bg-slate-800 px-3.5 py-2 text-xs font-bold text-slate-200 border border-slate-700 hover:bg-slate-700 hover:text-white transition cursor-pointer"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              <span>Back to Applications Queue</span>
+            </button>
+            <span className="rounded bg-blue-950 px-2.5 py-1 font-mono text-xs font-bold text-blue-400 border border-blue-800/80">
+              {selectedApp.applicationNumber}
+            </span>
+            <span className="text-xs text-slate-400 hidden sm:inline">
+              Submitted {new Date(selectedApp.submittedAt).toLocaleDateString()}
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2 sm:gap-3">
+            <button
+              type="button"
+              onClick={onOpenRubricInfo}
+              className="inline-flex items-center gap-1.5 rounded-xl border border-blue-900/60 bg-blue-950/40 px-3 py-1.5 text-xs font-medium text-blue-300 hover:bg-blue-900/50 hover:text-white transition cursor-pointer"
+            >
+              <Sparkles className="h-3.5 w-3.5 text-amber-400" />
+              <span>Rubric Guide</span>
+            </button>
+            <div className="rounded-xl border border-blue-800 bg-blue-950/60 px-3 py-1 text-center">
+              <span className="text-[10px] font-semibold uppercase text-blue-400 block">AI Rubric</span>
+              <span className="text-base font-black text-white">{selectedApp.aiScoring.totalScore} <span className="text-xs text-slate-400">/ 50</span></span>
+            </div>
+            <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${
+              selectedApp.committeeReview.status === 'Approved' ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40' :
+              selectedApp.committeeReview.status === 'Shortlisted' ? 'bg-blue-500/20 text-blue-300 border border-blue-500/40' :
+              selectedApp.committeeReview.status === 'Rejected' ? 'bg-red-500/20 text-red-300 border border-red-500/40' :
+              'bg-amber-500/20 text-amber-300 border border-amber-500/40'
+            }`}>
+              {selectedApp.committeeReview.status}
+            </span>
+          </div>
+        </div>
+
+        {/* Hero Card */}
+        <div className="rounded-2xl border border-slate-800 bg-[#0c1322] p-4 sm:p-6 shadow-xl mb-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+                {selectedApp.applicant.firstName} {selectedApp.applicant.lastName}
+              </h1>
+              <p className="text-xs sm:text-sm text-slate-400 mt-1">
+                {selectedApp.schoolFamily.currentHighSchool} &bull; GPA: <strong className="text-emerald-400">{selectedApp.schoolFamily.gpa}</strong> &bull; {selectedApp.applicant.email} &bull; {selectedApp.applicant.telephone}
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleSaveDecision}
+                className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-xs font-bold text-white shadow-lg shadow-blue-600/30 hover:bg-blue-500 transition cursor-pointer"
+              >
+                <CheckCircle2 className="h-4 w-4" />
+                <span>Save Decision</span>
+              </button>
+            </div>
+          </div>
+          {saveSuccessMsg && (
+            <div className="mt-3 p-2.5 rounded-xl bg-emerald-950/80 border border-emerald-700 text-emerald-300 text-center text-xs font-medium animate-in fade-in">
+              ✓ Decision and score saved successfully!
+            </div>
+          )}
+        </div>
+
+        {/* 2-Column Split: Left = Applicant 8 Sections, Right = AI Rubric + Committee Action */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          {/* LEFT COLUMN: Applicant Profile (All 8 Sections) */}
+          <div className="lg:col-span-7 space-y-5">
+            {/* 1. Contact & Demographic */}
+            <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-4">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-blue-400 mb-3 flex items-center gap-1.5">
+                <MapPin className="h-4 w-4" />
+                <span>Applicant & Guardian Details</span>
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                <div>
+                  <span className="text-slate-400">Address:</span>
+                  <p className="text-white mt-0.5">{selectedApp.applicant.streetAddress}, {selectedApp.applicant.city}, {selectedApp.applicant.state} {selectedApp.applicant.zip}</p>
+                </div>
+                <div>
+                  <span className="text-slate-400">Date of Birth:</span>
+                  <p className="text-white mt-0.5 font-mono">{selectedApp.applicant.dateOfBirth}</p>
+                </div>
+                <div>
+                  <span className="text-slate-400">Phone & Email:</span>
+                  <p className="text-white mt-0.5">{selectedApp.applicant.telephone}</p>
+                  <p className="text-blue-400 break-all">{selectedApp.applicant.email}</p>
+                </div>
+                <div>
+                  <span className="text-slate-400">Parent / Guardian:</span>
+                  <p className="text-white mt-0.5">{selectedApp.parentGuardian.fullName}</p>
+                  <p className="text-slate-400 break-all">{selectedApp.parentGuardian.phone} &bull; {selectedApp.parentGuardian.email}</p>
+                </div>
+              </div>
+            </div>
+
+            {/* 2. School & Family Need Metrics */}
+            <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-4">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-blue-400 mb-3 flex items-center gap-1.5">
+                <GraduationCap className="h-4 w-4" />
+                <span>School & Family Context</span>
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                <div>
+                  <span className="text-slate-400">High School GPA:</span>
+                  <p className="text-base font-bold text-emerald-400 mt-0.5">{selectedApp.schoolFamily.gpa}</p>
+                </div>
+                <div>
+                  <span className="text-slate-400">Siblings:</span>
+                  <p className="text-base font-bold text-white mt-0.5">{selectedApp.schoolFamily.numberOfSiblings}</p>
+                </div>
+                <div>
+                  <span className="text-slate-400">Family in College:</span>
+                  <p className="text-base font-bold text-amber-400 mt-0.5">{selectedApp.schoolFamily.familyMembersInCollege}</p>
+                </div>
+              </div>
+            </div>
+
+            {/* 3. Activities & Volunteering */}
+            <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-4 space-y-3">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-blue-400 flex items-center gap-1.5">
+                <Award className="h-4 w-4" />
+                <span>Activities, Service & Employment</span>
+              </h3>
+
+              <div>
+                <span className="text-[11px] font-semibold text-slate-400 uppercase">Clubs & Leadership:</span>
+                <ul className="mt-1 space-y-1 text-xs">
+                  {selectedApp.activities.map((a, i) => (
+                    <li key={i} className="flex items-center justify-between text-slate-200 bg-slate-950/60 p-1.5 rounded">
+                      <span><strong>{a.activity}</strong> {a.role && `(${a.role})`}</span>
+                      <span className="text-slate-400 font-mono text-[11px]">{a.years}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div>
+                <span className="text-[11px] font-semibold text-slate-400 uppercase">Community Service:</span>
+                <ul className="mt-1 space-y-1 text-xs">
+                  {selectedApp.communityService.map((cs, i) => (
+                    <li key={i} className="flex items-center justify-between text-slate-200 bg-slate-950/60 p-1.5 rounded">
+                      <div>
+                        <strong>{cs.organization}</strong>
+                        <div className="text-[11px] text-slate-400">{cs.description}</div>
+                      </div>
+                      <span className="text-blue-400 font-mono font-bold text-[11px] shrink-0">{cs.totalHours} hrs</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {selectedApp.employment.length > 0 && (
+                <div>
+                  <span className="text-[11px] font-semibold text-slate-400 uppercase">Employment:</span>
+                  <ul className="mt-1 space-y-1 text-xs">
+                    {selectedApp.employment.map((emp, i) => (
+                      <li key={i} className="flex items-center justify-between text-slate-200 bg-slate-950/60 p-1.5 rounded">
+                        <span><strong>{emp.employer}</strong> — {emp.position}</span>
+                        <span className="text-slate-400 text-[11px]">{emp.dates}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              <div>
+                <span className="text-[11px] font-semibold text-slate-400 uppercase">Colleges & Universities:</span>
+                <div className="mt-1 flex flex-wrap gap-1.5">
+                  {selectedApp.colleges.map((col, i) => (
+                    <span key={i} className="inline-flex items-center gap-1.5 rounded bg-slate-950 px-2 py-1 text-xs border border-slate-800">
+                      <span className="text-white font-medium">{col.college}</span>
+                      <span className={`text-[10px] font-semibold uppercase px-1 rounded ${
+                        col.status === 'accepted' ? 'text-emerald-400 bg-emerald-950' : 'text-slate-400 bg-slate-800'
+                      }`}>
+                        {col.status}
+                      </span>
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* 4. Uploaded Documents */}
+            <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-4">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-blue-400 mb-2.5 flex items-center gap-1.5">
+                <FileText className="h-4 w-4" />
+                <span>Uploaded Documents</span>
+              </h3>
+              <div className="space-y-1.5 text-xs">
+                {selectedApp.documents.transcript && (
+                  <div className="flex items-center justify-between p-2 rounded bg-slate-950/60 border border-slate-800/80">
+                    <span className="text-white font-medium">Official Transcript (Through Jan)</span>
+                    <span className="text-emerald-400 text-[11px] font-mono">Verified Attached</span>
+                  </div>
+                )}
+                {selectedApp.documents.studentAidReport && (
+                  <div className="flex items-center justify-between p-2 rounded bg-slate-950/60 border border-slate-800/80">
+                    <span className="text-white font-medium">Student Aid Report (SAR)</span>
+                    <span className="text-emerald-400 text-[11px] font-mono">Verified Attached</span>
+                  </div>
+                )}
+                <div className="flex items-center justify-between p-2 rounded bg-slate-950/60 border border-slate-800/80">
+                  <span className="text-white font-medium">Recommendation Letters</span>
+                  <span className="text-blue-400 text-[11px] font-mono">
+                    {selectedApp.documents.recommendationLetters.length} Letter(s) on file
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* RIGHT COLUMN: AI 10-Criterion Rubric + Committee Action */}
+          <div className="lg:col-span-5 space-y-5">
+            {/* 10-Criterion Rubric Scorecard */}
+            <div className="rounded-xl border border-blue-900/40 bg-gradient-to-b from-[#111c35] to-[#0d1527] p-4 shadow-lg">
+              <div className="flex items-center justify-between mb-3 border-b border-blue-800/60 pb-2.5">
+                <div className="flex items-center gap-2">
+                  <Sparkles className="h-4 w-4 text-amber-400" />
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-blue-300">
+                    10-Criterion AI Rubric
+                  </h3>
+                </div>
+                <span className="font-mono text-xs font-bold text-white bg-blue-900/60 px-2 py-0.5 rounded border border-blue-700">
+                  {selectedApp.aiScoring.totalScore} / 50 pts
+                </span>
+              </div>
+
+              <p className="text-xs text-slate-300 leading-relaxed mb-4">
+                {selectedApp.aiScoring.summary}
+              </p>
+
+              {/* Criteria Items (1 to 10) */}
+              <div className="space-y-2.5 max-h-[380px] overflow-y-auto pr-1">
+                {selectedApp.aiScoring.criteria.map((c) => (
+                  <div key={c.id} className="rounded-lg bg-slate-900/80 p-2.5 border border-slate-800/80">
+                    <div className="flex items-center justify-between text-xs mb-1">
+                      <span className="font-semibold text-white line-clamp-1">{c.title}</span>
+                      <span className="font-mono font-bold text-amber-400 shrink-0 ml-2">
+                        {c.score} / 5
+                      </span>
+                    </div>
+                    {/* Progress Bar */}
+                    <div className="h-1.5 w-full rounded-full bg-slate-800 overflow-hidden mb-1.5">
+                      <div
+                        className="h-full bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full"
+                        style={{ width: `${(c.score / 5) * 100}%` }}
+                      />
+                    </div>
+                    <p className="text-[11px] text-slate-400 leading-tight">
+                      {c.reasoning}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Committee Review Action Panel */}
+            <div className="rounded-xl border border-amber-500/30 bg-[#161c2e] p-4 shadow-lg">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-amber-300 mb-3 flex items-center gap-1.5">
+                <UserCheck className="h-4 w-4 text-amber-400" />
+                <span>Committee Review Decision</span>
+              </h3>
+
+              <div className="space-y-3 text-xs">
+                <div>
+                  <label className="block text-slate-300 font-medium mb-1">
+                    Committee Score (Override 0–50):
+                  </label>
+                  <input
+                    type="number"
+                    min="0"
+                    max="50"
+                    value={overrideScore}
+                    onChange={(e) => setOverrideScore(Math.min(50, Math.max(0, parseInt(e.target.value) || 0)))}
+                    className="w-full rounded-lg px-3 py-1.5 text-white font-mono font-bold text-sm bg-slate-950 border border-slate-800"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-slate-300 font-medium mb-1">
+                    Application Status:
+                  </label>
+                  <select
+                    value={decisionStatus}
+                    onChange={(e) => setDecisionStatus(e.target.value as ScholarshipApplication['committeeReview']['status'])}
+                    className="w-full rounded-lg px-3 py-1.5 text-white capitalize text-xs bg-slate-950 border border-slate-800"
+                  >
+                    <option value="Under Review">Under Review</option>
+                    <option value="Shortlisted">Shortlisted</option>
+                    <option value="Approved">Approved (Award Scholarship)</option>
+                    <option value="Waitlisted">Waitlisted</option>
+                    <option value="Rejected">Rejected</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-slate-300 font-medium mb-1">
+                    Reviewer / Committee Signature:
+                  </label>
+                  <input
+                    type="text"
+                    value={reviewerName}
+                    onChange={(e) => setReviewerName(e.target.value)}
+                    placeholder="e.g. Committee Member"
+                    className="w-full rounded-lg px-3 py-1.5 text-white text-xs bg-slate-950 border border-slate-800"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-slate-300 font-medium mb-1">
+                    Committee Deliberation Notes:
+                  </label>
+                  <textarea
+                    rows={3}
+                    value={committeeNotes}
+                    onChange={(e) => setCommitteeNotes(e.target.value)}
+                    placeholder="Enter committee comments, scholarship allocation notes, or interview follow-up..."
+                    className="w-full rounded-lg px-3 py-1.5 text-white text-xs bg-slate-950 border border-slate-800"
+                  />
+                </div>
+
+                <button
+                  onClick={handleSaveDecision}
+                  className="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-xs font-bold text-white shadow-lg shadow-blue-600/30 hover:bg-blue-500 transition cursor-pointer"
+                >
+                  <CheckCircle2 className="h-4 w-4" />
+                  <span>Save Committee Decision</span>
+                </button>
+
+                {saveSuccessMsg && (
+                  <div className="p-2 rounded bg-emerald-950/80 border border-emerald-800 text-emerald-300 text-center font-medium animate-in fade-in">
+                    ✓ Decision and score saved successfully!
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom Actions */}
+        <div className="flex items-center justify-between pt-6 border-t border-slate-800 mt-6">
+          <button
+            type="button"
+            onClick={() => {
+              setSelectedApp(null);
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+            className="inline-flex items-center gap-2 rounded-xl bg-slate-800 px-4 py-2.5 text-xs font-bold text-slate-200 border border-slate-700 hover:bg-slate-700 hover:text-white transition cursor-pointer"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            <span>Back to Applications Queue</span>
+          </button>
+          <button
+            onClick={handleSaveDecision}
+            className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-xs font-bold text-white shadow-lg shadow-blue-600/30 hover:bg-blue-500 transition cursor-pointer"
+          >
+            <CheckCircle2 className="h-4 w-4" />
+            <span>Save Committee Decision</span>
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto max-w-7xl px-3 py-6 sm:px-6 sm:py-8 lg:px-8">
@@ -583,332 +966,11 @@ export default function ReviewerDashboard({
       </div>
 
       {/* ======================================================== */}
-      {/* FULL APPLICATION REVIEW MODAL */}
-      {/* ======================================================== */}
-      {selectedApp && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-2.5 sm:p-5 bg-black/85 backdrop-blur-md animate-in fade-in">
-          <div ref={reviewModalRef} className="relative w-full max-w-5xl max-h-[92vh] overflow-y-auto rounded-2xl border border-slate-700 bg-[#0f172a] shadow-2xl text-slate-100 p-4 sm:p-8">
-            {/* Close Button */}
-            <button
-              onClick={() => setSelectedApp(null)}
-              className="absolute top-4 right-4 sm:top-5 sm:right-5 p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition cursor-pointer"
-            >
-              <X className="h-5 w-5" />
-            </button>
-
-            {/* Modal Header */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-5 mb-6">
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="rounded bg-blue-950 px-2.5 py-0.5 font-mono text-xs font-bold text-blue-400 border border-blue-800/80">
-                    {selectedApp.applicationNumber}
-                  </span>
-                  <span className="text-xs text-slate-400">
-                    Submitted on {new Date(selectedApp.submittedAt).toLocaleString()}
-                  </span>
-                </div>
-                <h2 className="text-xl sm:text-2xl font-black text-white mt-1">
-                  {selectedApp.applicant.firstName} {selectedApp.applicant.lastName}
-                </h2>
-                <p className="text-xs text-slate-400">
-                  {selectedApp.schoolFamily.currentHighSchool} &bull; Cumulative GPA: <strong className="text-emerald-400">{selectedApp.schoolFamily.gpa}</strong>
-                </p>
-              </div>
-
-              <div className="flex items-center gap-3">
-                <div className="rounded-xl border border-blue-800 bg-blue-950/60 px-4 py-2 text-center">
-                  <div className="text-[10px] font-semibold uppercase text-blue-400">AI Rubric Score</div>
-                  <div className="text-xl font-black text-white">{selectedApp.aiScoring.totalScore} <span className="text-xs text-slate-400">/ 50</span></div>
-                </div>
-              </div>
-            </div>
-
-            {/* 2-Column Split: Left = Applicant 8 Sections, Right = AI Rubric + Committee Action */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-              {/* LEFT COLUMN: Applicant Profile (All 8 Sections) */}
-              <div className="lg:col-span-7 space-y-5">
-                {/* 1. Contact & Demographic */}
-                <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-4">
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-blue-400 mb-3 flex items-center gap-1.5">
-                    <MapPin className="h-4 w-4" />
-                    <span>Applicant & Guardian Details</span>
-                  </h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                    <div>
-                      <span className="text-slate-400">Address:</span>
-                      <p className="text-white mt-0.5">{selectedApp.applicant.streetAddress}, {selectedApp.applicant.city}, {selectedApp.applicant.state} {selectedApp.applicant.zip}</p>
-                    </div>
-                    <div>
-                      <span className="text-slate-400">Date of Birth:</span>
-                      <p className="text-white mt-0.5 font-mono">{selectedApp.applicant.dateOfBirth}</p>
-                    </div>
-                    <div>
-                      <span className="text-slate-400">Phone & Email:</span>
-                      <p className="text-white mt-0.5">{selectedApp.applicant.telephone}</p>
-                      <p className="text-blue-400 break-all">{selectedApp.applicant.email}</p>
-                    </div>
-                    <div>
-                      <span className="text-slate-400">Parent / Guardian:</span>
-                      <p className="text-white mt-0.5">{selectedApp.parentGuardian.fullName}</p>
-                      <p className="text-slate-400 break-all">{selectedApp.parentGuardian.phone} &bull; {selectedApp.parentGuardian.email}</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* 2. School & Family Need Metrics */}
-                <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-4">
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-blue-400 mb-3 flex items-center gap-1.5">
-                    <GraduationCap className="h-4 w-4" />
-                    <span>School & Family Context</span>
-                  </h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-                    <div>
-                      <span className="text-slate-400">High School GPA:</span>
-                      <p className="text-base font-bold text-emerald-400 mt-0.5">{selectedApp.schoolFamily.gpa}</p>
-                    </div>
-                    <div>
-                      <span className="text-slate-400">Siblings:</span>
-                      <p className="text-base font-bold text-white mt-0.5">{selectedApp.schoolFamily.numberOfSiblings}</p>
-                    </div>
-                    <div>
-                      <span className="text-slate-400">Family in College:</span>
-                      <p className="text-base font-bold text-amber-400 mt-0.5">{selectedApp.schoolFamily.familyMembersInCollege}</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* 3. Activities & Volunteering */}
-                <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-4 space-y-3">
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-blue-400 flex items-center gap-1.5">
-                    <Award className="h-4 w-4" />
-                    <span>Activities, Service & Employment</span>
-                  </h3>
-
-                  <div>
-                    <span className="text-[11px] font-semibold text-slate-400 uppercase">Clubs & Leadership:</span>
-                    <ul className="mt-1 space-y-1 text-xs">
-                      {selectedApp.activities.map((a, i) => (
-                        <li key={i} className="flex items-center justify-between text-slate-200 bg-slate-950/60 p-1.5 rounded">
-                          <span><strong>{a.activity}</strong> {a.role && `(${a.role})`}</span>
-                          <span className="text-slate-400 font-mono text-[11px]">{a.years}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  <div>
-                    <span className="text-[11px] font-semibold text-slate-400 uppercase">Community Service:</span>
-                    <ul className="mt-1 space-y-1 text-xs">
-                      {selectedApp.communityService.map((cs, i) => (
-                        <li key={i} className="flex items-center justify-between text-slate-200 bg-slate-950/60 p-1.5 rounded">
-                          <div>
-                            <strong>{cs.organization}</strong>
-                            <div className="text-[11px] text-slate-400">{cs.description}</div>
-                          </div>
-                          <span className="text-blue-400 font-mono font-bold text-[11px] shrink-0">{cs.totalHours} hrs</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  {selectedApp.employment.length > 0 && (
-                    <div>
-                      <span className="text-[11px] font-semibold text-slate-400 uppercase">Employment:</span>
-                      <ul className="mt-1 space-y-1 text-xs">
-                        {selectedApp.employment.map((emp, i) => (
-                          <li key={i} className="flex items-center justify-between text-slate-200 bg-slate-950/60 p-1.5 rounded">
-                            <span><strong>{emp.employer}</strong> — {emp.position}</span>
-                            <span className="text-slate-400 text-[11px]">{emp.dates}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-
-                  <div>
-                    <span className="text-[11px] font-semibold text-slate-400 uppercase">Colleges & Universities:</span>
-                    <div className="mt-1 flex flex-wrap gap-1.5">
-                      {selectedApp.colleges.map((col, i) => (
-                        <span key={i} className="inline-flex items-center gap-1.5 rounded bg-slate-950 px-2 py-1 text-xs border border-slate-800">
-                          <span className="text-white font-medium">{col.college}</span>
-                          <span className={`text-[10px] font-semibold uppercase px-1 rounded ${
-                            col.status === 'accepted' ? 'text-emerald-400 bg-emerald-950' : 'text-slate-400 bg-slate-800'
-                          }`}>
-                            {col.status}
-                          </span>
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                {/* 4. Uploaded Documents */}
-                <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-4">
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-blue-400 mb-2.5 flex items-center gap-1.5">
-                    <FileText className="h-4 w-4" />
-                    <span>Uploaded Documents</span>
-                  </h3>
-                  <div className="space-y-1.5 text-xs">
-                    {selectedApp.documents.transcript && (
-                      <div className="flex items-center justify-between p-2 rounded bg-slate-950/60 border border-slate-800/80">
-                        <span className="text-white font-medium">Official Transcript (Through Jan)</span>
-                        <span className="text-emerald-400 text-[11px] font-mono">Verified Attached</span>
-                      </div>
-                    )}
-                    {selectedApp.documents.studentAidReport && (
-                      <div className="flex items-center justify-between p-2 rounded bg-slate-950/60 border border-slate-800/80">
-                        <span className="text-white font-medium">Student Aid Report (SAR)</span>
-                        <span className="text-emerald-400 text-[11px] font-mono">Verified Attached</span>
-                      </div>
-                    )}
-                    <div className="flex items-center justify-between p-2 rounded bg-slate-950/60 border border-slate-800/80">
-                      <span className="text-white font-medium">Recommendation Letters</span>
-                      <span className="text-blue-400 text-[11px] font-mono">
-                        {selectedApp.documents.recommendationLetters.length} Letter(s) on file
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* RIGHT COLUMN: AI 10-Criterion Rubric + Committee Action */}
-              <div className="lg:col-span-5 space-y-5">
-                {/* 10-Criterion Rubric Scorecard */}
-                <div className="rounded-xl border border-blue-900/40 bg-gradient-to-b from-[#111c35] to-[#0d1527] p-4 shadow-lg">
-                  <div className="flex items-center justify-between mb-3 border-b border-blue-800/60 pb-2.5">
-                    <div className="flex items-center gap-2">
-                      <Sparkles className="h-4 w-4 text-amber-400" />
-                      <h3 className="text-xs font-bold uppercase tracking-wider text-blue-300">
-                        10-Criterion AI Rubric
-                      </h3>
-                    </div>
-                    <span className="font-mono text-xs font-bold text-white bg-blue-900/60 px-2 py-0.5 rounded border border-blue-700">
-                      {selectedApp.aiScoring.totalScore} / 50 pts
-                    </span>
-                  </div>
-
-                  <p className="text-xs text-slate-300 leading-relaxed mb-4">
-                    {selectedApp.aiScoring.summary}
-                  </p>
-
-                  {/* Criteria Items (1 to 10) */}
-                  <div className="space-y-2.5 max-h-[340px] overflow-y-auto pr-1">
-                    {selectedApp.aiScoring.criteria.map((c) => (
-                      <div key={c.id} className="rounded-lg bg-slate-900/80 p-2.5 border border-slate-800/80">
-                        <div className="flex items-center justify-between text-xs mb-1">
-                          <span className="font-semibold text-white line-clamp-1">{c.title}</span>
-                          <span className="font-mono font-bold text-amber-400 shrink-0 ml-2">
-                            {c.score} / 5
-                          </span>
-                        </div>
-                        {/* Progress Bar */}
-                        <div className="h-1.5 w-full rounded-full bg-slate-800 overflow-hidden mb-1.5">
-                          <div
-                            className="h-full bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full"
-                            style={{ width: `${(c.score / 5) * 100}%` }}
-                          />
-                        </div>
-                        <p className="text-[11px] text-slate-400 leading-tight">
-                          {c.reasoning}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Committee Review Action Panel */}
-                <div className="rounded-xl border border-amber-500/30 bg-[#161c2e] p-4 shadow-lg">
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-amber-300 mb-3 flex items-center gap-1.5">
-                    <UserCheck className="h-4 w-4 text-amber-400" />
-                    <span>Committee Review Decision</span>
-                  </h3>
-
-                  <div className="space-y-3 text-xs">
-                    <div>
-                      <label className="block text-slate-300 font-medium mb-1">
-                        Committee Score (Override 0–50):
-                      </label>
-                      <input
-                        type="number"
-                        min="0"
-                        max="50"
-                        value={overrideScore}
-                        onChange={(e) => setOverrideScore(Math.min(50, Math.max(0, parseInt(e.target.value) || 0)))}
-                        className="w-full rounded-lg px-3 py-1.5 text-white font-mono font-bold text-sm"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-slate-300 font-medium mb-1">
-                        Application Status:
-                      </label>
-                      <select
-                        value={decisionStatus}
-                        onChange={(e) => setDecisionStatus(e.target.value as ScholarshipApplication['committeeReview']['status'])}
-                        className="w-full rounded-lg px-3 py-1.5 text-white capitalize text-xs"
-                      >
-                        <option value="Under Review">Under Review</option>
-                        <option value="Shortlisted">Shortlisted</option>
-                        <option value="Approved">Approved (Award Scholarship)</option>
-                        <option value="Waitlisted">Waitlisted</option>
-                        <option value="Rejected">Rejected</option>
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="block text-slate-300 font-medium mb-1">
-                        Reviewer / Committee Signature:
-                      </label>
-                      <input
-                        type="text"
-                        value={reviewerName}
-                        onChange={(e) => setReviewerName(e.target.value)}
-                        placeholder="e.g. Committee Member"
-                        className="w-full rounded-lg px-3 py-1.5 text-white text-xs"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-slate-300 font-medium mb-1">
-                        Committee Deliberation Notes:
-                      </label>
-                      <textarea
-                        rows={3}
-                        value={committeeNotes}
-                        onChange={(e) => setCommitteeNotes(e.target.value)}
-                        placeholder="Enter committee comments, scholarship allocation notes, or interview follow-up..."
-                        className="w-full rounded-lg px-3 py-1.5 text-white text-xs"
-                      />
-                    </div>
-
-                    <button
-                      onClick={handleSaveDecision}
-                      className="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-xs font-bold text-white shadow-lg shadow-blue-600/30 hover:bg-blue-500 transition cursor-pointer"
-                    >
-                      <CheckCircle2 className="h-4 w-4" />
-                      <span>Save Committee Decision</span>
-                    </button>
-
-                    {saveSuccessMsg && (
-                      <div className="p-2 rounded bg-emerald-950/80 border border-emerald-800 text-emerald-300 text-center font-medium animate-in fade-in">
-                        ✓ Decision and score saved successfully!
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-
-      {/* ======================================================== */}
       {/* GOOGLE SHEET INTEGRATION & LIVE SYNC MODAL */}
       {/* ======================================================== */}
       {isGoogleSheetModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
-          <div ref={googleSheetModalRef} className="relative w-full max-w-2xl max-h-[92vh] overflow-y-auto rounded-2xl border border-slate-700 bg-[#0f172a] p-5 sm:p-7 shadow-2xl text-slate-100">
+        <div className="fixed inset-0 z-50 overflow-y-auto flex items-start justify-center p-3 sm:p-6 pt-4 sm:pt-8 bg-black/85 backdrop-blur-md animate-in fade-in duration-200">
+          <div ref={googleSheetModalRef} className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl border border-slate-700 bg-[#0f172a] p-5 sm:p-7 shadow-2xl text-slate-100 mb-8">
             <button
               onClick={() => setIsGoogleSheetModalOpen(false)}
               className="absolute top-4 right-4 p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition cursor-pointer"
