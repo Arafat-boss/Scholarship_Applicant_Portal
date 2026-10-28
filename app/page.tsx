@@ -6,7 +6,7 @@ import ReviewerDashboard from '@/components/ReviewerDashboard';
 import CommitteeLoginGate from '@/components/CommitteeLoginGate';
 import RubricInfoModal from '@/components/RubricInfoModal';
 import { ScholarshipApplication } from '@/types/scholarship';
-import { getStoredApplications } from '@/lib/storage';
+import { getStoredApplications, saveApplicationsToStorage } from '@/lib/storage';
 import { FileText, ShieldCheck, Sparkles, Lock } from 'lucide-react';
 
 export default function Home() {
@@ -21,6 +21,19 @@ export default function Home() {
     }
     return false;
   });
+
+  // Auto-fetch live applications directly from Google Sheet on startup
+  useEffect(() => {
+    fetch('/api/google-sheet?action=fetch')
+      .then((r) => r.json())
+      .then((data) => {
+        if (data && data.success && Array.isArray(data.applications) && data.applications.length > 0) {
+          setApplications(data.applications);
+          saveApplicationsToStorage(data.applications);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   // Scroll to top ONLY when switching tabs
   useEffect(() => {

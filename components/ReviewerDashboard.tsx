@@ -24,7 +24,12 @@ import {
   ArrowLeft,
 } from 'lucide-react';
 import { ScholarshipApplication } from '@/types/scholarship';
-import { updateCommitteeReview, resetToSampleData, deleteApplication } from '@/lib/storage';
+import {
+  updateCommitteeReview,
+  resetToSampleData,
+  deleteApplication,
+  saveApplicationsToStorage,
+} from '@/lib/storage';
 import {
   GOOGLE_SHEET_URL,
   GOOGLE_APPS_SCRIPT_CODE,
@@ -32,6 +37,7 @@ import {
   saveStoredWebhookUrl,
   syncAllToGoogleSheet,
   deleteApplicationFromGoogleSheet,
+  fetchApplicationsFromGoogleSheet,
 } from '@/lib/googleSheet';
 
 interface ReviewerDashboardProps {
@@ -67,9 +73,42 @@ export default function ReviewerDashboard({
   const [isGoogleSheetModalOpen, setIsGoogleSheetModalOpen] = useState(false);
   const [webhookUrl, setWebhookUrl] = useState(() => getStoredWebhookUrl());
   const [isSyncingSheet, setIsSyncingSheet] = useState(false);
+  const [isFetchingSheet, setIsFetchingSheet] = useState(false);
   const [sheetSyncResult, setSheetSyncResult] = useState<{ text: string; isError: boolean } | null>(null);
+  const [sheetSyncToast, setSheetSyncToast] = useState<{ text: string; isError: boolean } | null>(null);
   const [copiedScript, setCopiedScript] = useState(false);
   const [showScriptGuide, setShowScriptGuide] = useState(() => !getStoredWebhookUrl());
+
+  // Live Sync directly from Google Sheet
+  const handleFetchFromGoogleSheet = async () => {
+    setIsFetchingSheet(true);
+    setSheetSyncToast(null);
+
+    try {
+      const res = await fetchApplicationsFromGoogleSheet();
+      if (res && res.success && Array.isArray(res.applications)) {
+        onRefreshApplications(res.applications);
+        saveApplicationsToStorage(res.applications);
+        setSheetSyncToast({
+          text: `✓ Google Sheet Live Sync Complete: Loaded ${res.applications.length} applications directly from your Google Sheet!`,
+          isError: false,
+        });
+      } else {
+        setSheetSyncToast({
+          text: res.message || 'Could not fetch from Google Sheet. Check webhook or link sharing settings.',
+          isError: true,
+        });
+      }
+    } catch {
+      setSheetSyncToast({
+        text: 'Network error connecting to Google Sheet.',
+        isError: true,
+      });
+    } finally {
+      setIsFetchingSheet(false);
+      setTimeout(() => setSheetSyncToast(null), 6000);
+    }
+  };
 
   // Delete modal state
   const [appToDelete, setAppToDelete] = useState<ScholarshipApplication | null>(null);
@@ -663,12 +702,22 @@ export default function ReviewerDashboard({
 
           <div className="flex flex-wrap items-center gap-2 sm:gap-3">
             <button
+              type="button"
+              onClick={handleFetchFromGoogleSheet}
+              disabled={isFetchingSheet}
+              className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-3.5 py-2 text-xs font-bold text-white shadow-md shadow-emerald-600/30 hover:bg-emerald-500 disabled:opacity-50 transition cursor-pointer"
+              title="Sync live records directly from your Google Sheet"
+            >
+              <RotateCcw className={`h-4 w-4 ${isFetchingSheet ? 'animate-spin' : ''}`} />
+              <span>{isFetchingSheet ? 'Syncing...' : 'Sync from Google Sheet'}</span>
+            </button>
+            <button
               onClick={() => setIsGoogleSheetModalOpen(true)}
               className="inline-flex items-center gap-2 rounded-lg bg-[#0F9D58] px-3.5 py-2 text-xs font-bold text-white shadow-md shadow-green-700/20 hover:bg-[#0b8043] transition cursor-pointer"
-              title="Open and sync with Google Sheet"
+              title="Open and configure Google Sheet integration"
             >
               <ExternalLink className="h-4 w-4" />
-              <span>Google Sheet</span>
+              <span>Google Sheet Settings</span>
             </button>
             <button
               onClick={onOpenRubricInfo}
@@ -721,6 +770,27 @@ export default function ReviewerDashboard({
           </div>
         </div>
       </div>
+
+      {sheetSyncToast && (
+        <div
+          className={`mb-4 flex items-center justify-between p-3 rounded-xl border text-xs font-semibold animate-in fade-in ${
+            sheetSyncToast.isError
+              ? 'bg-amber-950/80 border-amber-800 text-amber-200'
+              : 'bg-emerald-950/80 border-emerald-800 text-emerald-200'
+          }`}
+        >
+          <div className="flex items-center gap-2">
+            <RotateCcw className={`h-4 w-4 shrink-0 ${sheetSyncToast.isError ? 'text-amber-400' : 'text-emerald-400'}`} />
+            <span>{sheetSyncToast.text}</span>
+          </div>
+          <button
+            onClick={() => setSheetSyncToast(null)}
+            className="p-1 rounded cursor-pointer opacity-70 hover:opacity-100"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+      )}
 
       {deleteSuccessToast && (
         <div className="mb-4 flex items-center justify-between p-3 rounded-xl bg-red-950/80 border border-red-800 text-red-200 text-xs font-semibold animate-in fade-in">
@@ -1027,29 +1097,40 @@ export default function ReviewerDashboard({
               </div>
             )}
 
-            {/* Primary Actions: Open Sheet & Sync All */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-5">
+            {/* Primary Actions: Open Sheet, Pull Live, Push All */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 mb-5">
               <a
                 href={GOOGLE_SHEET_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 rounded-xl bg-[#0F9D58] px-4 py-3 text-xs sm:text-sm font-bold text-white shadow-lg shadow-green-700/30 hover:bg-[#0b8043] transition cursor-pointer"
+                className="flex items-center justify-center gap-2 rounded-xl bg-[#0F9D58] px-3.5 py-2.5 text-xs font-bold text-white shadow-lg shadow-green-700/30 hover:bg-[#0b8043] transition cursor-pointer"
               >
                 <ExternalLink className="h-4 w-4" />
-                <span>Open Google Sheet in New Tab</span>
+                <span>Open Google Sheet</span>
               </a>
 
               <button
+                type="button"
+                onClick={handleFetchFromGoogleSheet}
+                disabled={isFetchingSheet}
+                className="flex items-center justify-center gap-2 rounded-xl border border-emerald-600 bg-emerald-700/40 px-3.5 py-2.5 text-xs font-bold text-emerald-300 hover:bg-emerald-600 hover:text-white disabled:opacity-50 transition cursor-pointer"
+              >
+                <RotateCcw className={`h-4 w-4 ${isFetchingSheet ? 'animate-spin' : ''}`} />
+                <span>{isFetchingSheet ? 'Pulling...' : 'Pull from Sheet'}</span>
+              </button>
+
+              <button
+                type="button"
                 onClick={handleSyncAllToSheet}
                 disabled={isSyncingSheet}
-                className="flex items-center justify-center gap-2 rounded-xl border border-slate-700 bg-slate-800/90 px-4 py-3 text-xs sm:text-sm font-semibold text-slate-200 hover:bg-slate-700 hover:text-white disabled:opacity-50 transition cursor-pointer"
+                className="flex items-center justify-center gap-2 rounded-xl border border-slate-700 bg-slate-800/90 px-3.5 py-2.5 text-xs font-semibold text-slate-200 hover:bg-slate-700 hover:text-white disabled:opacity-50 transition cursor-pointer"
               >
                 {isSyncingSheet ? (
-                  <span>Syncing records...</span>
+                  <span>Syncing...</span>
                 ) : (
                   <>
                     <CheckCircle2 className="h-4 w-4 text-emerald-400" />
-                    <span>Sync All Current Records ({applications.length})</span>
+                    <span>Push to Sheet ({applications.length})</span>
                   </>
                 )}
               </button>

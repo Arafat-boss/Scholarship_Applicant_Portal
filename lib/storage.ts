@@ -18,14 +18,7 @@ export function getStoredApplications(): ScholarshipApplication[] {
       return sampleApplications;
     }
     const parsed = JSON.parse(raw);
-    if (Array.isArray(parsed) && parsed.length > 0) {
-      const existingIds = new Set(parsed.map((a: ScholarshipApplication) => a.id));
-      const missing = sampleApplications.filter((s) => !existingIds.has(s.id));
-      if (missing.length > 0) {
-        const merged = [...parsed, ...missing];
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
-        return merged;
-      }
+    if (Array.isArray(parsed)) {
       return parsed;
     }
     localStorage.setItem(STORAGE_KEY, JSON.stringify(sampleApplications));
@@ -33,6 +26,12 @@ export function getStoredApplications(): ScholarshipApplication[] {
   } catch (err) {
     console.error('Failed to read from localStorage:', err);
     return sampleApplications;
+  }
+}
+
+export function saveApplicationsToStorage(apps: ScholarshipApplication[]): void {
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(apps));
   }
 }
 

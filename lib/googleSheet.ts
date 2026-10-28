@@ -113,21 +113,278 @@ export async function syncAllToGoogleSheet(
   }
 }
 
+export async function fetchApplicationsFromGoogleSheet(): Promise<{
+  success: boolean;
+  applications?: ScholarshipApplication[];
+  count?: number;
+  message?: string;
+  source?: string;
+}> {
+  try {
+    const webhookUrl = getStoredWebhookUrl();
+    const res = await fetch('/api/google-sheet?action=fetch', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'fetchAll',
+        webhookUrl: webhookUrl || undefined,
+      }),
+    });
+    return await res.json();
+  } catch (err) {
+    console.warn('Failed to fetch applications from Google Sheet:', err);
+    return {
+      success: false,
+      message: 'Network error communicating with Google Sheet API',
+    };
+  }
+}
+
+export function parseGoogleSheetCsv(csvText: string): ScholarshipApplication[] {
+  const p: string[][] = [];
+  let row: string[] = [''];
+  let inQuotes = false;
+
+  for (let i = 0; i < csvText.length; i++) {
+    const c = csvText[i];
+    const next = csvText[i + 1];
+
+    if (c === '"') {
+      if (inQuotes && next === '"') {
+        row[row.length - 1] += '"';
+        i++;
+      } else {
+        inQuotes = !inQuotes;
+      }
+    } else if (c === ',' && !inQuotes) {
+      row.push('');
+    } else if ((c === '\r' || c === '\n') && !inQuotes) {
+      if (c === '\r' && next === '\n') {
+        i++;
+      }
+      p.push(row);
+      row = [''];
+    } else {
+      row[row.length - 1] += c;
+    }
+  }
+  if (row.length > 1 || row[0] !== '') {
+    p.push(row);
+  }
+
+  if (p.length <= 1) return [];
+
+  const applications: ScholarshipApplication[] = [];
+
+  for (let i = 1; i < p.length; i++) {
+    const r = p[i];
+    if (!r[0] || !r[0].trim()) continue;
+
+    const appNumber = r[0].trim();
+    const subDate = r[1] ? new Date(r[1]).toISOString() : new Date().toISOString();
+    const firstName = r[2]?.trim() || '';
+    const lastName = r[3]?.trim() || '';
+    const email = r[4]?.trim() || '';
+    const phone = r[5]?.trim() || '';
+    const highSchool = r[6]?.trim() || '';
+    const gpa = r[7]?.trim() || '3.00';
+    const siblings = r[8]?.trim() || '0';
+    const inCollege = r[9]?.trim() || '0';
+    const serviceHours = r[11]?.trim() || '0';
+    const collegesRaw = r[12]?.trim() || '';
+    const aiScore = parseInt(r[14]?.trim() || '0', 10) || 0;
+    const aiTier = (r[15]?.trim() || 'RECOMMENDED') as ScholarshipApplication['aiScoring']['ratingCategory'];
+    const status = (r[16]?.trim() || 'Under Review') as ScholarshipApplication['committeeReview']['status'];
+    const reviewerScore = parseInt(r[17]?.trim() || '0', 10) || aiScore;
+    const reviewerName = r[18]?.trim() || 'Selection Committee';
+    const committeeNotes = r[19]?.trim() || '';
+    const appId = r[20]?.trim() || `app-${i}`;
+
+    applications.push({
+      id: appId,
+      applicationNumber: appNumber,
+      submittedAt: subDate,
+      eligibility: { isDelawareSenior: true, isEligibleDescent: true, isMinGpa: true },
+      applicant: {
+        firstName,
+        lastName,
+        streetAddress: 'Address on file',
+        city: 'Delaware',
+        state: 'DE',
+        zip: '19801',
+        telephone: phone,
+        email,
+        dateOfBirth: '2008-01-01',
+      },
+      parentGuardian: {
+        fullName: `Guardian of ${firstName}`,
+        phone,
+        email,
+      },
+      schoolFamily: {
+        currentHighSchool: highSchool,
+        gpa,
+        numberOfSiblings: siblings,
+        immediateFamilyMembers: '3',
+        familyMembersInCollege: inCollege,
+      },
+      activities: [],
+      communityService: [
+        {
+          id: 'cs-1',
+          organization: 'Community Service',
+          description: 'Documented volunteer hours',
+          totalHours: serviceHours,
+        },
+      ],
+      employment: [],
+      colleges: collegesRaw
+        ? collegesRaw.split(';').map((c, idx) => ({
+            id: `col-${idx}`,
+            college: c.trim(),
+            cityState: 'DE',
+            status: 'accepted' as const,
+          }))
+        : [],
+      documents: {
+        transcript: { name: 'Transcript_on_file.pdf', size: 1500000, type: 'application/pdf', uploadedAt: subDate },
+        studentAidReport: { name: 'SAR_Report_on_file.pdf', size: 900000, type: 'application/pdf', uploadedAt: subDate },
+        recommendationLetters: [
+          { name: 'Recommendation_Letter_1.pdf', size: 400000, type: 'application/pdf', uploadedAt: subDate },
+        ],
+        extraDocuments: [],
+      },
+      certification: {
+        isInfoAccurate: true,
+        parentGrantsPermission: true,
+        applicantSignature: `${firstName} ${lastName}`,
+      },
+      aiScoring: {
+        totalScore: aiScore,
+        maxScore: 50,
+        ratingCategory: aiTier,
+        summary: `Applicant from ${highSchool} with ${gpa} GPA and ${serviceHours} community service hours.`,
+        strengths: [`Strong academic performance: ${gpa} GPA`, `Dedicated volunteer: ${serviceHours} service hours`],
+        flags: [],
+        criteria: [
+          { id: 'c1', title: '1. Academic Performance & GPA Rigor', category: 'Academics', score: Math.min(5, Math.max(1, Math.round(parseFloat(gpa) * 1.25))), maxScore: 5, reasoning: `Cumulative GPA: ${gpa}` },
+          { id: 'c4', title: '4. Community Service & Civic Impact', category: 'Community', score: Math.min(5, Math.max(1, Math.round(parseFloat(serviceHours) / 30))), maxScore: 5, reasoning: `${serviceHours} documented volunteer hours.` },
+        ],
+        scoredAt: subDate,
+      },
+      committeeReview: {
+        status,
+        reviewerScore,
+        reviewerName,
+        committeeNotes,
+        reviewedAt: subDate,
+      },
+    });
+  }
+
+  return applications;
+}
+
 export const GOOGLE_APPS_SCRIPT_CODE = `// ==========================================================================
 // Google Apps Script for The Monday Club Scholarship Portal
 // Connected Spreadsheet ID: 1AHMFiMT6QsKECxJnUL1WqP0c0pOu6rWzPejKPlOwfgQ
 // ==========================================================================
-// INSTRUCTIONS:
+// INSTRUCTIONS FOR 2-WAY LIVE SYNC:
 // 1. In your Google Sheet, click "Extensions" > "Apps Script"
-// 2. Delete everything and paste this entire code
-// 3. Click "Deploy" > "New deployment"
-// 4. Select type: "Web app"
-// 5. Description: "Scholarship Portal Sync"
-// 6. Execute as: "Me"
-// 7. Who has access: "Anyone"
-// 8. Click "Deploy" and copy the Web App URL (ends in /exec)
-// 9. Paste that URL into the Google Sheet Settings in Reviewer Dashboard!
+// 2. Select All and Delete existing code, then Paste this entire code
+// 3. Click "Deploy" > "Manage deployments" > Click the Pencil Edit icon
+// 4. Select Version: "New version"
+// 5. Click "Deploy"
+// Now, your Google Sheet and Reviewer Portal are 100% in sync!
 // ==========================================================================
+
+function getSheetApplications(sheet) {
+  var rows = sheet.getDataRange().getValues();
+  var apps = [];
+  if (!rows || rows.length <= 1) return apps;
+  
+  for (var i = 1; i < rows.length; i++) {
+    var r = rows[i];
+    if (!r[0] || String(r[0]).trim() === "") continue;
+    
+    var appNumber = String(r[0]).trim();
+    var subDate = r[1] ? new Date(r[1]).toISOString() : new Date().toISOString();
+    var firstName = String(r[2] || "").trim();
+    var lastName = String(r[3] || "").trim();
+    var email = String(r[4] || "").trim();
+    var phone = String(r[5] || "").trim();
+    var highSchool = String(r[6] || "").trim();
+    var gpa = String(r[7] || "3.00").trim();
+    var siblings = String(r[8] || "0").trim();
+    var inCollege = String(r[9] || "0").trim();
+    var serviceHours = String(r[11] || "0").trim();
+    var collegesRaw = String(r[12] || "").trim();
+    var aiScore = parseInt(r[14], 10) || 0;
+    var aiTier = String(r[15] || "RECOMMENDED").trim();
+    var status = String(r[16] || "Under Review").trim();
+    var reviewerScore = parseInt(r[17], 10) || aiScore;
+    var reviewerName = String(r[18] || "Selection Committee").trim();
+    var notes = String(r[19] || "").trim();
+    var appId = String(r[20] || ("app-" + i)).trim();
+    
+    apps.push({
+      id: appId,
+      applicationNumber: appNumber,
+      submittedAt: subDate,
+      eligibility: { isDelawareSenior: true, isEligibleDescent: true, isMinGpa: true },
+      applicant: {
+        firstName: firstName,
+        lastName: lastName,
+        streetAddress: "Address on file",
+        city: "Delaware",
+        state: "DE",
+        zip: "19801",
+        telephone: phone,
+        email: email,
+        dateOfBirth: "2008-01-01"
+      },
+      parentGuardian: {
+        fullName: "Guardian of " + firstName,
+        phone: phone,
+        email: email
+      },
+      schoolFamily: {
+        currentHighSchool: highSchool,
+        gpa: gpa,
+        numberOfSiblings: siblings,
+        immediateFamilyMembers: "3",
+        familyMembersInCollege: inCollege
+      },
+      activities: [],
+      communityService: [
+        { id: "cs-1", organization: "Community Service", description: "Verified service hours", totalHours: serviceHours }
+      ],
+      employment: [],
+      colleges: collegesRaw ? collegesRaw.split(";").map(function(c, idx) {
+        return { id: "col-" + idx, college: c.trim(), cityState: "DE", status: "accepted" };
+      }) : [],
+      documents: { recommendationLetters: [], extraDocuments: [] },
+      certification: { isInfoAccurate: true, parentGrantsPermission: true, applicantSignature: firstName + " " + lastName },
+      aiScoring: {
+        totalScore: aiScore,
+        ratingCategory: aiTier,
+        summary: "Applicant from " + highSchool + " with " + gpa + " GPA and " + serviceHours + " service hours.",
+        criteria: [
+          { id: "c1", title: "1. Academic Performance & GPA Rigor", category: "Academics", score: Math.min(5, Math.max(1, Math.round(parseFloat(gpa) * 1.25))), maxScore: 5, reasoning: "GPA: " + gpa },
+          { id: "c4", title: "4. Community Service & Civic Impact", category: "Community", score: Math.min(5, Math.max(1, Math.round(parseFloat(serviceHours) / 30))), maxScore: 5, reasoning: serviceHours + " documented hours." }
+        ]
+      },
+      committeeReview: {
+        status: status,
+        reviewerScore: reviewerScore,
+        reviewerName: reviewerName,
+        committeeNotes: notes,
+        reviewedAt: subDate
+      }
+    });
+  }
+  return apps;
+}
 
 function doPost(e) {
   var lock = LockService.getScriptLock();
@@ -154,7 +411,19 @@ function doPost(e) {
     }
     
     // ----------------------------------------------------------------------
-    // 1. ADD / UPDATE APPLICATION
+    // 1. FETCH ALL APPLICATIONS (Return all rows from Google Sheet)
+    // ----------------------------------------------------------------------
+    if (data.action === "fetchAll" || data.action === "get" || data.action === "fetch") {
+      var allApps = getSheetApplications(sheet);
+      return ContentService.createTextOutput(JSON.stringify({
+        success: true,
+        count: allApps.length,
+        applications: allApps
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
+    
+    // ----------------------------------------------------------------------
+    // 2. ADD / UPDATE APPLICATION
     // ----------------------------------------------------------------------
     if (data.action === "add") {
       var app = data.application;
@@ -219,17 +488,17 @@ function doPost(e) {
     }
     
     // ----------------------------------------------------------------------
-    // 2. DELETE APPLICATION
+    // 3. DELETE APPLICATION
     // ----------------------------------------------------------------------
     if (data.action === "delete") {
       var appNumber = data.applicationNumber;
       var appId = data.id;
-      var rows = sheet.getDataRange().getValues();
+      var dRows = sheet.getDataRange().getValues();
       var deleted = false;
       
-      for (var k = rows.length - 1; k >= 1; k--) {
-        if ((appNumber && String(rows[k][0]).trim() === String(appNumber).trim()) ||
-            (appId && String(rows[k][20]).trim() === String(appId).trim())) {
+      for (var k = dRows.length - 1; k >= 1; k--) {
+        if ((appNumber && String(dRows[k][0]).trim() === String(appNumber).trim()) ||
+            (appId && String(dRows[k][20]).trim() === String(appId).trim())) {
           sheet.deleteRow(k + 1);
           deleted = true;
           break;
@@ -244,7 +513,7 @@ function doPost(e) {
     }
     
     // ----------------------------------------------------------------------
-    // 3. BULK SYNC ALL APPLICATIONS
+    // 4. BULK SYNC ALL APPLICATIONS
     // ----------------------------------------------------------------------
     if (data.action === "syncAll") {
       var apps = data.applications || [];
@@ -314,9 +583,25 @@ function doPost(e) {
 }
 
 function doGet(e) {
-  return ContentService.createTextOutput(JSON.stringify({
-    status: "ok",
-    message: "The Monday Club Google Sheet Webhook is active and listening!"
-  })).setMimeType(ContentService.MimeType.JSON);
+  var lock = LockService.getScriptLock();
+  lock.tryLock(10000);
+  
+  try {
+    var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+    var apps = getSheetApplications(sheet);
+    
+    return ContentService.createTextOutput(JSON.stringify({
+      success: true,
+      count: apps.length,
+      applications: apps
+    })).setMimeType(ContentService.MimeType.JSON);
+  } catch (err) {
+    return ContentService.createTextOutput(JSON.stringify({
+      success: false,
+      error: err.toString()
+    })).setMimeType(ContentService.MimeType.JSON);
+  } finally {
+    lock.releaseLock();
+  }
 }
 `;

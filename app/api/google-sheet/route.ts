@@ -1,13 +1,89 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { GOOGLE_SHEET_URL, DEFAULT_WEBHOOK_URL } from '@/lib/googleSheet';
+import {
+  GOOGLE_SHEET_URL,
+  GOOGLE_SHEET_ID,
+  DEFAULT_WEBHOOK_URL,
+  parseGoogleSheetCsv,
+} from '@/lib/googleSheet';
 import fs from 'fs';
 import path from 'path';
 
-export async function GET() {
+async function fetchFromWebhookOrCsv(webhookUrl: string) {
+  // 1. Try POST action fetchAll
+  if (webhookUrl && webhookUrl.startsWith('http')) {
+    try {
+      const postRes = await fetch(webhookUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'fetchAll' }),
+        redirect: 'follow',
+      });
+      const postData = await postRes.json().catch(() => null);
+      if (postData && Array.isArray(postData.applications)) {
+        return { source: 'webhook-post', applications: postData.applications };
+      }
+    } catch {
+      // ignore
+    }
+
+    // 2. Try GET to Webhook
+    try {
+      const getRes = await fetch(webhookUrl, {
+        method: 'GET',
+        redirect: 'follow',
+      });
+      const getData = await getRes.json().catch(() => null);
+      if (getData && Array.isArray(getData.applications)) {
+        return { source: 'webhook-get', applications: getData.applications };
+      }
+    } catch {
+      // ignore
+    }
+  }
+
+  // 3. Try direct Google Sheet CSV export (if link sharing is enabled)
+  try {
+    const csvUrl = `https://docs.google.com/spreadsheets/d/${GOOGLE_SHEET_ID}/export?format=csv`;
+    const csvRes = await fetch(csvUrl, { redirect: 'follow' });
+    if (csvRes.status === 200 && csvRes.headers.get('content-type')?.includes('text')) {
+      const csvText = await csvRes.text();
+      const parsed = parseGoogleSheetCsv(csvText);
+      if (parsed.length > 0) {
+        return { source: 'google-sheet-csv', applications: parsed };
+      }
+    }
+  } catch {
+    // ignore
+  }
+
+  return null;
+}
+
+export async function GET(req: NextRequest) {
   const webhookUrl =
     process.env.GOOGLE_SHEET_WEBHOOK_URL ||
     process.env.NEXT_PUBLIC_GOOGLE_SHEET_WEBHOOK_URL ||
     DEFAULT_WEBHOOK_URL;
+
+  const action = req.nextUrl.searchParams.get('action');
+
+  if (action === 'fetch' || action === 'fetchAll' || action === 'getApplications') {
+    const fetched = await fetchFromWebhookOrCsv(webhookUrl);
+    if (fetched) {
+      return NextResponse.json({
+        success: true,
+        source: fetched.source,
+        count: fetched.applications.length,
+        applications: fetched.applications,
+      });
+    }
+
+    return NextResponse.json({
+      success: false,
+      message:
+        'Could not fetch applications from Google Sheet. Please ensure the Apps Script code is updated or Google Sheet link sharing is enabled.',
+    });
+  }
 
   return NextResponse.json({
     configured: Boolean(webhookUrl && webhookUrl.startsWith('http')),
@@ -81,6 +157,27 @@ export async function POST(req: NextRequest) {
       Boolean(webhookUrl && webhookUrl.startsWith('http'))
     );
 
+    // Handle fetch / fetchAll live records from Google Sheet
+    if (body.action === 'fetchAll' || body.action === 'fetch' || body.action === 'get') {
+      const fetched = await fetchFromWebhookOrCsv(webhookUrl);
+      if (fetched) {
+        return NextResponse.json({
+          success: true,
+          webhookConfigured: true,
+          source: fetched.source,
+          count: fetched.applications.length,
+          applications: fetched.applications,
+        });
+      }
+
+      return NextResponse.json({
+        success: false,
+        webhookConfigured: Boolean(webhookUrl && webhookUrl.startsWith('http')),
+        message:
+          'Could not fetch applications from Google Sheet. Deploy the updated Apps Script code in your Google Sheet to enable live reading.',
+      });
+    }
+
     // If webhook URL is configured, forward to Google Apps Script
     if (webhookUrl && webhookUrl.startsWith('http')) {
       try {
@@ -94,6 +191,17 @@ export async function POST(req: NextRequest) {
         });
 
         const result = await response.json().catch(() => null);
+
+        // If Apps Script returned applications array
+        if (result && Array.isArray(result.applications)) {
+          return NextResponse.json({
+            success: true,
+            webhookConfigured: true,
+            source: 'webhook',
+            count: result.applications.length,
+            applications: result.applications,
+          });
+        }
 
         return NextResponse.json({
           success: true,
