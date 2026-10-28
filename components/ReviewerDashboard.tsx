@@ -20,6 +20,7 @@ import {
   Lock,
   Trash2,
   AlertTriangle,
+  Loader2,
 } from 'lucide-react';
 import { ScholarshipApplication } from '@/types/scholarship';
 import { updateCommitteeReview, resetToSampleData, deleteApplication } from '@/lib/storage';
@@ -73,6 +74,24 @@ export default function ReviewerDashboard({
   const [appToDelete, setAppToDelete] = useState<ScholarshipApplication | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteSuccessToast, setDeleteSuccessToast] = useState<string | null>(null);
+
+  // Modal refs for auto-scrolling directly into view when opened on Wix / iframes
+  const reviewModalRef = React.useRef<HTMLDivElement>(null);
+  const googleSheetModalRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    if (selectedApp) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      reviewModalRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [selectedApp]);
+
+  React.useEffect(() => {
+    if (isGoogleSheetModalOpen) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      googleSheetModalRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [isGoogleSheetModalOpen]);
 
   // Check server-side webhook configuration on load
   React.useEffect(() => {
@@ -415,8 +434,16 @@ export default function ReviewerDashboard({
                   return (
                     <tr
                       key={app.id}
-                      className="hover:bg-slate-900/60 transition cursor-pointer"
-                      onClick={() => handleOpenReview(app)}
+                      className={`transition cursor-pointer ${
+                        appToDelete?.id === app.id
+                          ? 'bg-red-950/40 border-l-4 border-l-red-500'
+                          : 'hover:bg-slate-900/60'
+                      }`}
+                      onClick={() => {
+                        if (appToDelete?.id !== app.id) {
+                          handleOpenReview(app);
+                        }
+                      }}
                     >
                       <td className="px-4 py-3 font-mono text-xs">
                         <span className="font-bold text-blue-400">{app.applicationNumber}</span>
@@ -471,31 +498,63 @@ export default function ReviewerDashboard({
                         </span>
                       </td>
 
-                      <td className="px-4 py-3 text-right whitespace-nowrap">
-                        <div className="flex items-center justify-end gap-1.5">
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleOpenReview(app);
-                            }}
-                            className="inline-flex items-center gap-1 rounded-lg bg-blue-600/20 px-2.5 py-1.5 text-xs font-semibold text-blue-400 border border-blue-500/30 hover:bg-blue-600 hover:text-white transition cursor-pointer"
-                            title="Review details & Rubric"
-                          >
-                            <Eye className="h-3.5 w-3.5" />
-                            <span>Review</span>
-                          </button>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setAppToDelete(app);
-                            }}
-                            className="inline-flex items-center gap-1 rounded-lg bg-red-600/10 px-2.5 py-1.5 text-xs font-semibold text-red-400 border border-red-500/30 hover:bg-red-600 hover:text-white transition cursor-pointer"
-                            title="Delete application from portal & Google Sheet"
-                          >
-                            <Trash2 className="h-3.5 w-3.5" />
-                            <span>Delete</span>
-                          </button>
-                        </div>
+                      <td className="px-4 py-3 text-right whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
+                        {appToDelete?.id === app.id ? (
+                          <div className="inline-flex items-center gap-1.5 bg-red-950/95 border border-red-700/80 p-1.5 rounded-xl shadow-xl animate-in fade-in zoom-in-95">
+                            <span className="text-[11px] font-bold text-red-300 pl-1 hidden lg:inline">
+                              Delete {app.applicant.firstName}?
+                            </span>
+                            <button
+                              disabled={isDeleting}
+                              onClick={handleConfirmDelete}
+                              className="inline-flex items-center gap-1 rounded-lg bg-red-600 px-2.5 py-1 text-xs font-bold text-white shadow-md shadow-red-600/30 hover:bg-red-500 disabled:opacity-50 transition cursor-pointer"
+                            >
+                              {isDeleting ? (
+                                <>
+                                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                                  <span>Deleting...</span>
+                                </>
+                              ) : (
+                                <>
+                                  <Trash2 className="h-3.5 w-3.5" />
+                                  <span>Confirm Delete</span>
+                                </>
+                              )}
+                            </button>
+                            <button
+                              disabled={isDeleting}
+                              onClick={() => setAppToDelete(null)}
+                              className="rounded-lg border border-slate-700 bg-slate-800 px-2.5 py-1 text-xs font-semibold text-slate-300 hover:bg-slate-700 hover:text-white transition cursor-pointer"
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="flex items-center justify-end gap-1.5">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleOpenReview(app);
+                              }}
+                              className="inline-flex items-center gap-1 rounded-lg bg-blue-600/20 px-2.5 py-1.5 text-xs font-semibold text-blue-400 border border-blue-500/30 hover:bg-blue-600 hover:text-white transition cursor-pointer"
+                              title="Review details & Rubric"
+                            >
+                              <Eye className="h-3.5 w-3.5" />
+                              <span>Review</span>
+                            </button>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setAppToDelete(app);
+                              }}
+                              className="inline-flex items-center gap-1 rounded-lg bg-red-600/10 px-2.5 py-1.5 text-xs font-semibold text-red-400 border border-red-500/30 hover:bg-red-600 hover:text-white transition cursor-pointer"
+                              title="Delete application from portal & Google Sheet"
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                              <span>Delete</span>
+                            </button>
+                          </div>
+                        )}
                       </td>
                     </tr>
                   );
@@ -511,7 +570,7 @@ export default function ReviewerDashboard({
       {/* ======================================================== */}
       {selectedApp && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-2.5 sm:p-5 bg-black/85 backdrop-blur-md animate-in fade-in">
-          <div className="relative w-full max-w-5xl max-h-[92vh] overflow-y-auto rounded-2xl border border-slate-700 bg-[#0f172a] shadow-2xl text-slate-100 p-4 sm:p-8">
+          <div ref={reviewModalRef} className="relative w-full max-w-5xl max-h-[92vh] overflow-y-auto rounded-2xl border border-slate-700 bg-[#0f172a] shadow-2xl text-slate-100 p-4 sm:p-8">
             {/* Close Button */}
             <button
               onClick={() => setSelectedApp(null)}
@@ -832,7 +891,7 @@ export default function ReviewerDashboard({
       {/* ======================================================== */}
       {isGoogleSheetModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
-          <div className="relative w-full max-w-2xl max-h-[92vh] overflow-y-auto rounded-2xl border border-slate-700 bg-[#0f172a] p-5 sm:p-7 shadow-2xl text-slate-100">
+          <div ref={googleSheetModalRef} className="relative w-full max-w-2xl max-h-[92vh] overflow-y-auto rounded-2xl border border-slate-700 bg-[#0f172a] p-5 sm:p-7 shadow-2xl text-slate-100">
             <button
               onClick={() => setIsGoogleSheetModalOpen(false)}
               className="absolute top-4 right-4 p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition cursor-pointer"
@@ -1019,72 +1078,7 @@ export default function ReviewerDashboard({
         </div>
       )}
 
-      {/* ======================================================== */}
-      {/* DELETE CONFIRMATION MODAL */}
-      {/* ======================================================== */}
-      {appToDelete && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/85 backdrop-blur-sm animate-in fade-in">
-          <div className="relative w-full max-w-md rounded-2xl border border-red-800/80 bg-[#0f172a] p-5 sm:p-6 shadow-2xl text-slate-100">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-red-600/20 text-red-400 border border-red-500/30">
-                <Trash2 className="h-5 w-5" />
-              </div>
-              <div>
-                <h3 className="text-base font-bold text-white">Delete Application?</h3>
-                <p className="text-xs text-red-400 font-mono font-bold">{appToDelete.applicationNumber}</p>
-              </div>
-            </div>
 
-            <div className="mb-5 rounded-xl border border-slate-800 bg-slate-900/80 p-3.5 text-xs text-slate-300 space-y-1.5">
-              <div>
-                <span className="text-slate-400">Applicant: </span>
-                <strong className="text-white">
-                  {appToDelete.applicant.firstName} {appToDelete.applicant.lastName}
-                </strong>
-              </div>
-              <div>
-                <span className="text-slate-400">High School: </span>
-                <span className="text-slate-200">{appToDelete.schoolFamily.currentHighSchool}</span>
-              </div>
-              <div>
-                <span className="text-slate-400">GPA / AI Score: </span>
-                <span className="text-emerald-400 font-mono font-bold">{appToDelete.schoolFamily.gpa}</span> /{' '}
-                <span className="text-blue-400 font-mono font-bold">{appToDelete.aiScoring.totalScore} pts</span>
-              </div>
-            </div>
-
-            <p className="text-xs text-slate-400 mb-5 leading-relaxed">
-              Are you sure you want to permanently delete this application? It will be removed from your reviewer queue and deleted from your connected <strong className="text-white">Google Sheet</strong>.
-            </p>
-
-            <div className="flex items-center justify-end gap-2.5">
-              <button
-                type="button"
-                disabled={isDeleting}
-                onClick={() => setAppToDelete(null)}
-                className="rounded-lg border border-slate-700 bg-slate-800 px-4 py-2 text-xs font-semibold text-slate-300 hover:bg-slate-700 hover:text-white transition cursor-pointer"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                disabled={isDeleting}
-                onClick={handleConfirmDelete}
-                className="inline-flex items-center gap-1.5 rounded-lg bg-red-600 px-4 py-2 text-xs font-bold text-white shadow-lg shadow-red-600/30 hover:bg-red-500 disabled:opacity-50 transition cursor-pointer"
-              >
-                {isDeleting ? (
-                  <span>Deleting...</span>
-                ) : (
-                  <>
-                    <Trash2 className="h-3.5 w-3.5" />
-                    <span>Confirm Delete</span>
-                  </>
-                )}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
