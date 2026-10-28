@@ -23,8 +23,8 @@ Official **The Monday Club Scholarship Portal** — Custom Full-Stack Web Applic
   - Filter by Status and AI Tier
   - Full Application Inspection modal with side-by-side profile view & AI breakdown
   - Human reviewer score override (0–50) and committee deliberation notes
-- **One-Click CSV Export**:
-  - Export all applicant records, GPA, financial need metrics, AI scores, and committee decisions into clean CSV format for meetings.
+- **Google Sheet Live Sync**:
+  - Automatically records applicant submissions, committee decisions, and real-time deletion synchronization directly to Google Sheets.
 - **Wix & Embed-Ready Architecture**:
   - Headerless & footerless clean widget style for seamless iFrame embedding into Wix or external sites.
 

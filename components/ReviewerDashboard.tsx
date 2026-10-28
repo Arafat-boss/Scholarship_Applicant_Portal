@@ -15,7 +15,6 @@ import {
   FileText,
   MapPin,
   X,
-  Download,
   Copy,
   ExternalLink,
   Lock,
@@ -24,7 +23,6 @@ import {
 } from 'lucide-react';
 import { ScholarshipApplication } from '@/types/scholarship';
 import { updateCommitteeReview, resetToSampleData, deleteApplication } from '@/lib/storage';
-import { convertApplicationsToCSV, downloadCSV, copyCSVToClipboard } from '@/lib/csvExport';
 import {
   GOOGLE_SHEET_URL,
   GOOGLE_APPS_SCRIPT_CODE,
@@ -61,9 +59,7 @@ export default function ReviewerDashboard({
   const [reviewerName, setReviewerName] = useState('Committee Member');
   const [committeeNotes, setCommitteeNotes] = useState('');
   const [saveSuccessMsg, setSaveSuccessMsg] = useState(false);
-  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
-  const [copiedToast, setCopiedToast] = useState(false);
-  const [downloadToast, setDownloadToast] = useState(false);
+
 
   // Google Sheet Modal & Sync state
   const [isGoogleSheetModalOpen, setIsGoogleSheetModalOpen] = useState(false);
@@ -122,13 +118,7 @@ export default function ReviewerDashboard({
     setTimeout(() => setSaveSuccessMsg(false), 3000);
   };
 
-  // CSV Export handler
-  const handleExportCSV = () => {
-    const csv = convertApplicationsToCSV(filteredApplications);
-    downloadCSV(csv, `Monday_Club_Scholarship_Review_${new Date().toISOString().split('T')[0]}.csv`);
-    setDownloadToast(true);
-    setTimeout(() => setDownloadToast(false), 5000);
-  };
+
 
   // Delete Application (from state & Google Sheet)
   const handleConfirmDelete = async () => {
@@ -265,19 +255,11 @@ export default function ReviewerDashboard({
               Application & AI Rubric Scoring Queue
             </h2>
             <p className="mt-1 text-xs sm:text-sm text-slate-400 leading-relaxed">
-              Inspect applicant records, analyze AI 10-criterion rubrics (0–50 pts), input committee overrides, and export CSV reports.
+              Inspect applicant records, analyze AI 10-criterion rubrics (0–50 pts), input committee overrides, and sync with Google Sheet.
             </p>
           </div>
 
           <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-            <button
-              onClick={() => setIsExportModalOpen(true)}
-              className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-3.5 py-2 text-xs font-bold text-white shadow-md shadow-emerald-600/20 hover:bg-emerald-500 transition cursor-pointer"
-              title="Download entire queue as CSV"
-            >
-              <FileSpreadsheet className="h-4 w-4" />
-              <span>Export CSV</span>
-            </button>
             <button
               onClick={() => setIsGoogleSheetModalOpen(true)}
               className="inline-flex items-center gap-2 rounded-lg bg-[#0F9D58] px-3.5 py-2 text-xs font-bold text-white shadow-md shadow-green-700/20 hover:bg-[#0b8043] transition cursor-pointer"
@@ -843,96 +825,7 @@ export default function ReviewerDashboard({
           </div>
         </div>
       )}
-      {/* ======================================================== */}
-      {/* EXPORT CSV MODAL (Works inside all iframes & Wix) */}
-      {/* ======================================================== */}
-      {isExportModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
-          <div className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-2xl border border-slate-700 bg-[#0f172a] p-4 sm:p-6 shadow-2xl text-slate-100">
-            <button
-              onClick={() => setIsExportModalOpen(false)}
-              className="absolute top-4 right-4 p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition cursor-pointer"
-            >
-              <X className="h-5 w-5" />
-            </button>
 
-            <div className="flex items-center gap-3 mb-4">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
-                <FileSpreadsheet className="h-5 w-5" />
-              </div>
-              <div>
-                <h3 className="text-base font-bold text-white">Export Applications Data</h3>
-                <p className="text-xs text-slate-400">Total {filteredApplications.length} application records ready • Wix & Embed compatible</p>
-              </div>
-            </div>
-
-            {copiedToast && (
-              <div className="mb-4 p-2.5 rounded-lg bg-emerald-950/80 border border-emerald-700 text-emerald-300 text-xs font-medium text-center animate-in fade-in">
-                ✓ Copied to clipboard! Open Excel or Google Sheets and press Ctrl+V.
-              </div>
-            )}
-
-            {downloadToast && (
-              <div className="mb-4 p-2.5 rounded-lg bg-blue-950/80 border border-blue-700 text-blue-300 text-xs font-medium text-center animate-in fade-in">
-                📥 Download initiated! (Note: If your browser blocks downloads inside Wix iframe, click &quot;Copy to Clipboard&quot; below to paste directly into Excel).
-              </div>
-            )}
-
-            <div className="space-y-2.5 mb-5">
-              {/* Copy to Clipboard Button (Guaranteed 100% to work in Wix & all iframes) */}
-              <button
-                onClick={async () => {
-                  const csv = convertApplicationsToCSV(filteredApplications);
-                  const copied = await copyCSVToClipboard(csv);
-                  if (copied) {
-                    setCopiedToast(true);
-                    setTimeout(() => setCopiedToast(false), 4000);
-                  }
-                }}
-                className="w-full flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-3 text-xs sm:text-sm font-bold text-white shadow-lg shadow-emerald-600/30 hover:bg-emerald-500 transition cursor-pointer"
-              >
-                <Copy className="h-4 w-4" />
-                <span>Copy to Clipboard (Paste into Excel / Sheets)</span>
-              </button>
-
-              {/* Direct Download Button (Standard client Blob, NO new tab) */}
-              <button
-                onClick={handleExportCSV}
-                className="w-full flex items-center justify-center gap-2 rounded-xl border border-slate-700 bg-slate-800/90 px-4 py-2.5 text-xs sm:text-sm font-semibold text-slate-200 hover:bg-slate-700 hover:text-white transition cursor-pointer"
-              >
-                <Download className="h-4 w-4 text-blue-400" />
-                <span>Download .CSV File Directly</span>
-              </button>
-            </div>
-
-            <div className="rounded-lg bg-slate-950/80 p-3 border border-slate-800/80">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
-                  CSV Data ({filteredApplications.length} records):
-                </span>
-                <button
-                  type="button"
-                  onClick={async () => {
-                    const csv = convertApplicationsToCSV(filteredApplications);
-                    await copyCSVToClipboard(csv);
-                    setCopiedToast(true);
-                    setTimeout(() => setCopiedToast(false), 4000);
-                  }}
-                  className="text-[11px] font-medium text-emerald-400 hover:text-emerald-300 underline cursor-pointer"
-                >
-                  Select &amp; Copy All
-                </button>
-              </div>
-              <textarea
-                readOnly
-                value={convertApplicationsToCSV(filteredApplications)}
-                onFocus={(e) => e.target.select()}
-                className="w-full text-[10px] font-mono text-slate-400 bg-slate-900/60 p-2.5 rounded-lg border border-slate-800 h-28 overflow-y-auto whitespace-pre resize-none focus:outline-none focus:border-slate-700"
-              />
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* ======================================================== */}
       {/* GOOGLE SHEET INTEGRATION & LIVE SYNC MODAL */}

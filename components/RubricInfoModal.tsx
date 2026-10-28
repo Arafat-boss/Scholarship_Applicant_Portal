@@ -97,8 +97,8 @@ export default function RubricInfoModal({ isOpen, onClose }: RubricInfoModalProp
         {/* Committee Output & Export Note */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-slate-800 pt-5">
           <div className="flex items-center gap-2 text-xs text-slate-400">
-            <FileSpreadsheet className="h-4 w-4 text-emerald-400" />
-            <span>All 10 criterion scores and committee decisions are exportable via CSV.</span>
+            <FileSpreadsheet className="h-4 w-4 text-[#0F9D58]" />
+            <span>All 10 criterion scores and committee decisions are synced with Google Sheet.</span>
           </div>
           <button
             onClick={onClose}
