@@ -22,6 +22,11 @@ export default function Home() {
     return false;
   });
 
+  // Scroll to top ONLY when switching tabs
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, [activeTab]);
+
   // Broadcast dynamic height to Wix / parent iframe so container perfectly matches content height
   useEffect(() => {
     const notifyParentHeight = () => {
@@ -47,9 +52,6 @@ export default function Home() {
       });
       resizeObserver.observe(document.body);
     }
-
-    // Scroll to top on tab switch so user doesn't stay scrolled down
-    window.scrollTo({ top: 0, behavior: 'instant' });
 
     return () => {
       clearTimeout(timeout);

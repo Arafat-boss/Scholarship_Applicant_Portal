@@ -9,6 +9,9 @@ import {
   Sparkles,
   Send,
   Loader2,
+  Printer,
+  Eye,
+  ArrowLeft,
 } from 'lucide-react';
 import {
   ClubActivity,
@@ -141,6 +144,62 @@ export default function ApplicantPortal({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const [submittedApp, setSubmittedApp] = useState<ScholarshipApplication | null>(null);
+  const [showSubmittedForm, setShowSubmittedForm] = useState(false);
+  const successContainerRef = React.useRef<HTMLDivElement>(null);
+
+  // Smooth scroll directly to the confirmation view upon submission
+  React.useEffect(() => {
+    if (submittedApp && !showSubmittedForm) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      successContainerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [submittedApp, showSubmittedForm]);
+
+  // Clean reset form for a fresh applicant
+  const handleResetForm = () => {
+    setIsDelawareSenior(false);
+    setIsEligibleDescent(false);
+    setIsMinGpa(false);
+
+    setFirstName('');
+    setLastName('');
+    setStreetAddress('');
+    setCity('');
+    setStateVal('DE');
+    setZip('');
+    setTelephone('');
+    setEmail('');
+    setDateOfBirth('');
+
+    setParentName('');
+    setParentPhone('');
+    setParentEmail('');
+
+    setCurrentHighSchool('');
+    setGpa('');
+    setNumberOfSiblings('');
+    setImmediateFamilyMembers('');
+    setFamilyMembersInCollege('');
+
+    setActivities([{ id: '1', activity: '', role: '', years: '' }]);
+    setCommunityService([{ id: '1', organization: '', description: '', totalHours: '' }]);
+    setEmployment([{ id: '1', employer: '', position: '', dates: '' }]);
+    setColleges([{ id: '1', college: '', cityState: '', status: 'applied' }]);
+
+    setTranscript(null);
+    setStudentAidReport(null);
+    setRecLetters([]);
+    setExtraDocs([]);
+
+    setIsInfoAccurate(false);
+    setParentGrantsPermission(false);
+    setApplicantSignature('');
+
+    setFormError(null);
+    setSubmittedApp(null);
+    setShowSubmittedForm(false);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   // Autofill realistic demo data
   const handleAutofill = () => {
@@ -324,8 +383,152 @@ export default function ApplicantPortal({
     }, 1200);
   };
 
+  // ----------------------------------------------------
+  // SUBMISSION SUCCESS VIEW (In-viewport, zero scrolling required on Wix / iframes)
+  // ----------------------------------------------------
+  if (submittedApp && !showSubmittedForm) {
+    return (
+      <div
+        ref={successContainerRef}
+        id="submission-success-view"
+        className="mx-auto max-w-2xl px-3 sm:px-6 py-6 sm:py-10 animate-in fade-in zoom-in-95 duration-300"
+      >
+        <div className="relative rounded-2xl border border-emerald-500/50 bg-gradient-to-b from-[#131f37] via-[#0f172a] to-[#090d16] p-5 sm:p-8 text-center text-slate-100 shadow-2xl">
+          {/* Animated Glowing Success Icon */}
+          <div className="mx-auto flex h-16 w-16 sm:h-20 sm:w-20 items-center justify-center rounded-full bg-emerald-500/20 border-2 border-emerald-500 text-emerald-400 mb-4 shadow-lg shadow-emerald-500/25">
+            <CheckCircle2 className="h-10 w-10 sm:h-12 sm:w-12" />
+          </div>
+
+          <div className="inline-flex items-center gap-2 rounded-full bg-emerald-950 px-3.5 py-1 text-xs font-bold text-emerald-300 border border-emerald-700/60 mb-3">
+            <span>Application ID: {submittedApp.applicationNumber}</span>
+          </div>
+
+          <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+            Application Submitted Successfully!
+          </h2>
+
+          <p className="text-xs sm:text-sm text-slate-300 mt-2 max-w-md mx-auto leading-relaxed">
+            Thank you, <strong className="text-white">{submittedApp.applicant.firstName} {submittedApp.applicant.lastName}</strong>. Your application has been logged for The Monday Club scholarship review committee.
+          </p>
+
+          {/* AI Rubric Evaluation Card */}
+          <div className="my-5 rounded-xl border border-blue-800/80 bg-blue-950/40 p-4 sm:p-5 text-left shadow-inner">
+            <div className="flex items-center justify-between mb-2">
+              <span className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-blue-300">
+                <Sparkles className="h-4 w-4 text-amber-400" />
+                <span>AI Rubric Evaluation</span>
+              </span>
+              <span className="font-mono text-sm sm:text-base font-extrabold text-white bg-blue-900/90 px-3 py-1 rounded-md border border-blue-600 shadow-sm">
+                {submittedApp.aiScoring.totalScore} / 50 pts
+              </span>
+            </div>
+            <div className="inline-block mb-2 text-xs font-semibold px-2.5 py-0.5 rounded bg-blue-900/60 text-blue-200 border border-blue-700/50">
+              Tier Category: {submittedApp.aiScoring.ratingCategory}
+            </div>
+            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+              {submittedApp.aiScoring.summary}
+            </p>
+            <div className="mt-3 pt-2.5 border-t border-blue-900/50 text-[11px] text-slate-400 italic">
+              * Note: The AI rubric score evaluates GPA, volunteer hours, leadership, and household metrics to assist the selection committee.
+            </div>
+          </div>
+
+          {/* Key Submission Details Snapshot */}
+          <div className="mb-6 rounded-xl border border-slate-800 bg-slate-900/70 p-4 text-left text-xs space-y-2">
+            <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">
+              Submission Summary
+            </div>
+            <div className="flex justify-between py-1 border-b border-slate-800/60">
+              <span className="text-slate-400">Applicant:</span>
+              <span className="font-semibold text-white">{submittedApp.applicant.firstName} {submittedApp.applicant.lastName}</span>
+            </div>
+            <div className="flex justify-between py-1 border-b border-slate-800/60">
+              <span className="text-slate-400">High School:</span>
+              <span className="font-semibold text-white">{submittedApp.schoolFamily.currentHighSchool}</span>
+            </div>
+            <div className="flex justify-between py-1 border-b border-slate-800/60">
+              <span className="text-slate-400">Cumulative GPA:</span>
+              <span className="font-semibold text-white">{submittedApp.schoolFamily.gpa}</span>
+            </div>
+            <div className="flex justify-between py-1 border-b border-slate-800/60">
+              <span className="text-slate-400">Submitted At:</span>
+              <span className="font-semibold text-slate-300">{new Date(submittedApp.submittedAt).toLocaleString()}</span>
+            </div>
+            <div className="flex justify-between py-1">
+              <span className="text-slate-400">Google Sheet Status:</span>
+              <span className="font-semibold text-emerald-400">✓ Logged &amp; Synchronized</span>
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+            <button
+              onClick={handleResetForm}
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-xs sm:text-sm font-bold text-white shadow-lg shadow-blue-600/30 hover:bg-blue-500 transition cursor-pointer"
+            >
+              <Plus className="h-4 w-4" />
+              <span>Submit Another Application</span>
+            </button>
+            <button
+              onClick={() => {
+                setShowSubmittedForm(true);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl border border-slate-700 bg-slate-800/90 px-4 py-2.5 text-xs sm:text-sm font-semibold text-slate-200 hover:bg-slate-700 hover:text-white transition cursor-pointer"
+            >
+              <Eye className="h-4 w-4" />
+              <span>Review Submitted Form</span>
+            </button>
+            <button
+              onClick={() => window.print()}
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl border border-slate-800 bg-slate-900/80 px-4 py-2.5 text-xs sm:text-sm font-semibold text-slate-400 hover:text-slate-200 transition cursor-pointer"
+            >
+              <Printer className="h-4 w-4" />
+              <span>Print Receipt</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="mx-auto max-w-4xl px-3 sm:px-6 py-6 sm:py-8">
+      {/* Submitted Application Banner when reviewing */}
+      {submittedApp && showSubmittedForm && (
+        <div className="mb-6 rounded-2xl border border-emerald-500/60 bg-gradient-to-r from-emerald-950/80 via-slate-900 to-slate-900 p-4 sm:p-5 text-slate-100 shadow-xl flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <CheckCircle2 className="h-7 w-7 text-emerald-400 shrink-0" />
+            <div>
+              <div className="font-bold text-white text-sm sm:text-base">
+                Application {submittedApp.applicationNumber} Submitted!
+              </div>
+              <div className="text-xs text-slate-300">
+                AI Score: <strong className="text-white">{submittedApp.aiScoring.totalScore}/50 pts</strong> ({submittedApp.aiScoring.ratingCategory}) • Synced with Google Sheet
+              </div>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              type="button"
+              onClick={() => setShowSubmittedForm(false)}
+              className="inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-3.5 py-2 text-xs font-bold text-white hover:bg-blue-500 transition cursor-pointer shadow-md shadow-blue-600/30"
+            >
+              <ArrowLeft className="h-3.5 w-3.5" />
+              <span>Back to Confirmation</span>
+            </button>
+            <button
+              type="button"
+              onClick={handleResetForm}
+              className="inline-flex items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-xs font-semibold text-slate-300 hover:bg-slate-700 hover:text-white transition cursor-pointer"
+            >
+              <Plus className="h-3.5 w-3.5" />
+              <span>New Application</span>
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Title & Organization Header matching Client Mockup */}
       <div className="mb-6 rounded-2xl border border-slate-800 bg-gradient-to-b from-[#131b2e] to-[#0f172a] p-4 sm:p-6 shadow-xl text-slate-100">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -1217,54 +1420,7 @@ export default function ApplicantPortal({
         </div>
       </form>
 
-      {/* Success Modal with AI Rubric Score teaser */}
-      {submittedApp && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/85 backdrop-blur-md animate-in fade-in">
-          <div className="relative w-full max-w-lg max-h-[92vh] overflow-y-auto rounded-2xl border border-blue-500/40 bg-[#0f172a] p-4 sm:p-8 text-center text-slate-100 shadow-2xl">
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 mb-4">
-              <CheckCircle2 className="h-8 w-8" />
-            </div>
 
-            <span className="rounded-full bg-blue-950 px-3 py-1 text-xs font-semibold text-blue-400 border border-blue-800/60">
-              Application ID: {submittedApp.applicationNumber}
-            </span>
-
-            <h3 className="text-xl sm:text-2xl font-extrabold text-white mt-3">
-              Application Submitted Successfully!
-            </h3>
-
-            <p className="text-xs sm:text-sm text-slate-300 mt-2">
-              Thank you, <strong className="text-white">{submittedApp.applicant.firstName}</strong>. Your application has been logged for The Monday Club scholarship review committee.
-            </p>
-
-            {/* AI Rubric Preliminary Feedback Banner */}
-            <div className="my-5 rounded-xl border border-blue-800/80 bg-blue-950/40 p-4 text-left">
-              <div className="flex items-center justify-between mb-2">
-                <span className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-blue-300">
-                  <Sparkles className="h-3.5 w-3.5 text-amber-400" />
-                  <span>AI Rubric Evaluation</span>
-                </span>
-                <span className="font-mono text-sm font-extrabold text-white bg-blue-900/80 px-2 py-0.5 rounded border border-blue-700">
-                  {submittedApp.aiScoring.totalScore} / 50 pts
-                </span>
-              </div>
-              <p className="text-xs text-slate-300 leading-relaxed">
-                {submittedApp.aiScoring.summary}
-              </p>
-              <div className="mt-2 text-[11px] text-slate-400 italic">
-                * Note: AI scores serve as an initial rubric calculation to assist the human selection committee.
-              </div>
-            </div>
-
-            <button
-              onClick={() => setSubmittedApp(null)}
-              className="w-full rounded-lg bg-blue-600 px-5 py-2.5 text-xs font-bold text-white hover:bg-blue-500 transition shadow-lg shadow-blue-600/30"
-            >
-              Close & View Application
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
