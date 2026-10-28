@@ -19,6 +19,13 @@ export function getStoredApplications(): ScholarshipApplication[] {
     }
     const parsed = JSON.parse(raw);
     if (Array.isArray(parsed) && parsed.length > 0) {
+      const existingIds = new Set(parsed.map((a: ScholarshipApplication) => a.id));
+      const missing = sampleApplications.filter((s) => !existingIds.has(s.id));
+      if (missing.length > 0) {
+        const merged = [...parsed, ...missing];
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
+        return merged;
+      }
       return parsed;
     }
     localStorage.setItem(STORAGE_KEY, JSON.stringify(sampleApplications));
