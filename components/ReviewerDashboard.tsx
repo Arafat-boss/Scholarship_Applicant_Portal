@@ -79,22 +79,6 @@ export default function ReviewerDashboard({
     return fullScoring.criteria;
   }, [selectedApp]);
 
-  // Handle 1-click direct download inside iframes (Wix)
-  const handleDirectDownload = (e: React.MouseEvent<HTMLAnchorElement>, relativeUrl: string) => {
-    if (typeof window !== 'undefined' && window.self !== window.top) {
-      try {
-        if (window.top) {
-          const fullUrl = `${window.location.origin}${relativeUrl}`;
-          window.top.location.href = fullUrl;
-          e.preventDefault();
-          return;
-        }
-      } catch (err) {
-        console.warn('Top location navigation prevented, using target _blank fallback:', err);
-      }
-    }
-  };
-
   // Google Sheet Modal & Sync state
   const [isGoogleSheetModalOpen, setIsGoogleSheetModalOpen] = useState(false);
   const [webhookUrl, setWebhookUrl] = useState(() => getStoredWebhookUrl());
@@ -385,8 +369,6 @@ export default function ReviewerDashboard({
                 href={`/api/pdf?download=1&id=${encodeURIComponent(selectedApp.id)}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                download={`Scholarship_Application_${selectedApp.applicant.firstName}_${selectedApp.applicant.lastName}.pdf`}
-                onClick={(e) => handleDirectDownload(e, `/api/pdf?download=1&id=${encodeURIComponent(selectedApp.id)}`)}
                 className="inline-flex items-center gap-1.5 rounded-xl border border-slate-700 bg-slate-800/90 px-3.5 py-2 text-xs font-bold text-slate-200 hover:bg-slate-700 hover:text-white transition cursor-pointer"
                 title="Download this applicant's dossier immediately as PDF"
               >
@@ -741,9 +723,7 @@ export default function ReviewerDashboard({
               href="/api/pdf?download=1"
               target="_blank"
               rel="noopener noreferrer"
-              download="Monday_Club_Scholarship_Applications.pdf"
               id="btn-download-all-pdf"
-              onClick={(e) => handleDirectDownload(e, '/api/pdf?download=1')}
               className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-3.5 py-2 text-xs font-bold text-white shadow-md shadow-indigo-600/30 hover:bg-indigo-500 transition cursor-pointer"
               title="Download all applications immediately into PDF"
             >
