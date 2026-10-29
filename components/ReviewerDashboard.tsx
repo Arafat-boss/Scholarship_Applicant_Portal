@@ -366,7 +366,7 @@ export default function ReviewerDashboard({
             </div>
             <div className="flex items-center gap-2">
               <a
-                href={`/api/pdf?download=1&id=${encodeURIComponent(selectedApp.id)}`}
+                href={`/api/pdf?id=${encodeURIComponent(selectedApp.id)}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1.5 rounded-xl border border-slate-700 bg-slate-800/90 px-3.5 py-2 text-xs font-bold text-slate-200 hover:bg-slate-700 hover:text-white transition cursor-pointer"
@@ -720,7 +720,7 @@ export default function ReviewerDashboard({
           <div className="flex flex-wrap items-center gap-2 sm:gap-3">
             {/* Direct 1-Click Instant Download Button */}
             <a
-              href="/api/pdf?download=1"
+              href="/api/pdf"
               target="_blank"
               rel="noopener noreferrer"
               id="btn-download-all-pdf"
@@ -733,7 +733,7 @@ export default function ReviewerDashboard({
 
             {/* Interactive Preview & Print Tab */}
             <a
-              href="/export-pdf"
+              href="/export-pdf?autoDownload=1"
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => {

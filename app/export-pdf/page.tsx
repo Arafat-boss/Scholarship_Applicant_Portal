@@ -10,7 +10,6 @@ import { generateScholarshipJsPdf } from '@/lib/pdfExport';
 
 function ExportPdfContent() {
   const searchParams = useSearchParams();
-  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [fileName, setFileName] = useState<string>('Scholarship_Applications.pdf');
   const [totalApps, setTotalApps] = useState<number>(0);
   const [isGenerating, setIsGenerating] = useState(true);
@@ -18,9 +17,11 @@ function ExportPdfContent() {
   const docRef = useRef<jsPDF | null>(null);
 
   const targetId = searchParams.get('id');
+  const autoDownload =
+    searchParams.get('autoDownload') === '1' || searchParams.get('download') === '1';
   const serverDownloadUrl = targetId
-    ? `/api/pdf?download=1&id=${encodeURIComponent(targetId)}`
-    : '/api/pdf?download=1';
+    ? `/api/pdf?id=${encodeURIComponent(targetId)}`
+    : '/api/pdf';
 
   useEffect(() => {
     let isMounted = true;
@@ -79,11 +80,16 @@ function ExportPdfContent() {
         const { doc, fileName: generatedFileName } = generateScholarshipJsPdf(apps);
         docRef.current = doc;
         setFileName(generatedFileName);
-
-        const blob = doc.output('blob');
-        const url = URL.createObjectURL(blob);
-        setPdfUrl(url);
         setIsGenerating(false);
+
+        if (autoDownload) {
+          try {
+            doc.save(generatedFileName);
+            setDownloadTriggered(true);
+          } catch (saveErr) {
+            console.warn('Auto download save error:', saveErr);
+          }
+        }
       } catch (err) {
         console.error('Failed to generate PDF:', err);
         setIsGenerating(false);
@@ -95,7 +101,7 @@ function ExportPdfContent() {
     return () => {
       isMounted = false;
     };
-  }, [searchParams, targetId]);
+  }, [searchParams, targetId, autoDownload]);
 
   const handleManualDownload = (e?: React.MouseEvent) => {
     setDownloadTriggered(true);
@@ -110,26 +116,8 @@ function ExportPdfContent() {
       }
     }
 
-    // 2. Try anchor download with blobUrl
-    if (pdfUrl) {
-      try {
-        const a = document.createElement('a');
-        a.href = pdfUrl;
-        a.download = fileName;
-        document.body.appendChild(a);
-        a.click();
-        setTimeout(() => {
-          if (document.body.contains(a)) document.body.removeChild(a);
-        }, 150);
-        return;
-      } catch (err) {
-        console.warn('Blob anchor error:', err);
-      }
-    }
-
-    // 3. Fallback to direct HTTP attachment download
+    // 2. Fallback to direct HTTP attachment download
     if (e) {
-      // Allow default <a> navigation to serverDownloadUrl
       return;
     }
     window.location.href = serverDownloadUrl;
@@ -169,19 +157,18 @@ function ExportPdfContent() {
           {downloadTriggered && (
             <div className="hidden sm:flex items-center gap-1.5 text-xs text-emerald-400 bg-emerald-950/60 border border-emerald-800/80 px-3 py-1.5 rounded-lg">
               <CheckCircle2 className="h-3.5 w-3.5" />
-              <span>Download Started</span>
+              <span>Download Saved to Device</span>
             </div>
           )}
 
-          <a
-            href={serverDownloadUrl}
-            download={fileName}
+          <button
+            type="button"
             onClick={handleManualDownload}
             className="inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-3.5 py-1.5 text-xs font-bold text-white shadow-md shadow-blue-600/30 hover:bg-blue-500 transition cursor-pointer"
           >
             <Download className="h-3.5 w-3.5" />
             <span>Save PDF File</span>
-          </a>
+          </button>
 
           <button
             type="button"
@@ -211,24 +198,12 @@ function ExportPdfContent() {
             <p className="text-sm font-medium text-white">Generating Scholarship Committee Dossier...</p>
             <p className="text-xs text-slate-400">Compiling rubric evaluations, profiles, and scorecards</p>
           </div>
-        ) : pdfUrl ? (
+        ) : (
           <iframe
-            src={pdfUrl}
+            src={serverDownloadUrl}
             className="w-full h-full border-0 bg-slate-900"
             title="PDF Dossier Viewer"
           />
-        ) : (
-          <div className="flex flex-col items-center justify-center h-full gap-4 text-slate-400 p-8 text-center">
-            <p className="text-sm text-slate-300">No applications found in local cache.</p>
-            <a
-              href={serverDownloadUrl}
-              download={fileName}
-              className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-xs font-bold text-white hover:bg-blue-500 transition shadow"
-            >
-              <Download className="h-4 w-4" />
-              <span>Download Live Dossier from Google Sheet</span>
-            </a>
-          </div>
         )}
       </main>
     </div>

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { generateScholarshipJsPdf } from '@/lib/pdfExport';
 import { ScholarshipApplication } from '@/types/scholarship';
-import { GOOGLE_SHEET_ID, parseGoogleSheetCsv } from '@/lib/googleSheet';
+import { GOOGLE_SHEET_ID, DEFAULT_WEBHOOK_URL, parseGoogleSheetCsv } from '@/lib/googleSheet';
 
 export async function POST(req: NextRequest) {
   try {
@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
       headers: {
         'Content-Type': 'application/pdf',
         'Content-Disposition': `inline; filename="${fileName}"`,
-        'Cache-Control': 'no-store, no-cache, must-revalidate',
+        'Cache-Control': 'public, max-age=60, must-revalidate',
       },
     });
   } catch (error) {
@@ -51,14 +51,14 @@ export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
     const targetId = searchParams.get('id');
-    const isDownload = searchParams.get('download') === '1' || searchParams.get('attachment') === '1';
 
     let applications: ScholarshipApplication[] = [];
 
     // 1. Fetch from Google Sheet webhook if available
     const webhookUrl =
       process.env.GOOGLE_SHEET_WEBHOOK_URL ||
-      process.env.NEXT_PUBLIC_GOOGLE_SHEET_WEBHOOK_URL;
+      process.env.NEXT_PUBLIC_GOOGLE_SHEET_WEBHOOK_URL ||
+      DEFAULT_WEBHOOK_URL;
 
     if (webhookUrl) {
       try {
@@ -117,8 +117,8 @@ export async function GET(req: NextRequest) {
       status: 200,
       headers: {
         'Content-Type': 'application/pdf',
-        'Content-Disposition': `${isDownload ? 'attachment' : 'inline'}; filename="${fileName}"`,
-        'Cache-Control': 'no-store, no-cache, must-revalidate',
+        'Content-Disposition': `inline; filename="${fileName}"`,
+        'Cache-Control': 'public, max-age=60, must-revalidate',
       },
     });
   } catch (error) {
