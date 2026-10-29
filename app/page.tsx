@@ -32,7 +32,7 @@ export default function Home() {
           saveApplicationsToStorage(data.applications);
         }
       })
-      .catch(() => {});
+      .catch(() => { });
   }, []);
 
   // Scroll to top ONLY when switching tabs
@@ -94,11 +94,10 @@ export default function Home() {
             <button
               id="tab-apply-now"
               onClick={() => setActiveTab('applicant')}
-              className={`flex items-center gap-1.5 sm:gap-2 rounded-lg px-3 sm:px-4 py-2 text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
-                activeTab === 'applicant'
+              className={`flex items-center gap-1.5 sm:gap-2 rounded-lg px-3 sm:px-4 py-2 text-xs sm:text-sm font-semibold transition-all cursor-pointer ${activeTab === 'applicant'
                   ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30'
                   : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
-              }`}
+                }`}
             >
               <FileText className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
               <span>Apply Now</span>
@@ -107,11 +106,10 @@ export default function Home() {
             <button
               id="tab-reviewer-portal"
               onClick={() => setActiveTab('reviewer')}
-              className={`flex items-center gap-1.5 sm:gap-2 rounded-lg px-3 sm:px-4 py-2 text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
-                activeTab === 'reviewer'
+              className={`flex items-center gap-1.5 sm:gap-2 rounded-lg px-3 sm:px-4 py-2 text-xs sm:text-sm font-semibold transition-all cursor-pointer ${activeTab === 'reviewer'
                   ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30'
                   : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
-              }`}
+                }`}
             >
               {isCommitteeAuthenticated ? (
                 <ShieldCheck className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-emerald-400" />

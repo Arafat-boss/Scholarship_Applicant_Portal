@@ -22,8 +22,10 @@ import {
   AlertTriangle,
   Loader2,
   ArrowLeft,
+  FileDown,
 } from 'lucide-react';
 import { ScholarshipApplication } from '@/types/scholarship';
+import { exportApplicationsToPDF } from '@/lib/pdfExport';
 import {
   updateCommitteeReview,
   deleteApplication,
@@ -155,7 +157,7 @@ export default function ReviewerDashboard({
           }
         }
       })
-      .catch(() => {});
+      .catch(() => { });
   }, []);
 
   // When opening modal, populate review state
@@ -342,12 +344,11 @@ export default function ReviewerDashboard({
               <span className="text-[10px] font-semibold uppercase text-blue-400 block">AI Rubric</span>
               <span className="text-base font-black text-white">{selectedApp.aiScoring.totalScore} <span className="text-xs text-slate-400">/ 50</span></span>
             </div>
-            <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${
-              selectedApp.committeeReview.status === 'Approved' ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40' :
-              selectedApp.committeeReview.status === 'Shortlisted' ? 'bg-blue-500/20 text-blue-300 border border-blue-500/40' :
-              selectedApp.committeeReview.status === 'Rejected' ? 'bg-red-500/20 text-red-300 border border-red-500/40' :
-              'bg-amber-500/20 text-amber-300 border border-amber-500/40'
-            }`}>
+            <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${selectedApp.committeeReview.status === 'Approved' ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40' :
+                selectedApp.committeeReview.status === 'Shortlisted' ? 'bg-blue-500/20 text-blue-300 border border-blue-500/40' :
+                  selectedApp.committeeReview.status === 'Rejected' ? 'bg-red-500/20 text-red-300 border border-red-500/40' :
+                    'bg-amber-500/20 text-amber-300 border border-amber-500/40'
+              }`}>
               {selectedApp.committeeReview.status}
             </span>
           </div>
@@ -365,6 +366,15 @@ export default function ReviewerDashboard({
               </p>
             </div>
             <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => exportApplicationsToPDF([selectedApp])}
+                className="inline-flex items-center gap-1.5 rounded-xl border border-slate-700 bg-slate-800/90 px-3.5 py-2 text-xs font-bold text-slate-200 hover:bg-slate-700 hover:text-white transition cursor-pointer"
+                title="Download this applicant's dossier as PDF"
+              >
+                <FileDown className="h-4 w-4 text-indigo-400" />
+                <span>Export Dossier (PDF)</span>
+              </button>
               <button
                 onClick={handleSaveDecision}
                 className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-xs font-bold text-white shadow-lg shadow-blue-600/30 hover:bg-blue-500 transition cursor-pointer"
@@ -489,9 +499,8 @@ export default function ReviewerDashboard({
                   {selectedApp.colleges.map((col, i) => (
                     <span key={i} className="inline-flex items-center gap-1.5 rounded bg-slate-950 px-2 py-1 text-xs border border-slate-800">
                       <span className="text-white font-medium">{col.college}</span>
-                      <span className={`text-[10px] font-semibold uppercase px-1 rounded ${
-                        col.status === 'accepted' ? 'text-emerald-400 bg-emerald-950' : 'text-slate-400 bg-slate-800'
-                      }`}>
+                      <span className={`text-[10px] font-semibold uppercase px-1 rounded ${col.status === 'accepted' ? 'text-emerald-400 bg-emerald-950' : 'text-slate-400 bg-slate-800'
+                        }`}>
                         {col.status}
                       </span>
                     </span>
@@ -709,6 +718,18 @@ export default function ReviewerDashboard({
           </div>
 
           <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+            {/* Download All Applications into a single organized PDF */}
+            <button
+              type="button"
+              id="btn-download-all-pdf"
+              onClick={() => exportApplicationsToPDF(filteredApplications.length > 0 ? filteredApplications : applications)}
+              className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-3.5 py-2 text-xs font-bold text-white shadow-md shadow-indigo-600/30 hover:bg-indigo-500 transition cursor-pointer"
+              title="Download all applications into a beautifully organized single PDF report"
+            >
+              <FileDown className="h-4 w-4" />
+              <span>Download All (PDF)</span>
+            </button>
+
             <button
               type="button"
               onClick={handleFetchFromGoogleSheet}
@@ -774,11 +795,10 @@ export default function ReviewerDashboard({
 
       {sheetSyncToast && (
         <div
-          className={`mb-4 flex items-center justify-between p-3 rounded-xl border text-xs font-semibold animate-in fade-in ${
-            sheetSyncToast.isError
+          className={`mb-4 flex items-center justify-between p-3 rounded-xl border text-xs font-semibold animate-in fade-in ${sheetSyncToast.isError
               ? 'bg-amber-950/80 border-amber-800 text-amber-200'
               : 'bg-emerald-950/80 border-emerald-800 text-emerald-200'
-          }`}
+            }`}
         >
           <div className="flex items-center gap-2">
             <RotateCcw className={`h-4 w-4 shrink-0 ${sheetSyncToast.isError ? 'text-amber-400' : 'text-emerald-400'}`} />
@@ -903,11 +923,10 @@ export default function ReviewerDashboard({
                   return (
                     <tr
                       key={app.id}
-                      className={`transition cursor-pointer ${
-                        appToDelete?.id === app.id
+                      className={`transition cursor-pointer ${appToDelete?.id === app.id
                           ? 'bg-red-950/40 border-l-4 border-l-red-500'
                           : 'hover:bg-slate-900/60'
-                      }`}
+                        }`}
                       onClick={() => {
                         if (appToDelete?.id !== app.id) {
                           handleOpenReview(app);
@@ -949,17 +968,16 @@ export default function ReviewerDashboard({
                             {app.aiScoring.totalScore} / 50
                           </span>
                           <span
-                            className={`shrink-0 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border whitespace-nowrap ${
-                              app.aiScoring.ratingCategory === 'Exceptional'
+                            className={`shrink-0 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border whitespace-nowrap ${app.aiScoring.ratingCategory === 'Exceptional'
                                 ? 'bg-emerald-950/90 text-emerald-300 border-emerald-700/80'
                                 : app.aiScoring.ratingCategory === 'High Merit'
-                                ? 'bg-blue-950/90 text-blue-300 border-blue-700/80'
-                                : app.aiScoring.ratingCategory === 'Recommended'
-                                ? 'bg-amber-950/90 text-amber-300 border-amber-700/80'
-                                : app.aiScoring.ratingCategory === 'Competitive'
-                                ? 'bg-purple-950/90 text-purple-300 border-purple-700/80'
-                                : 'bg-slate-800/90 text-slate-300 border-slate-700'
-                            }`}
+                                  ? 'bg-blue-950/90 text-blue-300 border-blue-700/80'
+                                  : app.aiScoring.ratingCategory === 'Recommended'
+                                    ? 'bg-amber-950/90 text-amber-300 border-amber-700/80'
+                                    : app.aiScoring.ratingCategory === 'Competitive'
+                                      ? 'bg-purple-950/90 text-purple-300 border-purple-700/80'
+                                      : 'bg-slate-800/90 text-slate-300 border-slate-700'
+                              }`}
                           >
                             {app.aiScoring.ratingCategory}
                           </span>
@@ -968,15 +986,14 @@ export default function ReviewerDashboard({
 
                       <td className="px-4 py-3 whitespace-nowrap w-[140px] min-w-[140px]">
                         <span
-                          className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold whitespace-nowrap ${
-                            app.committeeReview.status === 'Approved'
+                          className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold whitespace-nowrap ${app.committeeReview.status === 'Approved'
                               ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30'
                               : app.committeeReview.status === 'Shortlisted'
-                              ? 'bg-blue-500/10 text-blue-400 border border-blue-500/30'
-                              : app.committeeReview.status === 'Rejected'
-                              ? 'bg-red-500/10 text-red-400 border border-red-500/30'
-                              : 'bg-amber-500/10 text-amber-400 border border-amber-500/30'
-                          }`}
+                                ? 'bg-blue-500/10 text-blue-400 border border-blue-500/30'
+                                : app.committeeReview.status === 'Rejected'
+                                  ? 'bg-red-500/10 text-red-400 border border-red-500/30'
+                                  : 'bg-amber-500/10 text-amber-400 border border-amber-500/30'
+                            }`}
                         >
                           {app.committeeReview.status}
                         </span>
@@ -1073,11 +1090,10 @@ export default function ReviewerDashboard({
                 <div className="flex items-center gap-2">
                   <h3 className="text-lg font-bold text-white">Google Sheet Live Integration</h3>
                   <span
-                    className={`text-[10px] font-semibold uppercase px-2.5 py-0.5 rounded-full border ${
-                      webhookUrl && webhookUrl.startsWith('http')
+                    className={`text-[10px] font-semibold uppercase px-2.5 py-0.5 rounded-full border ${webhookUrl && webhookUrl.startsWith('http')
                         ? 'bg-emerald-950 text-emerald-300 border-emerald-700'
                         : 'bg-red-950 text-red-300 border-red-700'
-                    }`}
+                      }`}
                   >
                     {webhookUrl && webhookUrl.startsWith('http') ? '✓ Connected' : '⚠️ Setup Required'}
                   </span>
@@ -1090,11 +1106,10 @@ export default function ReviewerDashboard({
 
             {sheetSyncResult && (
               <div
-                className={`mb-4 p-3 rounded-xl border text-xs font-medium text-center animate-in fade-in ${
-                  sheetSyncResult.isError
+                className={`mb-4 p-3 rounded-xl border text-xs font-medium text-center animate-in fade-in ${sheetSyncResult.isError
                     ? 'bg-red-950/80 border-red-700 text-red-200'
                     : 'bg-emerald-950/80 border-emerald-700 text-emerald-300'
-                }`}
+                  }`}
               >
                 {sheetSyncResult.text}
               </div>

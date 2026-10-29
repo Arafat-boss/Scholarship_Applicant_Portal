@@ -65,18 +65,18 @@ export default function ApplicantPortal({
   const [activities, setActivities] = useState<ClubActivity[]>(
     initialAutofill
       ? [
-          { id: '1', activity: 'National Technical Honor Society', role: 'President', years: '11-12' },
-          { id: '2', activity: 'Black Youth Leadership Council', role: 'Student Ambassador', years: '10-12' },
-        ]
+        { id: '1', activity: 'National Technical Honor Society', role: 'President', years: '11-12' },
+        { id: '2', activity: 'Black Youth Leadership Council', role: 'Student Ambassador', years: '10-12' },
+      ]
       : [{ id: '1', activity: '', role: '', years: '' }]
   );
 
   const [communityService, setCommunityService] = useState<CommunityService[]>(
     initialAutofill
       ? [
-          { id: '1', organization: 'Kingswood Community Center', description: 'Youth STEM mentor & after-school tutor', totalHours: '85' },
-          { id: '2', organization: 'Sunday Breakfast Mission', description: 'Food pantry packaging volunteer', totalHours: '30' },
-        ]
+        { id: '1', organization: 'Kingswood Community Center', description: 'Youth STEM mentor & after-school tutor', totalHours: '85' },
+        { id: '2', organization: 'Sunday Breakfast Mission', description: 'Food pantry packaging volunteer', totalHours: '30' },
+      ]
       : [{ id: '1', organization: '', description: '', totalHours: '' }]
   );
 
@@ -89,10 +89,10 @@ export default function ApplicantPortal({
   const [colleges, setColleges] = useState<CollegePlan[]>(
     initialAutofill
       ? [
-          { id: '1', college: 'Delaware State University', cityState: 'Dover, DE', status: 'accepted' },
-          { id: '2', college: 'University of Delaware', cityState: 'Newark, DE', status: 'accepted' },
-          { id: '3', college: 'Howard University', cityState: 'Washington, DC', status: 'waiting' },
-        ]
+        { id: '1', college: 'Delaware State University', cityState: 'Dover, DE', status: 'accepted' },
+        { id: '2', college: 'University of Delaware', cityState: 'Newark, DE', status: 'accepted' },
+        { id: '3', college: 'Howard University', cityState: 'Washington, DC', status: 'waiting' },
+      ]
       : [{ id: '1', college: '', cityState: '', status: 'applied' }]
   );
 
@@ -100,32 +100,32 @@ export default function ApplicantPortal({
   const [transcript, setTranscript] = useState<UploadedDocument | null>(
     initialAutofill
       ? {
-          name: 'Official_Transcript_Jordan_Taylor_2026.pdf',
-          size: 2150000,
-          type: 'application/pdf',
-          uploadedAt: new Date().toISOString(),
-        }
+        name: 'Official_Transcript_Jordan_Taylor_2026.pdf',
+        size: 2150000,
+        type: 'application/pdf',
+        uploadedAt: new Date().toISOString(),
+      }
       : null
   );
 
   const [studentAidReport, setStudentAidReport] = useState<UploadedDocument | null>(
     initialAutofill
       ? {
-          name: 'Student_Aid_Report_2026_FAFSA.pdf',
-          size: 1120000,
-          type: 'application/pdf',
-          uploadedAt: new Date().toISOString(),
-        }
+        name: 'Student_Aid_Report_2026_FAFSA.pdf',
+        size: 1120000,
+        type: 'application/pdf',
+        uploadedAt: new Date().toISOString(),
+      }
       : null
   );
 
   const [recLetters, setRecLetters] = useState<UploadedDocument[]>(
     initialAutofill
       ? [
-          { name: 'Letter_AP_Biology_Teacher.pdf', size: 450000, type: 'application/pdf', uploadedAt: new Date().toISOString() },
-          { name: 'Letter_Kingswood_Director.pdf', size: 380000, type: 'application/pdf', uploadedAt: new Date().toISOString() },
-          { name: 'Letter_Counselor_Recommendation.pdf', size: 420000, type: 'application/pdf', uploadedAt: new Date().toISOString() },
-        ]
+        { name: 'Letter_AP_Biology_Teacher.pdf', size: 450000, type: 'application/pdf', uploadedAt: new Date().toISOString() },
+        { name: 'Letter_Kingswood_Director.pdf', size: 380000, type: 'application/pdf', uploadedAt: new Date().toISOString() },
+        { name: 'Letter_Counselor_Recommendation.pdf', size: 420000, type: 'application/pdf', uploadedAt: new Date().toISOString() },
+      ]
       : []
   );
 
