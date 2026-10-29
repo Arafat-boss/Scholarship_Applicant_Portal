@@ -57,7 +57,7 @@ function ExportPdfContent() {
           if (data && data.success && Array.isArray(data.applications)) {
             apps = data.applications;
           }
-        } catch {}
+        } catch { }
       }
 
       if (!isMounted) return;

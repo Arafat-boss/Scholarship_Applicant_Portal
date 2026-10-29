@@ -25,7 +25,6 @@ import {
   FileDown,
 } from 'lucide-react';
 import { ScholarshipApplication } from '@/types/scholarship';
-import { exportApplicationsToPDF } from '@/lib/pdfExport';
 import {
   updateCommitteeReview,
   deleteApplication,
@@ -81,15 +80,6 @@ export default function ReviewerDashboard({
   }, [selectedApp]);
 
   // PDF Export Ready Toast
-  const [pdfToast, setPdfToast] = useState<{ url: string; name: string } | null>(null);
-
-  const handleDownloadPdf = (appsToExport: ScholarshipApplication[]) => {
-    const res = exportApplicationsToPDF(appsToExport);
-    if (res && res.url) {
-      setPdfToast({ url: res.url, name: res.fileName });
-      setTimeout(() => setPdfToast(null), 25000);
-    }
-  };
 
   // Google Sheet Modal & Sync state
   const [isGoogleSheetModalOpen, setIsGoogleSheetModalOpen] = useState(false);
@@ -377,15 +367,21 @@ export default function ReviewerDashboard({
               </p>
             </div>
             <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={() => handleDownloadPdf([selectedApp])}
+              <a
+                href={`/export-pdf?id=${encodeURIComponent(selectedApp.id)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => {
+                  try {
+                    localStorage.setItem('monday_club_export_temp', JSON.stringify([selectedApp]));
+                  } catch {}
+                }}
                 className="inline-flex items-center gap-1.5 rounded-xl border border-slate-700 bg-slate-800/90 px-3.5 py-2 text-xs font-bold text-slate-200 hover:bg-slate-700 hover:text-white transition cursor-pointer"
-                title="Download this applicant's dossier as PDF"
+                title="Open and print/save this applicant's dossier as PDF"
               >
                 <FileDown className="h-4 w-4 text-indigo-400" />
                 <span>Export Dossier (PDF)</span>
-              </button>
+              </a>
               <button
                 onClick={handleSaveDecision}
                 className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-xs font-bold text-white shadow-lg shadow-blue-600/30 hover:bg-blue-500 transition cursor-pointer"
@@ -730,16 +726,23 @@ export default function ReviewerDashboard({
 
           <div className="flex flex-wrap items-center gap-2 sm:gap-3">
             {/* Download All Applications into a single organized PDF */}
-            <button
-              type="button"
+            <a
+              href="/export-pdf"
+              target="_blank"
+              rel="noopener noreferrer"
               id="btn-download-all-pdf"
-              onClick={() => handleDownloadPdf(filteredApplications.length > 0 ? filteredApplications : applications)}
+              onClick={() => {
+                try {
+                  const toExport = filteredApplications.length > 0 ? filteredApplications : applications;
+                  localStorage.setItem('monday_club_export_temp', JSON.stringify(toExport));
+                } catch {}
+              }}
               className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-3.5 py-2 text-xs font-bold text-white shadow-md shadow-indigo-600/30 hover:bg-indigo-500 transition cursor-pointer"
-              title="Download all applications into a beautifully organized single PDF report"
+              title="Open and print/save all applications in master PDF report"
             >
               <FileDown className="h-4 w-4" />
               <span>Download All (PDF)</span>
-            </button>
+            </a>
 
             <button
               type="button"
@@ -804,35 +807,6 @@ export default function ReviewerDashboard({
         </div>
       </div>
 
-      {pdfToast && (
-        <div className="mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-xl bg-gradient-to-r from-blue-950 via-indigo-950 to-slate-900 border border-blue-500 text-slate-100 text-xs shadow-xl animate-in fade-in">
-          <div className="flex items-center gap-2.5">
-            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-blue-600/30 text-blue-400 border border-blue-500/40 shrink-0">
-              <FileDown className="h-4 w-4" />
-            </div>
-            <div>
-              <span className="font-bold text-white">PDF Dossier Ready!</span>
-              <span className="text-slate-300 ml-1.5 hidden sm:inline">If Wix or browser blocked automatic download:</span>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => handleDownloadPdf(filteredApplications.length > 0 ? filteredApplications : applications)}
-              className="inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-3 py-1.5 font-bold text-white hover:bg-blue-500 transition shadow-sm cursor-pointer"
-            >
-              <FileDown className="h-3.5 w-3.5" />
-              <span>Click to Open &amp; Save PDF</span>
-            </button>
-            <button
-              onClick={() => setPdfToast(null)}
-              className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition cursor-pointer"
-            >
-              <X className="h-4 w-4" />
-            </button>
-          </div>
-        </div>
-      )}
 
       {sheetSyncToast && (
         <div

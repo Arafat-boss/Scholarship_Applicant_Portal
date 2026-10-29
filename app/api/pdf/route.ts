@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { generateScholarshipJsPdf } from '@/lib/pdfExport';
 import { ScholarshipApplication } from '@/types/scholarship';
+import { GOOGLE_SHEET_ID, parseGoogleSheetCsv } from '@/lib/googleSheet';
 
 export async function POST(req: NextRequest) {
   try {
@@ -50,10 +51,11 @@ export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
     const targetId = searchParams.get('id');
+    const isDownload = searchParams.get('download') === '1' || searchParams.get('attachment') === '1';
 
     let applications: ScholarshipApplication[] = [];
 
-    // Fetch from Google Sheet webhook if available
+    // 1. Fetch from Google Sheet webhook if available
     const webhookUrl =
       process.env.GOOGLE_SHEET_WEBHOOK_URL ||
       process.env.NEXT_PUBLIC_GOOGLE_SHEET_WEBHOOK_URL;
@@ -72,6 +74,23 @@ export async function GET(req: NextRequest) {
       }
     }
 
+    // 2. Fallback to Google Sheet public CSV export if webhook is empty
+    if (applications.length === 0) {
+      try {
+        const csvUrl = `https://docs.google.com/spreadsheets/d/${GOOGLE_SHEET_ID}/export?format=csv`;
+        const csvRes = await fetch(csvUrl, { cache: 'no-store', redirect: 'follow' });
+        if (csvRes.status === 200) {
+          const csvText = await csvRes.text();
+          const parsed = parseGoogleSheetCsv(csvText);
+          if (parsed.length > 0) {
+            applications = parsed;
+          }
+        }
+      } catch (e) {
+        console.warn('Fallback CSV in /api/pdf error:', e);
+      }
+    }
+
     if (targetId && applications.length > 0) {
       const filtered = applications.filter(
         (a) => a.id === targetId || a.applicationNumber === targetId
@@ -83,7 +102,7 @@ export async function GET(req: NextRequest) {
 
     if (applications.length === 0) {
       return new Response(
-        `<!DOCTYPE html><html><body style="background:#090d16;color:#f8fafc;font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;"><div style="text-align:center;padding:24px;"><h2>No Applications Found</h2><p style="color:#94a3b8;">No applications are currently stored or available for this ID.</p></div></body></html>`,
+        `<!DOCTYPE html><html><body style="background:#090d16;color:#f8fafc;font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;"><div style="text-align:center;padding:24px;"><h2>No Applications Found</h2><p style="color:#94a3b8;">No applications are currently stored or available.</p></div></body></html>`,
         {
           status: 404,
           headers: { 'Content-Type': 'text/html' },
@@ -98,7 +117,7 @@ export async function GET(req: NextRequest) {
       status: 200,
       headers: {
         'Content-Type': 'application/pdf',
-        'Content-Disposition': `inline; filename="${fileName}"`,
+        'Content-Disposition': `${isDownload ? 'attachment' : 'inline'}; filename="${fileName}"`,
         'Cache-Control': 'no-store, no-cache, must-revalidate',
       },
     });
