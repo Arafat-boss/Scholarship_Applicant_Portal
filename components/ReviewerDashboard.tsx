@@ -25,7 +25,7 @@ import {
   FileDown,
 } from 'lucide-react';
 import { ScholarshipApplication } from '@/types/scholarship';
-import { exportApplicationsToPDF, openPdfViewerWindow } from '@/lib/pdfExport';
+import { exportApplicationsToPDF } from '@/lib/pdfExport';
 import {
   updateCommitteeReview,
   deleteApplication,
@@ -81,13 +81,13 @@ export default function ReviewerDashboard({
   }, [selectedApp]);
 
   // PDF Export Ready Toast
-  const [pdfToast, setPdfToast] = useState<{ dataUri: string; name: string; count: number } | null>(null);
+  const [pdfToast, setPdfToast] = useState<{ url: string; name: string } | null>(null);
 
   const handleDownloadPdf = (appsToExport: ScholarshipApplication[]) => {
     const res = exportApplicationsToPDF(appsToExport);
-    if (res && res.dataUri) {
-      setPdfToast({ dataUri: res.dataUri, name: res.fileName, count: appsToExport.length });
-      setTimeout(() => setPdfToast(null), 20000);
+    if (res && res.url) {
+      setPdfToast({ url: res.url, name: res.fileName });
+      setTimeout(() => setPdfToast(null), 25000);
     }
   };
 
@@ -816,14 +816,15 @@ export default function ReviewerDashboard({
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => openPdfViewerWindow(pdfToast.dataUri, pdfToast.name, pdfToast.count)}
+            <a
+              href={pdfToast.url}
+              target="_blank"
+              rel="noopener noreferrer"
               className="inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-3 py-1.5 font-bold text-white hover:bg-blue-500 transition shadow-sm cursor-pointer"
             >
               <FileDown className="h-3.5 w-3.5" />
               <span>Click to Open &amp; Save PDF</span>
-            </button>
+            </a>
             <button
               onClick={() => setPdfToast(null)}
               className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition cursor-pointer"

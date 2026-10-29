@@ -24,7 +24,7 @@ import {
 } from '@/types/scholarship';
 import { saveNewApplication } from '@/lib/storage';
 import { sendApplicationToGoogleSheet } from '@/lib/googleSheet';
-import { exportApplicationsToPDF, openPdfViewerWindow } from '@/lib/pdfExport';
+import { exportApplicationsToPDF } from '@/lib/pdfExport';
 
 interface ApplicantPortalProps {
   onSuccessSubmit: (app: ScholarshipApplication) => void;
@@ -150,13 +150,13 @@ export default function ApplicantPortal({
   const successContainerRef = React.useRef<HTMLDivElement>(null);
 
   // PDF Export Ready Toast
-  const [pdfToast, setPdfToast] = useState<{ dataUri: string; name: string } | null>(null);
+  const [pdfToast, setPdfToast] = useState<{ url: string; name: string } | null>(null);
 
   const handleDownloadPdf = (apps: ScholarshipApplication[]) => {
     const res = exportApplicationsToPDF(apps);
-    if (res && res.dataUri) {
-      setPdfToast({ dataUri: res.dataUri, name: res.fileName });
-      setTimeout(() => setPdfToast(null), 20000);
+    if (res && res.url) {
+      setPdfToast({ url: res.url, name: res.fileName });
+      setTimeout(() => setPdfToast(null), 25000);
     }
   };
 
@@ -514,14 +514,15 @@ export default function ApplicantPortal({
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => openPdfViewerWindow(pdfToast.dataUri, pdfToast.name, 1)}
+                <a
+                  href={pdfToast.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-3 py-1.5 font-bold text-white hover:bg-blue-500 transition shadow-sm cursor-pointer"
                 >
                   <FileDown className="h-3.5 w-3.5" />
                   <span>Click to Open &amp; Save PDF</span>
-                </button>
+                </a>
                 <button
                   type="button"
                   onClick={() => setPdfToast(null)}
@@ -594,14 +595,15 @@ export default function ApplicantPortal({
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => openPdfViewerWindow(pdfToast.dataUri, pdfToast.name, 1)}
+                <a
+                  href={pdfToast.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-3 py-1.5 font-bold text-white hover:bg-blue-500 transition shadow-sm cursor-pointer"
                 >
                   <FileDown className="h-3.5 w-3.5" />
                   <span>Click to Open &amp; Save PDF</span>
-                </button>
+                </a>
                 <button
                   type="button"
                   onClick={() => setPdfToast(null)}
