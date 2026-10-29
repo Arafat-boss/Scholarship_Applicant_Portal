@@ -366,9 +366,14 @@ export default function ReviewerDashboard({
             </div>
             <div className="flex items-center gap-2">
               <a
-                href={`/api/pdf?download=1&id=${encodeURIComponent(selectedApp.id)}`}
+                href={`/export-pdf?id=${encodeURIComponent(selectedApp.id)}&download=1`}
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={() => {
+                  try {
+                    localStorage.setItem('monday_club_export_temp', JSON.stringify([selectedApp]));
+                  } catch {}
+                }}
                 className="inline-flex items-center gap-1.5 rounded-xl border border-slate-700 bg-slate-800/90 px-3.5 py-2 text-xs font-bold text-slate-200 hover:bg-slate-700 hover:text-white transition cursor-pointer"
                 title="Download this applicant's dossier immediately as PDF"
               >
@@ -720,10 +725,16 @@ export default function ReviewerDashboard({
           <div className="flex flex-wrap items-center gap-2 sm:gap-3">
             {/* Direct 1-Click Instant Download Button */}
             <a
-              href="/api/pdf?download=1"
+              href="/export-pdf?download=1"
               target="_blank"
               rel="noopener noreferrer"
               id="btn-download-all-pdf"
+              onClick={() => {
+                try {
+                  const toExport = filteredApplications.length > 0 ? filteredApplications : applications;
+                  localStorage.setItem('monday_club_export_temp', JSON.stringify(toExport));
+                } catch {}
+              }}
               className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-3.5 py-2 text-xs font-bold text-white shadow-md shadow-indigo-600/30 hover:bg-indigo-500 transition cursor-pointer"
               title="Download all applications immediately into PDF"
             >
@@ -733,7 +744,7 @@ export default function ReviewerDashboard({
 
             {/* Interactive Preview & Print Tab */}
             <a
-              href="/api/pdf"
+              href="/export-pdf"
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => {

@@ -476,9 +476,14 @@ export default function ApplicantPortal({
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             <a
-              href={`/api/pdf?download=1&id=${encodeURIComponent(submittedApp.id)}`}
+              href={`/export-pdf?id=${encodeURIComponent(submittedApp.id)}&download=1`}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() => {
+                try {
+                  localStorage.setItem('monday_club_export_temp', JSON.stringify([submittedApp]));
+                } catch {}
+              }}
               className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-5 py-2.5 text-xs sm:text-sm font-bold text-white shadow-lg shadow-emerald-600/30 hover:bg-emerald-500 transition cursor-pointer"
             >
               <FileDown className="h-4 w-4" />
