@@ -110,6 +110,8 @@ export async function GET(req: NextRequest) {
       );
     }
 
+    const isDownload = searchParams.get('download') === '1' || searchParams.get('attachment') === '1';
+
     const { doc, fileName } = generateScholarshipJsPdf(applications);
     const pdfBuffer = Buffer.from(doc.output('arraybuffer'));
 
@@ -117,7 +119,7 @@ export async function GET(req: NextRequest) {
       status: 200,
       headers: {
         'Content-Type': 'application/pdf',
-        'Content-Disposition': `inline; filename="${fileName}"`,
+        'Content-Disposition': `${isDownload ? 'attachment' : 'inline'}; filename="${fileName}"`,
         'Cache-Control': 'public, max-age=60, must-revalidate',
       },
     });

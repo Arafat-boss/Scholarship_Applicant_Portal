@@ -476,7 +476,7 @@ export default function ApplicantPortal({
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             <a
-              href={`/api/pdf?id=${encodeURIComponent(submittedApp.id)}`}
+              href={`/api/pdf?download=1&id=${encodeURIComponent(submittedApp.id)}`}
               target="_blank"
               rel="noopener noreferrer"
               className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-5 py-2.5 text-xs sm:text-sm font-bold text-white shadow-lg shadow-emerald-600/30 hover:bg-emerald-500 transition cursor-pointer"
