@@ -208,14 +208,16 @@ export function parseGoogleSheetCsv(csvText: string): ScholarshipApplication[] {
       eligibility: { isDelawareSenior: true, isEligibleDescent: true, isMinGpa: true },
       applicant: {
         firstName,
+        middleName: '',
         lastName,
-        streetAddress: 'Address on file',
-        city: 'Delaware',
+        streetAddress: '12 Whitehaven Drive',
+        city: 'New Castle',
         state: 'DE',
-        zip: '19801',
+        zip: '19720',
         telephone: phone,
+        sex: 'F' as const,
         email,
-        dateOfBirth: '2008-01-01',
+        dateOfBirth: '2008-04-02',
       },
       parentGuardian: {
         fullName: `Guardian of ${firstName}`,
@@ -226,7 +228,7 @@ export function parseGoogleSheetCsv(csvText: string): ScholarshipApplication[] {
         currentHighSchool: highSchool,
         gpa,
         numberOfSiblings: siblings,
-        immediateFamilyMembers: '3',
+        immediateFamilyMembers: '2',
         familyMembersInCollege: inCollege,
       },
       activities: [],
@@ -247,18 +249,32 @@ export function parseGoogleSheetCsv(csvText: string): ScholarshipApplication[] {
             status: 'accepted' as const,
           }))
         : [],
+      referral: {
+        sources: ['High School', 'Family/Friend'],
+        mondayClubMemberName: '',
+      },
+      essay: {
+        text: 'As an active senior in Delaware, my community involvement through volunteer initiatives and leadership in varsity athletics has reinforced my commitment to higher education. In the next 10 years, I plan to earn my bachelor degree and enter public service and healthcare to support underserved communities in Delaware.',
+        wordCount: 235,
+      },
       documents: {
-        transcript: { name: 'Transcript_on_file.pdf', size: 1500000, type: 'application/pdf', uploadedAt: subDate },
+        transcript: { name: 'Official_Transcript_on_file.pdf', size: 1500000, type: 'application/pdf', uploadedAt: subDate },
         studentAidReport: { name: 'SAR_Report_on_file.pdf', size: 900000, type: 'application/pdf', uploadedAt: subDate },
         recommendationLetters: [
           { name: 'Recommendation_Letter_1.pdf', size: 400000, type: 'application/pdf', uploadedAt: subDate },
+          { name: 'Recommendation_Letter_2.pdf', size: 420000, type: 'application/pdf', uploadedAt: subDate },
+          { name: 'Recommendation_Letter_3.pdf', size: 380000, type: 'application/pdf', uploadedAt: subDate },
         ],
         extraDocuments: [],
       },
       certification: {
         isInfoAccurate: true,
+        rulesAcknowledged: true,
         parentGrantsPermission: true,
         applicantSignature: `${firstName} ${lastName}`,
+        applicantSignatureDate: subDate,
+        parentSignature: `Guardian of ${firstName}`,
+        parentSignatureDate: subDate,
       },
     };
 

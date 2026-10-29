@@ -77,12 +77,14 @@ export interface ScholarshipApplication {
   // 2. Applicant
   applicant: {
     firstName: string;
+    middleName?: string;
     lastName: string;
     streetAddress: string;
     city: string;
     state: string;
     zip: string;
     telephone: string;
+    sex?: 'F' | 'M' | 'Other' | string;
     email: string;
     dateOfBirth: string;
   };
@@ -97,10 +99,10 @@ export interface ScholarshipApplication {
   // 4. School & Family
   schoolFamily: {
     currentHighSchool: string;
-    gpa: string; // e.g. "3.85"
+    gpa: string; // Grade Point Average (as of 1/31/2026)
     numberOfSiblings: string;
-    immediateFamilyMembers: string;
-    familyMembersInCollege: string;
+    immediateFamilyMembers: string; // including yourself
+    familyMembersInCollege: string; // attending college/university 2025-2026
   };
 
   // 5. Activities, work & colleges
@@ -109,7 +111,20 @@ export interface ScholarshipApplication {
   employment: EmploymentHistory[];
   colleges: CollegePlan[];
 
-  // 6 & 7. Documents
+  // 6. Referral Source (How did you find out about this scholarship?)
+  referral?: {
+    sources: string[]; // High School, Church, Personal Friend, Another Organization, Parent/Guardian, Family/Friend, Recreation/Community Center, Member of THE MONDAY CLUB
+    mondayClubMemberName?: string;
+  };
+
+  // 7. Essay Submission (minimum 200 words)
+  essay?: {
+    text: string;
+    wordCount: number;
+    document?: UploadedDocument;
+  };
+
+  // 8. Documents
   documents: {
     transcript?: UploadedDocument;
     studentAidReport?: UploadedDocument;
@@ -117,11 +132,15 @@ export interface ScholarshipApplication {
     extraDocuments: UploadedDocument[];
   };
 
-  // 8. Certification
+  // 9. Certification & Signatures
   certification: {
     isInfoAccurate: boolean;
-    parentGrantsPermission: boolean;
+    rulesAcknowledged?: boolean;
     applicantSignature: string;
+    applicantSignatureDate?: string;
+    parentGrantsPermission: boolean;
+    parentSignature?: string;
+    parentSignatureDate?: string;
   };
 
   // AI & Review

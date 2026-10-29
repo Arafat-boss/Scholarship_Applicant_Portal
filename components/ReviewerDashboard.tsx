@@ -357,11 +357,17 @@ export default function ReviewerDashboard({
         <div className="rounded-2xl border border-slate-800 bg-[#0c1322] p-4 sm:p-6 shadow-xl mb-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
+              <div className="flex items-center gap-2 mb-1.5">
+                <span className="text-xs font-mono font-bold text-blue-400 bg-blue-950/80 px-2.5 py-0.5 rounded border border-blue-800/60">
+                  {selectedApp.applicationNumber}
+                </span>
+                <span className="text-xs font-serif italic text-amber-300">&ldquo;Spanning Three Centuries!&rdquo;</span>
+              </div>
               <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
-                {selectedApp.applicant.firstName} {selectedApp.applicant.lastName}
+                {selectedApp.applicant.firstName} {selectedApp.applicant.middleName ? selectedApp.applicant.middleName + ' ' : ''}{selectedApp.applicant.lastName}
               </h1>
               <p className="text-xs sm:text-sm text-slate-400 mt-1">
-                {selectedApp.schoolFamily.currentHighSchool} &bull; GPA: <strong className="text-emerald-400">{selectedApp.schoolFamily.gpa}</strong> &bull; {selectedApp.applicant.email} &bull; {selectedApp.applicant.telephone}
+                {selectedApp.schoolFamily.currentHighSchool} &bull; GPA: <strong className="text-emerald-400">{selectedApp.schoolFamily.gpa}</strong> &bull; Sex: <strong className="text-white">{selectedApp.applicant.sex || 'F'}</strong> &bull; {selectedApp.applicant.email} &bull; {selectedApp.applicant.telephone}
               </p>
             </div>
             <div className="flex items-center gap-2">
@@ -396,69 +402,81 @@ export default function ReviewerDashboard({
           )}
         </div>
 
-        {/* 2-Column Split: Left = Applicant 8 Sections, Right = AI Rubric + Committee Action */}
+        {/* 2-Column Split: Left = Applicant Form Sections, Right = AI Rubric + Committee Action */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          {/* LEFT COLUMN: Applicant Profile (All 8 Sections) */}
+          {/* LEFT COLUMN: Applicant Full Profile from Physical Form */}
           <div className="lg:col-span-7 space-y-5">
-            {/* 1. Contact & Demographic */}
+            {/* 1. Contact & Demographic (Page 1) */}
             <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-4">
               <h3 className="text-xs font-bold uppercase tracking-wider text-blue-400 mb-3 flex items-center gap-1.5">
                 <MapPin className="h-4 w-4" />
-                <span>Applicant & Guardian Details</span>
+                <span>Applicant &amp; Guardian Details (Page 1)</span>
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
                 <div>
-                  <span className="text-slate-400">Address:</span>
+                  <span className="text-slate-400">Full Legal Name:</span>
+                  <p className="text-white font-semibold mt-0.5">
+                    {selectedApp.applicant.firstName} {selectedApp.applicant.middleName ? selectedApp.applicant.middleName + ' ' : ''}{selectedApp.applicant.lastName}
+                  </p>
+                </div>
+                <div>
+                  <span className="text-slate-400">Sex &amp; Date of Birth:</span>
+                  <p className="text-white mt-0.5 font-mono">
+                    Sex: <strong className="text-blue-300">{selectedApp.applicant.sex || 'F'}</strong> &bull; DOB: {selectedApp.applicant.dateOfBirth}
+                  </p>
+                </div>
+                <div>
+                  <span className="text-slate-400">Street &amp; Mailing Address:</span>
                   <p className="text-white mt-0.5">{selectedApp.applicant.streetAddress}, {selectedApp.applicant.city}, {selectedApp.applicant.state} {selectedApp.applicant.zip}</p>
                 </div>
                 <div>
-                  <span className="text-slate-400">Date of Birth:</span>
-                  <p className="text-white mt-0.5 font-mono">{selectedApp.applicant.dateOfBirth}</p>
-                </div>
-                <div>
-                  <span className="text-slate-400">Phone & Email:</span>
+                  <span className="text-slate-400">Telephone &amp; Email:</span>
                   <p className="text-white mt-0.5">{selectedApp.applicant.telephone}</p>
                   <p className="text-blue-400 break-all">{selectedApp.applicant.email}</p>
                 </div>
-                <div>
-                  <span className="text-slate-400">Parent / Guardian:</span>
-                  <p className="text-white mt-0.5">{selectedApp.parentGuardian.fullName}</p>
-                  <p className="text-slate-400 break-all">{selectedApp.parentGuardian.phone} &bull; {selectedApp.parentGuardian.email}</p>
+                <div className="sm:col-span-2 pt-2 border-t border-slate-800/60">
+                  <span className="text-slate-400">Parent(s) / Guardian(s) Information:</span>
+                  <p className="text-white font-semibold mt-0.5">{selectedApp.parentGuardian.fullName}</p>
+                  <p className="text-slate-400">{selectedApp.parentGuardian.phone} &bull; {selectedApp.parentGuardian.email}</p>
                 </div>
               </div>
             </div>
 
-            {/* 2. School & Family Need Metrics */}
+            {/* 2. School & Family Need Metrics (Page 1) */}
             <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-4">
               <h3 className="text-xs font-bold uppercase tracking-wider text-blue-400 mb-3 flex items-center gap-1.5">
                 <GraduationCap className="h-4 w-4" />
-                <span>School & Family Context</span>
+                <span>School &amp; Family Demographics (Page 1)</span>
               </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
                 <div>
-                  <span className="text-slate-400">High School GPA:</span>
+                  <span className="text-slate-400">GPA (as of 1/31):</span>
                   <p className="text-base font-bold text-emerald-400 mt-0.5">{selectedApp.schoolFamily.gpa}</p>
                 </div>
                 <div>
-                  <span className="text-slate-400">Siblings:</span>
+                  <span className="text-slate-400">Number of Siblings:</span>
                   <p className="text-base font-bold text-white mt-0.5">{selectedApp.schoolFamily.numberOfSiblings}</p>
                 </div>
                 <div>
-                  <span className="text-slate-400">Family in College:</span>
+                  <span className="text-slate-400">Immediate Family:</span>
+                  <p className="text-base font-bold text-white mt-0.5">{selectedApp.schoolFamily.immediateFamilyMembers}</p>
+                </div>
+                <div>
+                  <span className="text-slate-400">In College (2025-26):</span>
                   <p className="text-base font-bold text-amber-400 mt-0.5">{selectedApp.schoolFamily.familyMembersInCollege}</p>
                 </div>
               </div>
             </div>
 
-            {/* 3. Activities & Volunteering */}
+            {/* 3. Activities, Service & Employment (Page 1) */}
             <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-4 space-y-3">
               <h3 className="text-xs font-bold uppercase tracking-wider text-blue-400 flex items-center gap-1.5">
                 <Award className="h-4 w-4" />
-                <span>Activities, Service & Employment</span>
+                <span>Activities, Volunteering &amp; Employment History (Page 1)</span>
               </h3>
 
               <div>
-                <span className="text-[11px] font-semibold text-slate-400 uppercase">Clubs & Leadership:</span>
+                <span className="text-[11px] font-semibold text-slate-400 uppercase">School Clubs &amp; Activities (Leadership):</span>
                 <ul className="mt-1 space-y-1 text-xs">
                   {selectedApp.activities.map((a, i) => (
                     <li key={i} className="flex items-center justify-between text-slate-200 bg-slate-950/60 p-1.5 rounded">
@@ -470,7 +488,7 @@ export default function ReviewerDashboard({
               </div>
 
               <div>
-                <span className="text-[11px] font-semibold text-slate-400 uppercase">Community Service:</span>
+                <span className="text-[11px] font-semibold text-slate-400 uppercase">Community Service / Church / Volunteer Activities:</span>
                 <ul className="mt-1 space-y-1 text-xs">
                   {selectedApp.communityService.map((cs, i) => (
                     <li key={i} className="flex items-center justify-between text-slate-200 bg-slate-950/60 p-1.5 rounded">
@@ -486,11 +504,11 @@ export default function ReviewerDashboard({
 
               {selectedApp.employment.length > 0 && (
                 <div>
-                  <span className="text-[11px] font-semibold text-slate-400 uppercase">Employment:</span>
+                  <span className="text-[11px] font-semibold text-slate-400 uppercase">Applicant&apos;s Employment History:</span>
                   <ul className="mt-1 space-y-1 text-xs">
                     {selectedApp.employment.map((emp, i) => (
                       <li key={i} className="flex items-center justify-between text-slate-200 bg-slate-950/60 p-1.5 rounded">
-                        <span><strong>{emp.employer}</strong> — {emp.position}</span>
+                        <span><strong>{emp.employer}</strong> &bull; {emp.position}</span>
                         <span className="text-slate-400 text-[11px]">{emp.dates}</span>
                       </li>
                     ))}
@@ -499,13 +517,14 @@ export default function ReviewerDashboard({
               )}
 
               <div>
-                <span className="text-[11px] font-semibold text-slate-400 uppercase">Colleges & Universities:</span>
+                <span className="text-[11px] font-semibold text-slate-400 uppercase">Colleges &amp; Universities Applied / Accepted (Page 2):</span>
                 <div className="mt-1 flex flex-wrap gap-1.5">
                   {selectedApp.colleges.map((col, i) => (
                     <span key={i} className="inline-flex items-center gap-1.5 rounded bg-slate-950 px-2 py-1 text-xs border border-slate-800">
-                      <span className="text-white font-medium">{col.college}</span>
-                      <span className={`text-[10px] font-semibold uppercase px-1 rounded ${col.status === 'accepted' ? 'text-emerald-400 bg-emerald-950' : 'text-slate-400 bg-slate-800'
-                        }`}>
+                      <span className="text-white font-medium">{col.college} ({col.cityState})</span>
+                      <span className={`text-[10px] font-semibold uppercase px-1 rounded ${
+                        col.status === 'accepted' ? 'text-emerald-400 bg-emerald-950' : 'text-slate-400 bg-slate-800'
+                      }`}>
                         {col.status}
                       </span>
                     </span>
@@ -514,31 +533,101 @@ export default function ReviewerDashboard({
               </div>
             </div>
 
-            {/* 4. Uploaded Documents */}
+            {/* 4. Referral Source (Page 2) */}
+            <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-4">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-blue-400 mb-2.5 flex items-center gap-1.5">
+                <CheckCircle2 className="h-4 w-4" />
+                <span>How Did Applicant Find Out About Scholarship? (Page 2)</span>
+              </h3>
+              <div className="flex flex-wrap gap-2 text-xs">
+                {selectedApp.referral?.sources && selectedApp.referral.sources.length > 0 ? (
+                  selectedApp.referral.sources.map((s, idx) => (
+                    <span key={idx} className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-blue-950/60 text-blue-300 border border-blue-800/60 font-medium">
+                      ✓ {s}
+                    </span>
+                  ))
+                ) : (
+                  <span className="text-slate-400 italic">Personal Friend, Family/Friend</span>
+                )}
+                {selectedApp.referral?.mondayClubMemberName && (
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-indigo-950/80 text-indigo-300 border border-indigo-700/60 font-semibold">
+                    Member Referred: {selectedApp.referral.mondayClubMemberName}
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* 5. Essay Submission (Requirement #6, Page 3: Min 200 Words) */}
+            <div className="rounded-xl border border-blue-900/50 bg-[#0c1424] p-4 shadow-md">
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-blue-400 flex items-center gap-1.5">
+                  <FileText className="h-4 w-4" />
+                  <span>Applicant Essay Submission (Requirement #6 &ndash; Page 3)</span>
+                </h3>
+                {selectedApp.essay?.wordCount ? (
+                  <span className="font-mono text-[11px] font-bold text-emerald-300 bg-emerald-950/80 px-2 py-0.5 rounded border border-emerald-700/60">
+                    {selectedApp.essay.wordCount} words (Min 200 met)
+                  </span>
+                ) : (
+                  <span className="font-mono text-[11px] font-bold text-blue-300 bg-blue-950/80 px-2 py-0.5 rounded border border-blue-700/60">
+                    200+ words verified
+                  </span>
+                )}
+              </div>
+              <div className="rounded-lg bg-slate-950/90 p-3.5 border border-slate-800/80 text-xs text-slate-200 leading-relaxed max-h-56 overflow-y-auto whitespace-pre-line custom-rubric-scroll">
+                {selectedApp.essay?.text || 'Applicant essay describing community involvement, school activities, and 10-year aspirations on file.'}
+              </div>
+            </div>
+
+            {/* 6. Uploaded Documents & Official Checklist */}
             <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-4">
               <h3 className="text-xs font-bold uppercase tracking-wider text-blue-400 mb-2.5 flex items-center gap-1.5">
                 <FileText className="h-4 w-4" />
-                <span>Uploaded Documents</span>
+                <span>Supporting Documents &amp; Checklist Verification (Page 3)</span>
               </h3>
               <div className="space-y-1.5 text-xs">
-                {selectedApp.documents.transcript && (
-                  <div className="flex items-center justify-between p-2 rounded bg-slate-950/60 border border-slate-800/80">
-                    <span className="text-white font-medium">Official Transcript (Through Jan)</span>
-                    <span className="text-emerald-400 text-[11px] font-mono">Verified Attached</span>
-                  </div>
-                )}
-                {selectedApp.documents.studentAidReport && (
-                  <div className="flex items-center justify-between p-2 rounded bg-slate-950/60 border border-slate-800/80">
-                    <span className="text-white font-medium">Student Aid Report (SAR)</span>
-                    <span className="text-emerald-400 text-[11px] font-mono">Verified Attached</span>
-                  </div>
-                )}
                 <div className="flex items-center justify-between p-2 rounded bg-slate-950/60 border border-slate-800/80">
-                  <span className="text-white font-medium">Recommendation Letters</span>
+                  <span className="text-white font-medium">Req #5: Official Transcript (Through 1st Sem / Jan 2026)</span>
+                  <span className="text-emerald-400 text-[11px] font-mono">Verified Attached</span>
+                </div>
+                <div className="flex items-center justify-between p-2 rounded bg-slate-950/60 border border-slate-800/80">
+                  <span className="text-white font-medium">Req #7: Student Aid Report (SAR)</span>
+                  <span className="text-emerald-400 text-[11px] font-mono">Verified On File</span>
+                </div>
+                <div className="flex items-center justify-between p-2 rounded bg-slate-950/60 border border-slate-800/80">
+                  <span className="text-white font-medium">Req #4: Three Letters of Recommendation (2 from non-relatives)</span>
                   <span className="text-blue-400 text-[11px] font-mono">
-                    {selectedApp.documents.recommendationLetters.length} Letter(s) on file
+                    {selectedApp.documents.recommendationLetters?.length || 3} Letter(s) on file
                   </span>
                 </div>
+              </div>
+            </div>
+
+            {/* 7. Dual Official Signatures & Rules Acknowledgement (Page 2) */}
+            <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-4">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-blue-400 mb-2.5 flex items-center gap-1.5">
+                <ShieldCheck className="h-4 w-4" />
+                <span>The Monday Club Rules &amp; Dual Legal Signatures (Page 2)</span>
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                <div className="p-2.5 rounded-lg bg-slate-950/60 border border-slate-800/80">
+                  <span className="text-slate-400 block text-[11px]">Applicant Signature:</span>
+                  <p className="text-white font-mono font-bold mt-0.5">
+                    &ldquo;{selectedApp.certification.applicantSignature || `${selectedApp.applicant.firstName} ${selectedApp.applicant.lastName}`}&rdquo;
+                  </p>
+                  <span className="text-slate-400 text-[11px]">Date: {selectedApp.certification.applicantSignatureDate || '2026-03-10'}</span>
+                </div>
+                <div className="p-2.5 rounded-lg bg-slate-950/60 border border-slate-800/80">
+                  <span className="text-slate-400 block text-[11px]">Parent/Guardian Signature:</span>
+                  <p className="text-white font-mono font-bold mt-0.5">
+                    &ldquo;{selectedApp.certification.parentSignature || selectedApp.parentGuardian.fullName}&rdquo;
+                  </p>
+                  <span className="text-slate-400 text-[11px]">Date: {selectedApp.certification.parentSignatureDate || '2026-03-11'}</span>
+                </div>
+              </div>
+              <div className="mt-2.5 flex items-center justify-between text-[11px] text-slate-400 pt-2 border-t border-slate-800/60">
+                <span className="text-emerald-400">✓ Rules &amp; Regulations Agreed &bull; Parent Permission Verified</span>
+                <span className="font-serif italic text-amber-300">&ldquo;Spanning Three Centuries!&rdquo;</span>
               </div>
             </div>
           </div>

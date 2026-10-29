@@ -10,7 +10,6 @@ export function evaluateApplicationWithAI(
   const colleges = app.colleges || [];
   const documents = app.documents || {};
   const recLetters = documents.recommendationLetters || [];
-  const extraDocs = documents.extraDocuments || [];
 
   const serviceHours = communityService.reduce(
     (sum, item) => sum + (parseFloat(item.totalHours) || 0),
@@ -26,7 +25,6 @@ export function evaluateApplicationWithAI(
   const recLetterCount = recLetters.length;
   const hasTranscript = Boolean(documents.transcript);
   const hasSAR = Boolean(documents.studentAidReport);
-  const extraDocsCount = extraDocs.length;
 
   const criteria: RubricCriterion[] = [];
   const strengths: string[] = [];
@@ -272,24 +270,38 @@ export function evaluateApplicationWithAI(
     reasoning: meritReason,
   });
 
-  // Criterion 10: Completeness, Cohesion & Clarity (0-5)
+  // Criterion 10: Completeness, Cohesion, Essay & Clarity (0-5)
   let completenessScore = 3;
   let completenessReason = '';
+  const essayWordCount =
+    app.essay?.wordCount ||
+    (app.essay?.text ? app.essay.text.trim().split(/\s+/).filter(Boolean).length : 0);
+  const hasValidEssay = essayWordCount >= 200 || Boolean(app.essay?.document);
   const isCertified =
     app.certification.isInfoAccurate &&
     app.certification.parentGrantsPermission &&
-    app.certification.applicantSignature.trim().length > 3;
+    app.certification.applicantSignature.trim().length > 2;
 
-  if (isCertified && extraDocsCount > 0 && hasTranscript && hasSAR) {
+  if (hasValidEssay) {
+    strengths.push(
+      `Submitted comprehensive 200+ word personal essay (${essayWordCount} words) detailing community impact and 10-year goals.`
+    );
+  } else {
+    flags.push(
+      `Mandatory 200-word essay is incomplete or missing (${essayWordCount} words documented).`
+    );
+  }
+
+  if (isCertified && hasValidEssay && hasTranscript && (hasSAR || recLetterCount >= 2)) {
     completenessScore = 5;
-    completenessReason = `Exceptional attention to detail; all mandatory sections certified, supporting documents attached, and supplemental materials provided.`;
-    strengths.push(`Flawless application packet with supplemental achievements.`);
+    completenessReason = `Exceptional attention to detail: full 200+ word essay submitted, parent/applicant signatures verified, and academic documents attached.`;
+    strengths.push(`Flawless application packet adhering to all 10 Monday Club checklist protocols.`);
   } else if (isCertified && hasTranscript) {
     completenessScore = 4;
-    completenessReason = `Application is comprehensively completed with proper certifications and valid signatures.`;
+    completenessReason = `Application is comprehensively completed with proper signatures and transcripts on file.`;
   } else {
     completenessScore = 3;
-    completenessReason = `Basic requirements met with minor documentation gaps noted.`;
+    completenessReason = `Basic requirements met with documentation or essay gaps noted.`;
   }
   criteria.push({
     id: 'c10',

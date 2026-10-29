@@ -40,35 +40,39 @@ export default function ApplicantPortal({
   const [isEligibleDescent, setIsEligibleDescent] = useState(initialAutofill);
   const [isMinGpa, setIsMinGpa] = useState(initialAutofill);
 
-  // 2. Applicant
-  const [firstName, setFirstName] = useState(initialAutofill ? 'Jordan' : '');
-  const [lastName, setLastName] = useState(initialAutofill ? 'Taylor' : '');
-  const [streetAddress, setStreetAddress] = useState(initialAutofill ? '450 West 4th Street' : '');
-  const [city, setCity] = useState(initialAutofill ? 'Wilmington' : '');
+  // 2. Applicant (Page 1 of official physical form)
+  const [firstName, setFirstName] = useState(initialAutofill ? 'Madison' : '');
+  const [middleName, setMiddleName] = useState(initialAutofill ? 'Rae' : '');
+  const [lastName, setLastName] = useState(initialAutofill ? 'Tymes' : '');
+  const [streetAddress, setStreetAddress] = useState(initialAutofill ? '12 Whitehaven Drive' : '');
+  const [city, setCity] = useState(initialAutofill ? 'New Castle' : '');
   const [stateVal, setStateVal] = useState('DE');
-  const [zip, setZip] = useState(initialAutofill ? '19801' : '');
-  const [telephone, setTelephone] = useState(initialAutofill ? '(302) 555-0392' : '');
-  const [email, setEmail] = useState(initialAutofill ? 'jordan.taylor@redclay.k12.de.us' : '');
-  const [dateOfBirth, setDateOfBirth] = useState(initialAutofill ? '2008-03-25' : '');
+  const [zip, setZip] = useState(initialAutofill ? '19720' : '');
+  const [telephone, setTelephone] = useState(initialAutofill ? '302-229-1408' : '');
+  const [sex, setSex] = useState(initialAutofill ? 'F' : 'F');
+  const [email, setEmail] = useState(initialAutofill ? 'maddietymes12@gmail.com' : '');
+  const [dateOfBirth, setDateOfBirth] = useState(initialAutofill ? '2008-04-02' : '');
 
-  // 3. Parent / Guardian
-  const [parentName, setParentName] = useState(initialAutofill ? 'Patricia Taylor' : '');
-  const [parentPhone, setParentPhone] = useState(initialAutofill ? '(302) 555-0393' : '');
-  const [parentEmail, setParentEmail] = useState(initialAutofill ? 'ptaylor@comcast.net' : '');
+  // 3. Parent / Guardian (Page 1)
+  const [parentName, setParentName] = useState(initialAutofill ? 'Shira Tymes' : '');
+  const [parentPhone, setParentPhone] = useState(initialAutofill ? '302-229-1408' : '');
+  const [parentEmail, setParentEmail] = useState(initialAutofill ? 'shiratymes@gmail.com' : '');
 
-  // 4. School & Family
-  const [currentHighSchool, setCurrentHighSchool] = useState(initialAutofill ? 'Howard High School of Technology' : '');
-  const [gpa, setGpa] = useState(initialAutofill ? '3.84' : '');
-  const [numberOfSiblings, setNumberOfSiblings] = useState(initialAutofill ? '2' : '');
-  const [immediateFamilyMembers, setImmediateFamilyMembers] = useState(initialAutofill ? '4' : '');
+  // 4. School & Family (Page 1)
+  const [currentHighSchool, setCurrentHighSchool] = useState(initialAutofill ? 'Padua Academy' : '');
+  const [gpa, setGpa] = useState(initialAutofill ? '3.77' : '');
+  const [numberOfSiblings, setNumberOfSiblings] = useState(initialAutofill ? '0' : '');
+  const [immediateFamilyMembers, setImmediateFamilyMembers] = useState(initialAutofill ? '2' : '');
   const [familyMembersInCollege, setFamilyMembersInCollege] = useState(initialAutofill ? '1' : '');
 
-  // 5. Dynamic Lists
+  // 5. Dynamic Lists (Activities, Community Service, Employment, Colleges - Page 1 & 2)
   const [activities, setActivities] = useState<ClubActivity[]>(
     initialAutofill
       ? [
-        { id: '1', activity: 'National Technical Honor Society', role: 'President', years: '11-12' },
-        { id: '2', activity: 'Black Youth Leadership Council', role: 'Student Ambassador', years: '10-12' },
+        { id: '1', activity: 'National Honor Society', role: 'Member', years: '11-12' },
+        { id: '2', activity: 'Black Student Union', role: 'Officer', years: '10-12' },
+        { id: '3', activity: 'Varsity Soccer (4yr)', role: 'Team Captain', years: '9-12' },
+        { id: '4', activity: 'Varsity Flag Football', role: 'Player', years: '11-12' },
       ]
       : [{ id: '1', activity: '', role: '', years: '' }]
   );
@@ -76,33 +80,54 @@ export default function ApplicantPortal({
   const [communityService, setCommunityService] = useState<CommunityService[]>(
     initialAutofill
       ? [
-        { id: '1', organization: 'Kingswood Community Center', description: 'Youth STEM mentor & after-school tutor', totalHours: '85' },
-        { id: '2', organization: 'Sunday Breakfast Mission', description: 'Food pantry packaging volunteer', totalHours: '30' },
+        { id: '1', organization: 'Habitat for Humanity Volunteer', description: 'Affordable home construction', totalHours: '40' },
+        { id: '2', organization: 'Salsthon Fundraising Planning Committee', description: 'Charity event planning coordinator', totalHours: '35' },
+        { id: '3', organization: 'Delaware Food Bank Volunteer', description: 'Food packaging & pantry distribution', totalHours: '25' },
+        { id: '4', organization: 'Newark Rotary Volunteer', description: 'Community service outreach', totalHours: '20' },
       ]
       : [{ id: '1', organization: '', description: '', totalHours: '' }]
   );
 
   const [employment, setEmployment] = useState<EmploymentHistory[]>(
     initialAutofill
-      ? [{ id: '1', employer: 'CVS Health Wilmington', position: 'Pharmacy Tech Assistant', dates: 'June 2024 - Present' }]
+      ? [
+        { id: '1', employer: 'Nothing Bundt Cakes', position: 'Cake Froster', dates: 'July 2023- October 2023' },
+        { id: '2', employer: 'F. Brown Boys & Girls Club', position: 'Summer Counselor', dates: 'May 2024-Aug 2024, May 2025- Aug 2025' },
+        { id: '3', employer: 'Columbus Inn', position: 'Hostess', dates: 'October 2025- Current' },
+      ]
       : [{ id: '1', employer: '', position: '', dates: '' }]
   );
 
   const [colleges, setColleges] = useState<CollegePlan[]>(
     initialAutofill
       ? [
-        { id: '1', college: 'Delaware State University', cityState: 'Dover, DE', status: 'accepted' },
-        { id: '2', college: 'University of Delaware', cityState: 'Newark, DE', status: 'accepted' },
-        { id: '3', college: 'Howard University', cityState: 'Washington, DC', status: 'waiting' },
+        { id: '1', college: 'Howard University', cityState: 'Washington DC', status: 'accepted' },
+        { id: '2', college: 'Duquense University', cityState: 'Pittsburgh PA', status: 'applied' },
+        { id: '3', college: "St. Joesph's University", cityState: 'Philadelphia PA', status: 'waiting' },
       ]
       : [{ id: '1', college: '', cityState: '', status: 'applied' }]
   );
 
-  // 6 & 7. Documents (Simulated file states with mock uploads)
+  // 6. Referral Source (Page 2: How did you find out about this scholarship?)
+  const [referralSources, setReferralSources] = useState<string[]>(
+    initialAutofill ? ['Personal Friend', 'Family/Friend'] : []
+  );
+  const [mondayClubMemberName, setMondayClubMemberName] = useState('');
+
+  // 7. Essay Submission (Page 3, Req #6: Minimum 200 words)
+  const MADISON_SAMPLE_ESSAY = `Throughout my four years at Padua Academy, community involvement, athletic discipline, and academic dedication have shaped my commitment to civic service. Serving as Team Captain of our Varsity Soccer squad and competing in Varsity Flag Football instilled resilience and taught me the value of unifying peers toward common goals. In the classroom and through my leadership as an officer in the Black Student Union, alongside induction into the National Honor Society, I have actively championed diversity, peer mentorship, and student equity.
+
+Giving back across Delaware is a fundamental priority for me. Through extensive volunteer efforts with the Delaware Food Bank, Newark Rotary, and the Salsthon Fundraising Planning Committee, as well as building homes with Habitat for Humanity, I have directly witnessed how coordinated community action creates real dignity for families experiencing hardship. Concurrently, balancing employment at Nothing Bundt Cakes, Columbus Inn, and serving as a Summer Counselor at the F. Brown Boys and Girls Club has strengthened my work ethic, patience, and compassion for youth development.
+
+Over the next ten years, my goal is to earn a Bachelor's degree in Public Health and Healthcare Administration from a four-year institution, followed by graduate study in Health Policy. Ultimately, I aim to lead community health initiatives that eliminate systemic disparities across underserved neighborhoods in Delaware. Receiving The Monday Club Scholarship will provide crucial support to realize this vision and continue serving our community.`;
+
+  const [essayText, setEssayText] = useState(initialAutofill ? MADISON_SAMPLE_ESSAY : '');
+
+  // 8. Documents (Simulated file states with mock uploads)
   const [transcript, setTranscript] = useState<UploadedDocument | null>(
     initialAutofill
       ? {
-        name: 'Official_Transcript_Jordan_Taylor_2026.pdf',
+        name: 'Official_Transcript_Madison_Rae_Tymes_2026.pdf',
         size: 2150000,
         type: 'application/pdf',
         uploadedAt: new Date().toISOString(),
@@ -113,7 +138,7 @@ export default function ApplicantPortal({
   const [studentAidReport, setStudentAidReport] = useState<UploadedDocument | null>(
     initialAutofill
       ? {
-        name: 'Student_Aid_Report_2026_FAFSA.pdf',
+        name: 'Student_Aid_Report_2026_SAR_Processed.pdf',
         size: 1120000,
         type: 'application/pdf',
         uploadedAt: new Date().toISOString(),
@@ -124,23 +149,27 @@ export default function ApplicantPortal({
   const [recLetters, setRecLetters] = useState<UploadedDocument[]>(
     initialAutofill
       ? [
-        { name: 'Letter_AP_Biology_Teacher.pdf', size: 450000, type: 'application/pdf', uploadedAt: new Date().toISOString() },
-        { name: 'Letter_Kingswood_Director.pdf', size: 380000, type: 'application/pdf', uploadedAt: new Date().toISOString() },
-        { name: 'Letter_Counselor_Recommendation.pdf', size: 420000, type: 'application/pdf', uploadedAt: new Date().toISOString() },
+        { name: 'Letter_Padua_Academy_Teacher.pdf', size: 450000, type: 'application/pdf', uploadedAt: new Date().toISOString() },
+        { name: 'Letter_Boys_Girls_Club_Director.pdf', size: 380000, type: 'application/pdf', uploadedAt: new Date().toISOString() },
+        { name: 'Letter_Community_Leader_Rotary.pdf', size: 420000, type: 'application/pdf', uploadedAt: new Date().toISOString() },
       ]
       : []
   );
 
   const [extraDocs, setExtraDocs] = useState<UploadedDocument[]>(
     initialAutofill
-      ? [{ name: 'Delaware_State_Merit_Award.pdf', size: 680000, type: 'application/pdf', uploadedAt: new Date().toISOString() }]
+      ? [{ name: 'Varsity_Soccer_Captain_Award.pdf', size: 680000, type: 'application/pdf', uploadedAt: new Date().toISOString() }]
       : []
   );
 
-  // 8. Certification
+  // 9. Certification & Dual Signatures (Page 2: Applicant & Parent Signatures + Dates)
+  const [rulesAcknowledged, setRulesAcknowledged] = useState(initialAutofill);
   const [isInfoAccurate, setIsInfoAccurate] = useState(initialAutofill);
+  const [applicantSignature, setApplicantSignature] = useState(initialAutofill ? 'Madison Rae Tymes' : '');
+  const [applicantSignatureDate, setApplicantSignatureDate] = useState(initialAutofill ? '2026-03-10' : '2026-03-10');
   const [parentGrantsPermission, setParentGrantsPermission] = useState(initialAutofill);
-  const [applicantSignature, setApplicantSignature] = useState(initialAutofill ? 'Jordan Taylor' : '');
+  const [parentSignature, setParentSignature] = useState(initialAutofill ? 'Shira Tymes' : '');
+  const [parentSignatureDate, setParentSignatureDate] = useState(initialAutofill ? '2026-03-11' : '2026-03-11');
 
   // UI States
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -175,12 +204,14 @@ export default function ApplicantPortal({
     setIsMinGpa(false);
 
     setFirstName('');
+    setMiddleName('');
     setLastName('');
     setStreetAddress('');
     setCity('');
     setStateVal('DE');
     setZip('');
     setTelephone('');
+    setSex('F');
     setEmail('');
     setDateOfBirth('');
 
@@ -199,14 +230,22 @@ export default function ApplicantPortal({
     setEmployment([{ id: '1', employer: '', position: '', dates: '' }]);
     setColleges([{ id: '1', college: '', cityState: '', status: 'applied' }]);
 
+    setReferralSources([]);
+    setMondayClubMemberName('');
+    setEssayText('');
+
     setTranscript(null);
     setStudentAidReport(null);
     setRecLetters([]);
     setExtraDocs([]);
 
+    setRulesAcknowledged(false);
     setIsInfoAccurate(false);
-    setParentGrantsPermission(false);
     setApplicantSignature('');
+    setApplicantSignatureDate('2026-03-10');
+    setParentGrantsPermission(false);
+    setParentSignature('');
+    setParentSignatureDate('2026-03-11');
 
     setFormError(null);
     setSubmittedApp(null);
@@ -214,79 +253,95 @@ export default function ApplicantPortal({
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // Autofill realistic demo data
+  // Autofill realistic demo data matching the official physical Madison Rae Tymes form
   const handleAutofill = () => {
     setIsDelawareSenior(true);
     setIsEligibleDescent(true);
     setIsMinGpa(true);
 
-    setFirstName('Jordan');
-    setLastName('Taylor');
-    setStreetAddress('450 West 4th Street');
-    setCity('Wilmington');
+    setFirstName('Madison');
+    setMiddleName('Rae');
+    setLastName('Tymes');
+    setStreetAddress('12 Whitehaven Drive');
+    setCity('New Castle');
     setStateVal('DE');
-    setZip('19801');
-    setTelephone('(302) 555-0392');
-    setEmail('jordan.taylor@redclay.k12.de.us');
-    setDateOfBirth('2008-03-25');
+    setZip('19720');
+    setTelephone('302-229-1408');
+    setSex('F');
+    setEmail('maddietymes12@gmail.com');
+    setDateOfBirth('2008-04-02');
 
-    setParentName('Patricia Taylor');
-    setParentPhone('(302) 555-0393');
-    setParentEmail('ptaylor@comcast.net');
+    setParentName('Shira Tymes');
+    setParentPhone('302-229-1408');
+    setParentEmail('shiratymes@gmail.com');
 
-    setCurrentHighSchool('Howard High School of Technology');
-    setGpa('3.84');
-    setNumberOfSiblings('2');
-    setImmediateFamilyMembers('4');
+    setCurrentHighSchool('Padua Academy');
+    setGpa('3.77');
+    setNumberOfSiblings('0');
+    setImmediateFamilyMembers('2');
     setFamilyMembersInCollege('1');
 
     setActivities([
-      { id: '1', activity: 'National Technical Honor Society', role: 'President', years: '11-12' },
-      { id: '2', activity: 'Black Youth Leadership Council', role: 'Student Ambassador', years: '10-12' },
+      { id: '1', activity: 'National Honor Society', role: 'Member', years: '11-12' },
+      { id: '2', activity: 'Black Student Union', role: 'Officer', years: '10-12' },
+      { id: '3', activity: 'Varsity Soccer (4yr)', role: 'Team Captain', years: '9-12' },
+      { id: '4', activity: 'Varsity Flag Football', role: 'Player', years: '11-12' },
     ]);
 
     setCommunityService([
-      { id: '1', organization: 'Kingswood Community Center', description: 'Youth STEM mentor & after-school tutor', totalHours: '85' },
-      { id: '2', organization: 'Sunday Breakfast Mission', description: 'Food pantry packaging volunteer', totalHours: '30' },
+      { id: '1', organization: 'Habitat for Humanity Volunteer', description: 'Affordable home construction', totalHours: '40' },
+      { id: '2', organization: 'Salsthon Fundraising Planning Committee', description: 'Charity event planning coordinator', totalHours: '35' },
+      { id: '3', organization: 'Delaware Food Bank Volunteer', description: 'Food packaging & pantry distribution', totalHours: '25' },
+      { id: '4', organization: 'Newark Rotary Volunteer', description: 'Community service outreach', totalHours: '20' },
     ]);
 
     setEmployment([
-      { id: '1', employer: 'CVS Health Wilmington', position: 'Pharmacy Tech Assistant', dates: 'June 2024 - Present' },
+      { id: '1', employer: 'Nothing Bundt Cakes', position: 'Cake Froster', dates: 'July 2023- October 2023' },
+      { id: '2', employer: 'F. Brown Boys & Girls Club', position: 'Summer Counselor', dates: 'May 2024-Aug 2024, May 2025- Aug 2025' },
+      { id: '3', employer: 'Columbus Inn', position: 'Hostess', dates: 'October 2025- Current' },
     ]);
 
     setColleges([
-      { id: '1', college: 'Delaware State University', cityState: 'Dover, DE', status: 'accepted' },
-      { id: '2', college: 'University of Delaware', cityState: 'Newark, DE', status: 'accepted' },
-      { id: '3', college: 'Howard University', cityState: 'Washington, DC', status: 'waiting' },
+      { id: '1', college: 'Howard University', cityState: 'Washington DC', status: 'accepted' },
+      { id: '2', college: 'Duquense University', cityState: 'Pittsburgh PA', status: 'applied' },
+      { id: '3', college: "St. Joesph's University", cityState: 'Philadelphia PA', status: 'waiting' },
     ]);
 
+    setReferralSources(['Personal Friend', 'Family/Friend']);
+    setMondayClubMemberName('');
+    setEssayText(MADISON_SAMPLE_ESSAY);
+
     setTranscript({
-      name: 'Official_Transcript_Jordan_Taylor_2026.pdf',
+      name: 'Official_Transcript_Madison_Rae_Tymes_2026.pdf',
       size: 2150000,
       type: 'application/pdf',
       uploadedAt: new Date().toISOString(),
     });
 
     setStudentAidReport({
-      name: 'Student_Aid_Report_2026_FAFSA.pdf',
+      name: 'Student_Aid_Report_2026_SAR_Processed.pdf',
       size: 1120000,
       type: 'application/pdf',
       uploadedAt: new Date().toISOString(),
     });
 
     setRecLetters([
-      { name: 'Letter_AP_Biology_Teacher.pdf', size: 450000, type: 'application/pdf', uploadedAt: new Date().toISOString() },
-      { name: 'Letter_Kingswood_Director.pdf', size: 380000, type: 'application/pdf', uploadedAt: new Date().toISOString() },
-      { name: 'Letter_Counselor_Recommendation.pdf', size: 420000, type: 'application/pdf', uploadedAt: new Date().toISOString() },
+      { name: 'Letter_Padua_Academy_Teacher.pdf', size: 450000, type: 'application/pdf', uploadedAt: new Date().toISOString() },
+      { name: 'Letter_Boys_Girls_Club_Director.pdf', size: 380000, type: 'application/pdf', uploadedAt: new Date().toISOString() },
+      { name: 'Letter_Community_Leader_Rotary.pdf', size: 420000, type: 'application/pdf', uploadedAt: new Date().toISOString() },
     ]);
 
     setExtraDocs([
-      { name: 'Delaware_State_Merit_Award.pdf', size: 680000, type: 'application/pdf', uploadedAt: new Date().toISOString() },
+      { name: 'Varsity_Soccer_Captain_Award.pdf', size: 680000, type: 'application/pdf', uploadedAt: new Date().toISOString() },
     ]);
 
+    setRulesAcknowledged(true);
     setIsInfoAccurate(true);
+    setApplicantSignature('Madison Rae Tymes');
+    setApplicantSignatureDate('2026-03-10');
     setParentGrantsPermission(true);
-    setApplicantSignature('Jordan Taylor');
+    setParentSignature('Shira Tymes');
+    setParentSignatureDate('2026-03-11');
     setFormError(null);
   };
 
@@ -325,8 +380,28 @@ export default function ApplicantPortal({
       return;
     }
 
-    if (!isInfoAccurate || !parentGrantsPermission || !applicantSignature.trim()) {
-      setFormError('Please sign and accept all certification declarations.');
+    const wordCount = essayText.trim() ? essayText.trim().split(/\s+/).filter(Boolean).length : 0;
+    if (!essayText.trim()) {
+      setFormError('Please enter your essay (Requirement #6: minimum 200 words required).');
+      return;
+    }
+    if (wordCount < 200) {
+      setFormError(`Your essay is currently ${wordCount} words. Requirement #6 specifies a minimum of 200 words.`);
+      return;
+    }
+
+    if (!rulesAcknowledged) {
+      setFormError('Please acknowledge The Monday Club Scholarship Rules and Regulations.');
+      return;
+    }
+
+    if (!isInfoAccurate || !applicantSignature.trim()) {
+      setFormError('Please provide the applicant certification and legal signature.');
+      return;
+    }
+
+    if (!parentGrantsPermission || !parentSignature.trim()) {
+      setFormError('Please provide the parent/guardian permission and legal signature.');
       return;
     }
 
@@ -342,12 +417,14 @@ export default function ApplicantPortal({
           },
           applicant: {
             firstName: firstName.trim(),
+            middleName: middleName.trim() || undefined,
             lastName: lastName.trim(),
             streetAddress: streetAddress.trim(),
             city: city.trim(),
             state: stateVal.trim() || 'DE',
             zip: zip.trim(),
             telephone: telephone.trim(),
+            sex: sex || 'F',
             email: email.trim(),
             dateOfBirth,
           },
@@ -360,13 +437,21 @@ export default function ApplicantPortal({
             currentHighSchool: currentHighSchool.trim(),
             gpa: gpa.trim(),
             numberOfSiblings: numberOfSiblings.trim() || '0',
-            immediateFamilyMembers: immediateFamilyMembers.trim() || '1',
+            immediateFamilyMembers: immediateFamilyMembers.trim() || '2',
             familyMembersInCollege: familyMembersInCollege.trim() || '0',
           },
           activities: activities.filter((a) => a.activity.trim()),
           communityService: communityService.filter((c) => c.organization.trim()),
           employment: employment.filter((e) => e.employer.trim()),
           colleges: colleges.filter((c) => c.college.trim()),
+          referral: {
+            sources: referralSources,
+            mondayClubMemberName: mondayClubMemberName.trim() || undefined,
+          },
+          essay: {
+            text: essayText.trim(),
+            wordCount,
+          },
           documents: {
             transcript: transcript || undefined,
             studentAidReport: studentAidReport || undefined,
@@ -375,8 +460,12 @@ export default function ApplicantPortal({
           },
           certification: {
             isInfoAccurate,
-            parentGrantsPermission,
+            rulesAcknowledged,
             applicantSignature: applicantSignature.trim(),
+            applicantSignatureDate: applicantSignatureDate.trim() || '2026-03-10',
+            parentGrantsPermission,
+            parentSignature: parentSignature.trim(),
+            parentSignatureDate: parentSignatureDate.trim() || '2026-03-11',
           },
         });
 
@@ -621,30 +710,33 @@ export default function ApplicantPortal({
         </>
       )}
 
-      {/* Title & Organization Header matching Client Mockup */}
+      {/* Title & Organization Header matching Client Mockup & Physical Form */}
       <div className="mb-6 rounded-2xl border border-slate-800 bg-gradient-to-b from-[#131b2e] to-[#0f172a] p-4 sm:p-6 shadow-xl text-slate-100">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <div className="inline-flex items-center gap-2 rounded-full bg-blue-950 px-3 py-1 text-xs font-semibold text-blue-400 border border-blue-800/60 mb-2">
-              <Sparkles className="h-3.5 w-3.5 text-blue-400" />
-              <span>Official 2026 Application Form</span>
+            <div className="flex flex-wrap items-center gap-2 mb-2">
+              <div className="inline-flex items-center gap-1.5 rounded-full bg-blue-950 px-3 py-1 text-xs font-semibold text-blue-400 border border-blue-800/60">
+                <Sparkles className="h-3.5 w-3.5 text-blue-400" />
+                <span>THE MONDAY CLUB, INC. &bull; 4020 NEW CASTLE AVENUE, WILMINGTON, DE 19720</span>
+              </div>
+              <span className="text-xs font-serif italic text-amber-300">&ldquo;Spanning Three Centuries!&rdquo;</span>
             </div>
-            <h2 className="text-xl sm:text-3xl font-extrabold tracking-tight text-white">
-              The Monday Club Scholarship
+            <h2 className="text-xl sm:text-2xl font-extrabold tracking-tight text-white">
+              Senator Herman M. Holloway Sr. / Dr. Woodrow Wilson / James H. Sills, Jr. / Delaware State University / The Monday Club Scholarship
             </h2>
-            <p className="mt-1 text-xs sm:text-sm text-slate-400 leading-relaxed">
-              Holloway St. / Dr. Woodrow Wilson / James H. Sills, Jr. / Delaware State University
+            <p className="mt-1 text-xs sm:text-sm text-slate-300 font-semibold tracking-wide">
+              OFFICIAL SCHOLARSHIP APPLICATION &ndash; 2026
             </p>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 shrink-0">
             <button
               type="button"
               onClick={handleAutofill}
               className="w-full sm:w-auto flex items-center justify-center gap-1.5 rounded-lg border border-blue-600/40 bg-blue-950/60 px-3.5 py-2 text-xs font-semibold text-blue-300 hover:bg-blue-900/60 hover:text-white transition shadow-sm cursor-pointer"
             >
               <Sparkles className="h-3.5 w-3.5 text-amber-400 shrink-0" />
-              <span>Pre-fill Sample Data</span>
+              <span>Pre-fill Sample Data (Madison Rae Tymes)</span>
             </button>
           </div>
         </div>
@@ -660,7 +752,7 @@ export default function ApplicantPortal({
             <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-600/20 text-xs font-bold text-blue-400 border border-blue-500/30 shrink-0">
               1
             </span>
-            <span>Eligibility</span>
+            <span>Scholarship Eligibility (Checklist Requirements #1, #2, #5)</span>
           </h3>
 
           <div className="space-y-3 text-xs sm:text-sm text-slate-300">
@@ -673,7 +765,7 @@ export default function ApplicantPortal({
                 className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-700 bg-slate-900 text-blue-600 focus:ring-blue-500"
               />
               <span className="leading-relaxed">
-                I am a senior at a high school in Delaware and am admitted to, or seeking admission to, a four-year college or university.
+                <strong>1.</strong> Applicant(s) must be a senior attending a public/private/parochial/vocational high school in the State of Delaware. The applicant must be admitted to or seeking admission into a four-year college or university.
               </span>
             </label>
 
@@ -686,7 +778,7 @@ export default function ApplicantPortal({
                 className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-700 bg-slate-900 text-blue-600 focus:ring-blue-500"
               />
               <span className="leading-relaxed">
-                I am of African-American, Hispanic or Native American descent.
+                <strong>2.</strong> The applicant must be of African American, Hispanic or Native American descent.
               </span>
             </label>
 
@@ -699,71 +791,82 @@ export default function ApplicantPortal({
                 className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-700 bg-slate-900 text-blue-600 focus:ring-blue-500"
               />
               <span className="leading-relaxed">
-                My cumulative GPA is at least 2.75 on a 4.00 scale.
+                <strong>5.</strong> The applicant must have a grade point average of at least 2.75 on a 4.00 scale (official transcript through first semester required).
               </span>
             </label>
           </div>
         </div>
 
         {/* ======================================================== */}
-        {/* 2. APPLICANT */}
+        {/* 2. APPLICANT (Page 1) */}
         {/* ======================================================== */}
         <div className="rounded-xl border border-slate-800 bg-[#0f172a] p-4 sm:p-6 shadow-md">
           <h3 className="text-base font-bold text-white mb-4 flex items-center gap-2">
             <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-600/20 text-xs font-bold text-blue-400 border border-blue-500/30 shrink-0">
               2
             </span>
-            <span>Applicant</span>
+            <span>Applicant Information (Form Page 1)</span>
           </h3>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs sm:text-sm">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs sm:text-sm">
             <div>
-              <label className="block text-slate-400 font-medium mb-1.5">First name</label>
+              <label className="block text-slate-400 font-medium mb-1.5">First Name</label>
               <input
                 id="applicant-first-name"
                 type="text"
                 value={firstName}
                 onChange={(e) => setFirstName(e.target.value)}
-                placeholder="First name"
-                className="w-full rounded-lg px-3 py-2 text-sm text-white"
+                placeholder="e.g. Madison"
+                className="w-full rounded-lg px-3 py-2 text-sm text-white bg-slate-950 border border-slate-800"
                 required
               />
             </div>
             <div>
-              <label className="block text-slate-400 font-medium mb-1.5">Last name</label>
+              <label className="block text-slate-400 font-medium mb-1.5">Middle Name</label>
+              <input
+                id="applicant-middle-name"
+                type="text"
+                value={middleName}
+                onChange={(e) => setMiddleName(e.target.value)}
+                placeholder="e.g. Rae"
+                className="w-full rounded-lg px-3 py-2 text-sm text-white bg-slate-950 border border-slate-800"
+              />
+            </div>
+            <div>
+              <label className="block text-slate-400 font-medium mb-1.5">Last Name</label>
               <input
                 id="applicant-last-name"
                 type="text"
                 value={lastName}
                 onChange={(e) => setLastName(e.target.value)}
-                placeholder="Last name"
-                className="w-full rounded-lg px-3 py-2 text-sm text-white"
+                placeholder="e.g. Tymes"
+                className="w-full rounded-lg px-3 py-2 text-sm text-white bg-slate-950 border border-slate-800"
                 required
               />
             </div>
 
-            <div>
-              <label className="block text-slate-400 font-medium mb-1.5">Street address</label>
+            <div className="sm:col-span-2">
+              <label className="block text-slate-400 font-medium mb-1.5">Street Address</label>
               <input
                 id="applicant-street-address"
                 type="text"
                 value={streetAddress}
                 onChange={(e) => setStreetAddress(e.target.value)}
-                placeholder="Street address"
-                className="w-full rounded-lg px-3 py-2 text-sm text-white"
+                placeholder="e.g. 12 Whitehaven Drive"
+                className="w-full rounded-lg px-3 py-2 text-sm text-white bg-slate-950 border border-slate-800"
                 required
               />
             </div>
             <div>
-              <label className="block text-slate-400 font-medium mb-1.5">City, State, Zip</label>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+              <label className="block text-slate-400 font-medium mb-1.5">City, State and Zip Code</label>
+              <div className="grid grid-cols-5 gap-1.5">
                 <input
                   id="applicant-city"
                   type="text"
                   value={city}
                   onChange={(e) => setCity(e.target.value)}
                   placeholder="City"
-                  className="w-full rounded-lg px-3 py-2 text-sm text-white"
+                  className="col-span-2 rounded-lg px-2.5 py-2 text-xs sm:text-sm text-white bg-slate-950 border border-slate-800"
                   required
                 />
                 <input
@@ -771,8 +874,8 @@ export default function ApplicantPortal({
                   type="text"
                   value={stateVal}
                   onChange={(e) => setStateVal(e.target.value)}
-                  placeholder="State (e.g. DE)"
-                  className="w-full rounded-lg px-3 py-2 text-sm text-white"
+                  placeholder="DE"
+                  className="col-span-1 rounded-lg px-2 py-2 text-xs sm:text-sm text-white text-center bg-slate-950 border border-slate-800"
                   required
                 />
                 <input
@@ -780,46 +883,61 @@ export default function ApplicantPortal({
                   type="text"
                   value={zip}
                   onChange={(e) => setZip(e.target.value)}
-                  placeholder="Zip code"
-                  className="w-full rounded-lg px-3 py-2 text-sm text-white"
+                  placeholder="Zip"
+                  className="col-span-2 rounded-lg px-2.5 py-2 text-xs sm:text-sm text-white bg-slate-950 border border-slate-800"
                   required
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-slate-400 font-medium mb-1.5">Telephone</label>
+              <label className="block text-slate-400 font-medium mb-1.5">Telephone Number</label>
               <input
                 id="applicant-telephone"
                 type="tel"
                 value={telephone}
                 onChange={(e) => setTelephone(e.target.value)}
-                placeholder="(302) 555-0100"
-                className="w-full rounded-lg px-3 py-2 text-sm text-white"
+                placeholder="e.g. 302-229-1408"
+                className="w-full rounded-lg px-3 py-2 text-sm text-white bg-slate-950 border border-slate-800"
                 required
               />
             </div>
+
             <div>
-              <label className="block text-slate-400 font-medium mb-1.5">Email</label>
+              <label className="block text-slate-400 font-medium mb-1.5">Sex</label>
+              <select
+                id="applicant-sex"
+                value={sex}
+                onChange={(e) => setSex(e.target.value)}
+                className="w-full rounded-lg px-3 py-2 text-sm text-white bg-slate-950 border border-slate-800"
+              >
+                <option value="F">F (Female)</option>
+                <option value="M">M (Male)</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-slate-400 font-medium mb-1.5">Email Address</label>
               <input
                 id="applicant-email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="student@example.com"
-                className="w-full rounded-lg px-3 py-2 text-sm text-white"
+                placeholder="e.g. maddietymes12@gmail.com"
+                className="w-full rounded-lg px-3 py-2 text-sm text-white bg-slate-950 border border-slate-800"
                 required
               />
             </div>
 
-            <div className="sm:col-span-2">
-              <label className="block text-slate-400 font-medium mb-1.5">Date of birth (mm/dd/yyyy)</label>
+            <div className="sm:col-span-3">
+              <label className="block text-slate-400 font-medium mb-1.5">Date of Birth (mm/dd/yyyy)</label>
               <input
                 id="applicant-dob"
                 type="date"
                 value={dateOfBirth}
                 onChange={(e) => setDateOfBirth(e.target.value)}
-                className="w-full sm:w-1/2 rounded-lg px-3 py-2 text-sm text-white"
+                className="w-full sm:w-1/3 rounded-lg px-3 py-2 text-sm text-white bg-slate-950 border border-slate-800"
                 required
               />
             </div>
@@ -827,50 +945,50 @@ export default function ApplicantPortal({
         </div>
 
         {/* ======================================================== */}
-        {/* 3. PARENT / GUARDIAN */}
+        {/* 3. PARENT / GUARDIAN (Page 1) */}
         {/* ======================================================== */}
         <div className="rounded-xl border border-slate-800 bg-[#0f172a] p-5 sm:p-6 shadow-md">
           <h3 className="text-base font-bold text-white mb-4 flex items-center gap-2">
             <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-600/20 text-xs font-bold text-blue-400 border border-blue-500/30">
               3
             </span>
-            <span>Parent / Guardian</span>
+            <span>Parent(s) / Guardian(s) Information (Form Page 1)</span>
           </h3>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs sm:text-sm">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs sm:text-sm">
             <div>
-              <label className="block text-slate-400 font-medium mb-1.5">Parent/Guardian full name</label>
+              <label className="block text-slate-400 font-medium mb-1.5">Parent(s)/Guardian(s) Name</label>
               <input
                 id="parent-name"
                 type="text"
                 value={parentName}
                 onChange={(e) => setParentName(e.target.value)}
-                placeholder="Parent/Guardian full name"
-                className="w-full rounded-lg px-3 py-2 text-sm text-white"
+                placeholder="e.g. Shira Tymes"
+                className="w-full rounded-lg px-3 py-2 text-sm text-white bg-slate-950 border border-slate-800"
                 required
               />
             </div>
             <div>
-              <label className="block text-slate-400 font-medium mb-1.5">Parent/Guardian phone</label>
+              <label className="block text-slate-400 font-medium mb-1.5">Parent Telephone Number</label>
               <input
                 id="parent-phone"
                 type="tel"
                 value={parentPhone}
                 onChange={(e) => setParentPhone(e.target.value)}
-                placeholder="(302) 555-0200"
-                className="w-full rounded-lg px-3 py-2 text-sm text-white"
+                placeholder="e.g. 302-229-1408"
+                className="w-full rounded-lg px-3 py-2 text-sm text-white bg-slate-950 border border-slate-800"
                 required
               />
             </div>
-            <div className="sm:col-span-2">
-              <label className="block text-slate-400 font-medium mb-1.5">Parent/Guardian email</label>
+            <div>
+              <label className="block text-slate-400 font-medium mb-1.5">Parent Email Address</label>
               <input
                 id="parent-email"
                 type="email"
                 value={parentEmail}
                 onChange={(e) => setParentEmail(e.target.value)}
-                placeholder="parent@example.com"
-                className="w-full sm:w-1/2 rounded-lg px-3 py-2 text-sm text-white"
+                placeholder="e.g. shiratymes@gmail.com"
+                className="w-full rounded-lg px-3 py-2 text-sm text-white bg-slate-950 border border-slate-800"
                 required
               />
             </div>
@@ -878,44 +996,44 @@ export default function ApplicantPortal({
         </div>
 
         {/* ======================================================== */}
-        {/* 4. SCHOOL & FAMILY */}
+        {/* 4. SCHOOL & FAMILY CONTEXT (Page 1) */}
         {/* ======================================================== */}
         <div className="rounded-xl border border-slate-800 bg-[#0f172a] p-5 sm:p-6 shadow-md">
           <h3 className="text-base font-bold text-white mb-4 flex items-center gap-2">
             <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-600/20 text-xs font-bold text-blue-400 border border-blue-500/30">
               4
             </span>
-            <span>School & family</span>
+            <span>School & Family Demographics (Form Page 1)</span>
           </h3>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs sm:text-sm">
             <div>
-              <label className="block text-slate-400 font-medium mb-1.5">Current high school</label>
+              <label className="block text-slate-400 font-medium mb-1.5">Current High School Attending</label>
               <input
                 id="school-name"
                 type="text"
                 value={currentHighSchool}
                 onChange={(e) => setCurrentHighSchool(e.target.value)}
-                placeholder="High school name"
-                className="w-full rounded-lg px-3 py-2 text-sm text-white"
+                placeholder="e.g. Padua Academy"
+                className="w-full rounded-lg px-3 py-2 text-sm text-white bg-slate-950 border border-slate-800"
                 required
               />
             </div>
             <div>
-              <label className="block text-slate-400 font-medium mb-1.5">GPA (as of Jan 31)</label>
+              <label className="block text-slate-400 font-medium mb-1.5">Grade Point Average (as of 1/31/2026)</label>
               <input
                 id="school-gpa"
                 type="text"
                 value={gpa}
                 onChange={(e) => setGpa(e.target.value)}
-                placeholder="e.g. 3.80"
-                className="w-full rounded-lg px-3 py-2 text-sm text-white"
+                placeholder="e.g. 3.77"
+                className="w-full rounded-lg px-3 py-2 text-sm text-white bg-slate-950 border border-slate-800"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-slate-400 font-medium mb-1.5">Number of siblings</label>
+              <label className="block text-slate-400 font-medium mb-1.5">Number of Siblings</label>
               <input
                 id="siblings-count"
                 type="number"
@@ -923,39 +1041,41 @@ export default function ApplicantPortal({
                 value={numberOfSiblings}
                 onChange={(e) => setNumberOfSiblings(e.target.value)}
                 placeholder="0"
-                className="w-full rounded-lg px-3 py-2 text-sm text-white"
+                className="w-full rounded-lg px-3 py-2 text-sm text-white bg-slate-950 border border-slate-800"
               />
             </div>
             <div>
-              <label className="block text-slate-400 font-medium mb-1.5">Immediate family members (incl. you)</label>
+              <label className="block text-slate-400 font-medium mb-1.5">Number of Immediate Family Members (including yourself)</label>
               <input
                 id="family-members-count"
                 type="number"
                 min="1"
                 value={immediateFamilyMembers}
                 onChange={(e) => setImmediateFamilyMembers(e.target.value)}
-                placeholder="e.g. 4"
-                className="w-full rounded-lg px-3 py-2 text-sm text-white"
+                placeholder="e.g. 2"
+                className="w-full rounded-lg px-3 py-2 text-sm text-white bg-slate-950 border border-slate-800"
               />
             </div>
 
             <div className="sm:col-span-2">
-              <label className="block text-slate-400 font-medium mb-1.5">Family members in college this year</label>
+              <label className="block text-slate-400 font-medium mb-1.5">
+                Number of Immediate Family Members (including yourself) attending college/university for the 2025-2026 academic year
+              </label>
               <input
                 id="family-in-college"
                 type="number"
                 min="0"
                 value={familyMembersInCollege}
                 onChange={(e) => setFamilyMembersInCollege(e.target.value)}
-                placeholder="0"
-                className="w-full sm:w-1/2 rounded-lg px-3 py-2 text-sm text-white"
+                placeholder="e.g. 1"
+                className="w-full sm:w-1/2 rounded-lg px-3 py-2 text-sm text-white bg-slate-950 border border-slate-800"
               />
             </div>
           </div>
         </div>
 
         {/* ======================================================== */}
-        {/* 5. ACTIVITIES, WORK & COLLEGES (Dynamic Lists) */}
+        {/* 5. ACTIVITIES, SERVICE, EMPLOYMENT & COLLEGES */}
         {/* ======================================================== */}
         <div className="rounded-xl border border-slate-800 bg-[#0f172a] p-5 sm:p-6 shadow-md space-y-6">
           <div>
@@ -963,17 +1083,17 @@ export default function ApplicantPortal({
               <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-600/20 text-xs font-bold text-blue-400 border border-blue-500/30">
                 5
               </span>
-              <span>Activities, work & colleges</span>
+              <span>Activities, Community Service, Employment & Colleges</span>
             </h3>
             <p className="text-xs text-slate-400 mt-1">
-              Add one line per item. Use the + button for more.
+              Directly aligned with Page 1 and Page 2 of the official physical form.
             </p>
           </div>
 
-          {/* Subsection: School clubs & activities */}
+          {/* School Clubs/Activities */}
           <div>
             <label className="block text-xs sm:text-sm font-semibold text-slate-300 mb-2">
-              School clubs & activities (include leadership positions)
+              School Clubs/Activities in which you participate (include leadership positions held)
             </label>
             <div className="space-y-3">
               {activities.map((item, index) => (
@@ -984,27 +1104,27 @@ export default function ApplicantPortal({
                   <div className="sm:col-span-5">
                     <input
                       type="text"
-                      placeholder="Activity / club"
+                      placeholder="e.g. Varsity Soccer (4yr)"
                       value={item.activity}
                       onChange={(e) => {
                         const updated = [...activities];
                         updated[index].activity = e.target.value;
                         setActivities(updated);
                       }}
-                      className="w-full rounded-lg px-3 py-2 text-xs sm:text-sm text-white"
+                      className="w-full rounded-lg px-3 py-2 text-xs sm:text-sm text-white bg-slate-950 border border-slate-800"
                     />
                   </div>
                   <div className="sm:col-span-4">
                     <input
                       type="text"
-                      placeholder="Leadership role (if any)"
+                      placeholder="e.g. Team Captain / Officer"
                       value={item.role}
                       onChange={(e) => {
                         const updated = [...activities];
                         updated[index].role = e.target.value;
                         setActivities(updated);
                       }}
-                      className="w-full rounded-lg px-3 py-2 text-xs sm:text-sm text-white"
+                      className="w-full rounded-lg px-3 py-2 text-xs sm:text-sm text-white bg-slate-950 border border-slate-800"
                     />
                   </div>
                   <div className="flex items-center gap-2 sm:col-span-3">
@@ -1017,14 +1137,14 @@ export default function ApplicantPortal({
                         updated[index].years = e.target.value;
                         setActivities(updated);
                       }}
-                      className="w-full rounded-lg px-3 py-2 text-xs sm:text-sm text-white"
+                      className="w-full rounded-lg px-3 py-2 text-xs sm:text-sm text-white bg-slate-950 border border-slate-800"
                     />
                     {activities.length > 1 && (
                       <button
                         type="button"
                         onClick={() => setActivities(activities.filter((_, i) => i !== index))}
                         className="p-2 shrink-0 rounded-lg text-slate-400 hover:text-red-400 hover:bg-slate-800 transition cursor-pointer"
-                        title="Remove line"
+                        title="Remove"
                       >
                         <Trash2 className="h-4 w-4" />
                       </button>
@@ -1041,14 +1161,14 @@ export default function ApplicantPortal({
               className="mt-2.5 inline-flex items-center gap-1.5 text-xs font-semibold text-blue-400 hover:text-blue-300 px-2 py-1 rounded hover:bg-slate-800 transition cursor-pointer"
             >
               <Plus className="h-3.5 w-3.5" />
-              <span>Add activity</span>
+              <span>Add activity/club</span>
             </button>
           </div>
 
-          {/* Subsection: Community service, church & volunteering */}
+          {/* Community Service/Church/Volunteer Activities */}
           <div className="pt-3 border-t border-slate-800/80">
             <label className="block text-xs sm:text-sm font-semibold text-slate-300 mb-2">
-              Community service, church & volunteering
+              Community Service/Church/Volunteer Activities
             </label>
             <div className="space-y-3">
               {communityService.map((item, index) => (
@@ -1059,47 +1179,47 @@ export default function ApplicantPortal({
                   <div className="sm:col-span-5">
                     <input
                       type="text"
-                      placeholder="Organization / church"
+                      placeholder="Organization / church (e.g. Habitat for Humanity)"
                       value={item.organization}
                       onChange={(e) => {
                         const updated = [...communityService];
                         updated[index].organization = e.target.value;
                         setCommunityService(updated);
                       }}
-                      className="w-full rounded-lg px-3 py-2 text-xs sm:text-sm text-white"
+                      className="w-full rounded-lg px-3 py-2 text-xs sm:text-sm text-white bg-slate-950 border border-slate-800"
                     />
                   </div>
                   <div className="sm:col-span-4">
                     <input
                       type="text"
-                      placeholder="What you did"
+                      placeholder="Description of volunteer role"
                       value={item.description}
                       onChange={(e) => {
                         const updated = [...communityService];
                         updated[index].description = e.target.value;
                         setCommunityService(updated);
                       }}
-                      className="w-full rounded-lg px-3 py-2 text-xs sm:text-sm text-white"
+                      className="w-full rounded-lg px-3 py-2 text-xs sm:text-sm text-white bg-slate-950 border border-slate-800"
                     />
                   </div>
                   <div className="flex items-center gap-2 sm:col-span-3">
                     <input
                       type="number"
-                      placeholder="Total hours"
+                      placeholder="Hours"
                       value={item.totalHours}
                       onChange={(e) => {
                         const updated = [...communityService];
                         updated[index].totalHours = e.target.value;
                         setCommunityService(updated);
                       }}
-                      className="w-full rounded-lg px-3 py-2 text-xs sm:text-sm text-white"
+                      className="w-full rounded-lg px-3 py-2 text-xs sm:text-sm text-white bg-slate-950 border border-slate-800"
                     />
                     {communityService.length > 1 && (
                       <button
                         type="button"
                         onClick={() => setCommunityService(communityService.filter((_, i) => i !== index))}
                         className="p-2 shrink-0 rounded-lg text-slate-400 hover:text-red-400 hover:bg-slate-800 transition cursor-pointer"
-                        title="Remove line"
+                        title="Remove"
                       >
                         <Trash2 className="h-4 w-4" />
                       </button>
@@ -1119,14 +1239,14 @@ export default function ApplicantPortal({
               className="mt-2.5 inline-flex items-center gap-1.5 text-xs font-semibold text-blue-400 hover:text-blue-300 px-2 py-1 rounded hover:bg-slate-800 transition cursor-pointer"
             >
               <Plus className="h-3.5 w-3.5" />
-              <span>Add service</span>
+              <span>Add volunteer activity</span>
             </button>
           </div>
 
-          {/* Subsection: Employment history */}
+          {/* Applicant's Employment History */}
           <div className="pt-3 border-t border-slate-800/80">
             <label className="block text-xs sm:text-sm font-semibold text-slate-300 mb-2">
-              Employment history
+              Applicant&apos;s Employment History (Employers, Positions, Dates of Employment)
             </label>
             <div className="space-y-3">
               {employment.map((item, index) => (
@@ -1137,47 +1257,47 @@ export default function ApplicantPortal({
                   <div className="sm:col-span-5">
                     <input
                       type="text"
-                      placeholder="Employer"
+                      placeholder="Employer (e.g. Nothing Bundt Cakes)"
                       value={item.employer}
                       onChange={(e) => {
                         const updated = [...employment];
                         updated[index].employer = e.target.value;
                         setEmployment(updated);
                       }}
-                      className="w-full rounded-lg px-3 py-2 text-xs sm:text-sm text-white"
+                      className="w-full rounded-lg px-3 py-2 text-xs sm:text-sm text-white bg-slate-950 border border-slate-800"
                     />
                   </div>
                   <div className="sm:col-span-4">
                     <input
                       type="text"
-                      placeholder="Position"
+                      placeholder="Position (e.g. Cake Froster / Hostess)"
                       value={item.position}
                       onChange={(e) => {
                         const updated = [...employment];
                         updated[index].position = e.target.value;
                         setEmployment(updated);
                       }}
-                      className="w-full rounded-lg px-3 py-2 text-xs sm:text-sm text-white"
+                      className="w-full rounded-lg px-3 py-2 text-xs sm:text-sm text-white bg-slate-950 border border-slate-800"
                     />
                   </div>
                   <div className="flex items-center gap-2 sm:col-span-3">
                     <input
                       type="text"
-                      placeholder="Dates"
+                      placeholder="Dates (e.g. July 2023 - Oct 2023)"
                       value={item.dates}
                       onChange={(e) => {
                         const updated = [...employment];
                         updated[index].dates = e.target.value;
                         setEmployment(updated);
                       }}
-                      className="w-full rounded-lg px-3 py-2 text-xs sm:text-sm text-white"
+                      className="w-full rounded-lg px-3 py-2 text-xs sm:text-sm text-white bg-slate-950 border border-slate-800"
                     />
                     {employment.length > 1 && (
                       <button
                         type="button"
                         onClick={() => setEmployment(employment.filter((_, i) => i !== index))}
                         className="p-2 shrink-0 rounded-lg text-slate-400 hover:text-red-400 hover:bg-slate-800 transition cursor-pointer"
-                        title="Remove line"
+                        title="Remove"
                       >
                         <Trash2 className="h-4 w-4" />
                       </button>
@@ -1197,14 +1317,14 @@ export default function ApplicantPortal({
               className="mt-2.5 inline-flex items-center gap-1.5 text-xs font-semibold text-blue-400 hover:text-blue-300 px-2 py-1 rounded hover:bg-slate-800 transition cursor-pointer"
             >
               <Plus className="h-3.5 w-3.5" />
-              <span>Add job</span>
+              <span>Add employer</span>
             </button>
           </div>
 
-          {/* Subsection: Colleges & universities */}
+          {/* Colleges and Universities applied, accepted and/or waiting */}
           <div className="pt-3 border-t border-slate-800/80">
             <label className="block text-xs sm:text-sm font-semibold text-slate-300 mb-2">
-              Colleges & universities (applied, accepted, or waiting)
+              List the colleges and universities to which you have applied, have been accepted and/or are waiting for acceptance
             </label>
             <div className="space-y-3">
               {colleges.map((item, index) => (
@@ -1215,27 +1335,27 @@ export default function ApplicantPortal({
                   <div className="sm:col-span-5">
                     <input
                       type="text"
-                      placeholder="College / university"
+                      placeholder="College / University (e.g. Howard University)"
                       value={item.college}
                       onChange={(e) => {
                         const updated = [...colleges];
                         updated[index].college = e.target.value;
                         setColleges(updated);
                       }}
-                      className="w-full rounded-lg px-3 py-2 text-xs sm:text-sm text-white"
+                      className="w-full rounded-lg px-3 py-2 text-xs sm:text-sm text-white bg-slate-950 border border-slate-800"
                     />
                   </div>
                   <div className="sm:col-span-4">
                     <input
                       type="text"
-                      placeholder="City, State"
+                      placeholder="City/State (e.g. Washington DC)"
                       value={item.cityState}
                       onChange={(e) => {
                         const updated = [...colleges];
                         updated[index].cityState = e.target.value;
                         setColleges(updated);
                       }}
-                      className="w-full rounded-lg px-3 py-2 text-xs sm:text-sm text-white"
+                      className="w-full rounded-lg px-3 py-2 text-xs sm:text-sm text-white bg-slate-950 border border-slate-800"
                     />
                   </div>
                   <div className="flex items-center gap-2 sm:col-span-3">
@@ -1246,18 +1366,18 @@ export default function ApplicantPortal({
                         updated[index].status = e.target.value as CollegePlan['status'];
                         setColleges(updated);
                       }}
-                      className="w-full rounded-lg px-3 py-2 text-xs sm:text-sm text-white capitalize"
+                      className="w-full rounded-lg px-3 py-2 text-xs sm:text-sm text-white capitalize bg-slate-950 border border-slate-800"
                     >
                       <option value="applied">Applied</option>
                       <option value="accepted">Accepted</option>
-                      <option value="waiting">Waiting</option>
+                      <option value="waiting">Waiting for acceptance</option>
                     </select>
                     {colleges.length > 1 && (
                       <button
                         type="button"
                         onClick={() => setColleges(colleges.filter((_, i) => i !== index))}
                         className="p-2 shrink-0 rounded-lg text-slate-400 hover:text-red-400 hover:bg-slate-800 transition cursor-pointer"
-                        title="Remove line"
+                        title="Remove"
                       >
                         <Trash2 className="h-4 w-4" />
                       </button>
@@ -1283,22 +1403,138 @@ export default function ApplicantPortal({
         </div>
 
         {/* ======================================================== */}
-        {/* 6. DOCUMENTS */}
+        {/* 6. REFERRAL SOURCE (Page 2) */}
         {/* ======================================================== */}
         <div className="rounded-xl border border-slate-800 bg-[#0f172a] p-5 sm:p-6 shadow-md">
-          <h3 className="text-base font-bold text-white mb-4 flex items-center gap-2">
+          <h3 className="text-base font-bold text-white mb-2 flex items-center gap-2">
             <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-600/20 text-xs font-bold text-blue-400 border border-blue-500/30">
               6
             </span>
-            <span>Documents</span>
+            <span>How did you find out about this scholarship? (Check all that apply &ndash; Page 2)</span>
           </h3>
+          <p className="text-xs text-slate-400 mb-4">
+            Select all sources where you learned about The Monday Club Scholarship.
+          </p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2.5 text-xs text-slate-300">
+            {[
+              'High School',
+              'Church',
+              'Personal Friend',
+              'Another Organization',
+              'Parent/Guardian',
+              'Family/Friend',
+              'Recreation/Community Center',
+              'Member of THE MONDAY CLUB',
+            ].map((source) => (
+              <label
+                key={source}
+                className="flex items-center gap-2.5 p-2.5 rounded-lg border border-slate-800/80 bg-slate-950/40 hover:bg-slate-900 transition cursor-pointer"
+              >
+                <input
+                  type="checkbox"
+                  checked={referralSources.includes(source)}
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      setReferralSources([...referralSources, source]);
+                    } else {
+                      setReferralSources(referralSources.filter((s) => s !== source));
+                    }
+                  }}
+                  className="h-4 w-4 rounded border-slate-700 bg-slate-900 text-blue-600 focus:ring-blue-500"
+                />
+                <span className="font-medium text-slate-200">{source}</span>
+              </label>
+            ))}
+          </div>
+
+          {referralSources.includes('Member of THE MONDAY CLUB') && (
+            <div className="mt-4 pt-3 border-t border-slate-800/60 max-w-md animate-in fade-in">
+              <label className="block text-slate-400 text-xs font-medium mb-1.5">
+                Member of THE MONDAY CLUB (Name of member):
+              </label>
+              <input
+                type="text"
+                value={mondayClubMemberName}
+                onChange={(e) => setMondayClubMemberName(e.target.value)}
+                placeholder="Name of Monday Club member"
+                className="w-full rounded-lg px-3 py-2 text-xs sm:text-sm text-white bg-slate-950 border border-slate-800"
+              />
+            </div>
+          )}
+        </div>
+
+        {/* ======================================================== */}
+        {/* 7. ESSAY SUBMISSION (Requirement #6, Page 3: Min 200 Words) */}
+        {/* ======================================================== */}
+        <div className="rounded-xl border border-slate-800 bg-[#0f172a] p-5 sm:p-6 shadow-md">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
+            <h3 className="text-base font-bold text-white flex items-center gap-2">
+              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-600/20 text-xs font-bold text-blue-400 border border-blue-500/30">
+                7
+              </span>
+              <span>Essay Submission (Requirement #6 &ndash; Minimum 200 words)</span>
+            </h3>
+            {/* Live Word Count Indicator */}
+            {(() => {
+              const count = essayText.trim() ? essayText.trim().split(/\s+/).filter(Boolean).length : 0;
+              const isMet = count >= 200;
+              return (
+                <span
+                  className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold border ${
+                    isMet
+                      ? 'bg-emerald-950/80 text-emerald-300 border-emerald-700/60'
+                      : 'bg-amber-950/80 text-amber-300 border-amber-700/60'
+                  }`}
+                >
+                  <CheckCircle2 className={`h-3.5 w-3.5 ${isMet ? 'text-emerald-400' : 'text-amber-400'}`} />
+                  <span>{count} / 200 words required {isMet ? '(Criteria Met)' : `(${200 - count} words left)`}</span>
+                </span>
+              );
+            })()}
+          </div>
+
+          <div className="rounded-lg bg-blue-950/30 border border-blue-900/50 p-3 mb-4 text-xs text-slate-300 leading-relaxed">
+            <strong className="text-blue-300">Requirement #6 Guidelines (from Form Page 3):</strong>
+            <p className="mt-1">
+              The applicant is to describe his/her community involvement (church, volunteering &amp; tutorial efforts), school activities (student government, honor society, band, sports, etc.) and proposed goals the applicant wants to accomplish in the next 10 years. The essay must be typed, double-spaced and in 12-point font. The essay will be evaluated on clarity, language usage, content, organization, and topic development. The essays will not be returned.
+            </p>
+          </div>
+
+          <div>
+            <textarea
+              id="essay-text"
+              rows={9}
+              value={essayText}
+              onChange={(e) => setEssayText(e.target.value)}
+              placeholder="Type your minimum 200-word essay here describing your community involvement, school activities, and 10-year aspirations..."
+              className="w-full rounded-lg px-3.5 py-3 text-xs sm:text-sm text-white bg-slate-950 border border-slate-800 leading-relaxed focus:border-blue-500 font-sans"
+              required
+            />
+          </div>
+        </div>
+
+        {/* ======================================================== */}
+        {/* 8. SUPPORTING DOCUMENTS & CHECKLIST (Page 3) */}
+        {/* ======================================================== */}
+        <div className="rounded-xl border border-slate-800 bg-[#0f172a] p-5 sm:p-6 shadow-md">
+          <h3 className="text-base font-bold text-white mb-2 flex items-center gap-2">
+            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-600/20 text-xs font-bold text-blue-400 border border-blue-500/30">
+              8
+            </span>
+            <span>Supporting Documents &amp; Official Checklist (Form Page 3)</span>
+          </h3>
+          <p className="text-xs text-slate-400 mb-4">
+            Upload digital files or verify that documents will be submitted with your completed application packet.
+          </p>
 
           <div className="space-y-4 text-xs sm:text-sm">
             {/* Official transcript */}
-            <div>
-              <label className="block text-slate-300 font-medium mb-1.5">
-                Official transcript (through Jan)
+            <div className="p-3 rounded-lg bg-slate-950/60 border border-slate-800/80">
+              <label className="block text-slate-300 font-semibold mb-1">
+                Requirement #5: Official copy of your transcript through 1st semester (Jan 2026)
               </label>
+              <p className="text-[11px] text-slate-400 mb-2">Must verify GPA of at least 2.75 on a 4.00 scale.</p>
               <input
                 id="file-transcript"
                 type="file"
@@ -1317,7 +1553,7 @@ export default function ApplicantPortal({
                 className="w-full text-slate-400 text-xs"
               />
               {transcript && (
-                <div className="mt-1 flex items-center gap-2 text-xs text-emerald-400">
+                <div className="mt-1.5 flex items-center gap-2 text-xs text-emerald-400 font-medium">
                   <CheckCircle2 className="h-3.5 w-3.5" />
                   <span>Attached: {transcript.name}</span>
                 </div>
@@ -1325,9 +1561,9 @@ export default function ApplicantPortal({
             </div>
 
             {/* Student Aid Report */}
-            <div>
-              <label className="block text-slate-300 font-medium mb-1.5">
-                Student Aid Report (SAR)
+            <div className="p-3 rounded-lg bg-slate-950/60 border border-slate-800/80">
+              <label className="block text-slate-300 font-semibold mb-1">
+                Requirement #7: Completed and processed copy of the Student Aid Report (SAR) (if available)
               </label>
               <input
                 id="file-sar"
@@ -1347,7 +1583,7 @@ export default function ApplicantPortal({
                 className="w-full text-slate-400 text-xs"
               />
               {studentAidReport && (
-                <div className="mt-1 flex items-center gap-2 text-xs text-emerald-400">
+                <div className="mt-1.5 flex items-center gap-2 text-xs text-emerald-400 font-medium">
                   <CheckCircle2 className="h-3.5 w-3.5" />
                   <span>Attached: {studentAidReport.name}</span>
                 </div>
@@ -1355,10 +1591,11 @@ export default function ApplicantPortal({
             </div>
 
             {/* Three recommendation letters */}
-            <div>
-              <label className="block text-slate-300 font-medium mb-1.5">
-                Three recommendation letters (two from non-relatives)
+            <div className="p-3 rounded-lg bg-slate-950/60 border border-slate-800/80">
+              <label className="block text-slate-300 font-semibold mb-1">
+                Requirement #4: Three letters of recommendation (two from non-relatives)
               </label>
+              <p className="text-[11px] text-slate-400 mb-2">Each with signature of the sender/writer over the flap of envelope.</p>
               <input
                 id="file-recommendations"
                 type="file"
@@ -1379,68 +1616,94 @@ export default function ApplicantPortal({
                 className="w-full text-slate-400 text-xs"
               />
               {recLetters.length > 0 && (
-                <div className="mt-1 flex items-center gap-2 text-xs text-emerald-400">
+                <div className="mt-1.5 flex items-center gap-2 text-xs text-emerald-400 font-medium">
                   <CheckCircle2 className="h-3.5 w-3.5" />
                   <span>{recLetters.length} recommendation letter(s) attached</span>
                 </div>
               )}
             </div>
+
+            {/* Extra Documents */}
+            <div className="p-3 rounded-lg bg-slate-950/60 border border-slate-800/80">
+              <label className="block text-slate-300 font-semibold mb-1">
+                Supplemental Documents &amp; Certificates (Optional)
+              </label>
+              <input
+                id="file-extra"
+                type="file"
+                multiple
+                accept=".pdf,.png,.jpg,.jpeg,.doc,.docx"
+                onChange={(e) => {
+                  const files = Array.from(e.target.files || []);
+                  if (files.length > 0) {
+                    const mapped: UploadedDocument[] = files.map((f) => ({
+                      name: f.name,
+                      size: f.size,
+                      type: f.type,
+                      uploadedAt: new Date().toISOString(),
+                    }));
+                    setExtraDocs(mapped);
+                  }
+                }}
+                className="w-full text-slate-400 text-xs"
+              />
+              {extraDocs.length > 0 && (
+                <div className="mt-1.5 flex items-center gap-2 text-xs text-emerald-400 font-medium">
+                  <CheckCircle2 className="h-3.5 w-3.5" />
+                  <span>{extraDocs.length} supplemental document(s) uploaded</span>
+                </div>
+              )}
+            </div>
+
+            {/* Official Contact & Mailing Notice */}
+            <div className="p-3 rounded-lg bg-blue-950/40 border border-blue-900/60 text-xs text-slate-300 space-y-1">
+              <div className="font-bold text-blue-300">Physical &amp; Email Delivery Instructions:</div>
+              <p>
+                All application materials must be emailed to <strong className="text-white">TheMCscholarships@gmail.com</strong> or mailed to <strong className="text-white">4020 New Castle Ave, Wilmington, DE 19720</strong>.
+              </p>
+              <p className="text-[11px] text-slate-400">
+                Questions? Contact Mr. Ken Snell: (302) 521-3798 &bull; Winners notified by May 1, 2026.
+              </p>
+            </div>
           </div>
         </div>
 
         {/* ======================================================== */}
-        {/* 7. EXTRA DOCUMENTS */}
+        {/* 9. THE MONDAY CLUB RULES AND REGULATIONS & DUAL SIGNATURES (Page 2) */}
         {/* ======================================================== */}
         <div className="rounded-xl border border-slate-800 bg-[#0f172a] p-5 sm:p-6 shadow-md">
-          <h3 className="text-base font-bold text-white mb-2 flex items-center gap-2">
+          <h3 className="text-base font-bold text-white mb-3 flex items-center gap-2">
             <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-600/20 text-xs font-bold text-blue-400 border border-blue-500/30">
-              7
+              9
             </span>
-            <span>Extra documents</span>
+            <span>THE MONDAY CLUB Scholarship Rules and Regulations &amp; Official Signatures (Page 2)</span>
           </h3>
-          <p className="text-xs text-slate-400 mb-3">
-            Extra documents (optional, any number)
-          </p>
 
-          <input
-            id="file-extra"
-            type="file"
-            multiple
-            accept=".pdf,.png,.jpg,.jpeg,.doc,.docx"
-            onChange={(e) => {
-              const files = Array.from(e.target.files || []);
-              if (files.length > 0) {
-                const mapped: UploadedDocument[] = files.map((f) => ({
-                  name: f.name,
-                  size: f.size,
-                  type: f.type,
-                  uploadedAt: new Date().toISOString(),
-                }));
-                setExtraDocs(mapped);
-              }
-            }}
-            className="w-full text-slate-400 text-xs"
-          />
-          {extraDocs.length > 0 && (
-            <div className="mt-2 flex items-center gap-2 text-xs text-emerald-400">
-              <CheckCircle2 className="h-3.5 w-3.5" />
-              <span>{extraDocs.length} supplemental document(s) uploaded</span>
+          {/* Rules Statement verbatim from physical form */}
+          <div className="rounded-lg bg-slate-950 p-4 border border-slate-800 text-xs text-slate-300 leading-relaxed space-y-2 mb-4">
+            <div className="font-bold text-white uppercase tracking-wider text-[11px]">
+              The Monday Club Scholarship Rules and Regulations:
             </div>
-          )}
-        </div>
+            <p>
+              The signatures of the persons below indicate accurate and honest information has been submitted and that the completion of this application and the accompanying materials are the work of the applicant. Furthermore, the applicant understands that if selected for a scholarship, the scholarship monies will be disbursed after August 15, 2026. All scholarship checks will be made payable to and sent directly to the college/university where the recipient will be admitted and enrolled, to matriculate. A notation on the scholarship check will indicate the name of the student to which the scholarship money is to be credited and the institution of attendance. Each scholarship recipient will be requested to supply the complete name, address, and telephone number of the business or bursar&apos;s office of the college/university that the recipient will be attending in Fall 2026 to The Monday Club.
+            </p>
+          </div>
 
-        {/* ======================================================== */}
-        {/* 8. CERTIFICATION */}
-        {/* ======================================================== */}
-        <div className="rounded-xl border border-slate-800 bg-[#0f172a] p-5 sm:p-6 shadow-md">
-          <h3 className="text-base font-bold text-white mb-4 flex items-center gap-2">
-            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-600/20 text-xs font-bold text-blue-400 border border-blue-500/30">
-              8
-            </span>
-            <span>Certification</span>
-          </h3>
-
+          {/* Acknowledgement Checkboxes */}
           <div className="space-y-3 text-xs sm:text-sm text-slate-300 mb-5">
+            <label className="flex items-start gap-3 cursor-pointer">
+              <input
+                id="cert-rules"
+                type="checkbox"
+                checked={rulesAcknowledged}
+                onChange={(e) => setRulesAcknowledged(e.target.checked)}
+                className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-700 bg-slate-900 text-blue-600 focus:ring-blue-500"
+              />
+              <span className="leading-relaxed">
+                I have read, understood, and agree to The Monday Club Scholarship Rules and Regulations.
+              </span>
+            </label>
+
             <label className="flex items-start gap-3 cursor-pointer">
               <input
                 id="cert-accurate"
@@ -1449,9 +1712,54 @@ export default function ApplicantPortal({
                 onChange={(e) => setIsInfoAccurate(e.target.checked)}
                 className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-700 bg-slate-900 text-blue-600 focus:ring-blue-500"
               />
-              <span className="leading-relaxed">The information is accurate and the work is my own.</span>
+              <span className="leading-relaxed">
+                Accurate and honest information has been submitted and the completion of this application is my own work.
+              </span>
             </label>
+          </div>
 
+          {/* Applicant Signature & Date */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6 p-3.5 rounded-lg bg-slate-950/60 border border-slate-800">
+            <div className="sm:col-span-2">
+              <label className="block text-slate-400 font-medium mb-1.5 text-xs sm:text-sm">
+                Applicant&apos;s Signature (Type Full Legal Name)
+              </label>
+              <input
+                id="applicant-signature"
+                type="text"
+                value={applicantSignature}
+                onChange={(e) => setApplicantSignature(e.target.value)}
+                placeholder="e.g. Madison Rae Tymes"
+                className="w-full rounded-lg px-3 py-2 text-sm text-white font-mono bg-slate-950 border border-slate-800"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-slate-400 font-medium mb-1.5 text-xs sm:text-sm">
+                Date (Applicant)
+              </label>
+              <input
+                id="applicant-signature-date"
+                type="date"
+                value={applicantSignatureDate}
+                onChange={(e) => setApplicantSignatureDate(e.target.value)}
+                className="w-full rounded-lg px-3 py-2 text-sm text-white bg-slate-950 border border-slate-800"
+                required
+              />
+            </div>
+          </div>
+
+          {/* Parent/Guardian Permission Statement */}
+          <div className="rounded-lg bg-slate-950 p-4 border border-slate-800 text-xs text-slate-300 leading-relaxed mb-4">
+            <div className="font-bold text-white uppercase tracking-wider text-[11px] mb-1">
+              Parent/Guardian Verification Statement:
+            </div>
+            <p>
+              &ldquo;I hereby verify that I am the parent(s)/guardian(s) of this student and grant permission for his/her participation in this competition and understand the rules above and that the decision of the judges is FINAL.&rdquo;
+            </p>
+          </div>
+
+          <div className="mb-4 text-xs sm:text-sm text-slate-300">
             <label className="flex items-start gap-3 cursor-pointer">
               <input
                 id="cert-permission"
@@ -1461,43 +1769,64 @@ export default function ApplicantPortal({
                 className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-700 bg-slate-900 text-blue-600 focus:ring-blue-500"
               />
               <span className="leading-relaxed">
-                Parent/guardian grants permission and understands the decision of the judges is final.
+                I hereby verify that I am the parent(s)/guardian(s) of this student and grant permission for his/her participation in this competition and understand that the decision of the judges is FINAL.
               </span>
             </label>
           </div>
 
-          <div className="mb-6">
-            <label className="block text-slate-400 font-medium mb-1.5 text-xs sm:text-sm">
-              Applicant signature (type full name)
-            </label>
-            <input
-              id="applicant-signature"
-              type="text"
-              value={applicantSignature}
-              onChange={(e) => setApplicantSignature(e.target.value)}
-              placeholder="Type your full legal name"
-              className="w-full sm:w-2/3 rounded-lg px-3 py-2.5 text-sm text-white font-mono"
-              required
-            />
+          {/* Parent Signature & Date */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6 p-3.5 rounded-lg bg-slate-950/60 border border-slate-800">
+            <div className="sm:col-span-2">
+              <label className="block text-slate-400 font-medium mb-1.5 text-xs sm:text-sm">
+                Parent/Guardian&apos;s Signature (Type Full Legal Name)
+              </label>
+              <input
+                id="parent-signature"
+                type="text"
+                value={parentSignature}
+                onChange={(e) => setParentSignature(e.target.value)}
+                placeholder="e.g. Shira Tymes"
+                className="w-full rounded-lg px-3 py-2 text-sm text-white font-mono bg-slate-950 border border-slate-800"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-slate-400 font-medium mb-1.5 text-xs sm:text-sm">
+                Date (Parent/Guardian)
+              </label>
+              <input
+                id="parent-signature-date"
+                type="date"
+                value={parentSignatureDate}
+                onChange={(e) => setParentSignatureDate(e.target.value)}
+                className="w-full rounded-lg px-3 py-2 text-sm text-white bg-slate-950 border border-slate-800"
+                required
+              />
+            </div>
           </div>
 
-          {/* Submit Action & Validation Banner matching Client Screenshot */}
+          {/* Centered Footer Motto from Physical Form */}
+          <div className="text-center py-2 text-xs font-serif italic text-amber-300/80 border-t border-slate-800/80 mb-5">
+            &ldquo;Spanning Three Centuries!&rdquo;
+          </div>
+
+          {/* Submit Action & Validation Banner */}
           <div className="flex flex-col sm:flex-row sm:items-center gap-4 pt-2 border-t border-slate-800/80">
             <button
               id="btn-submit-application"
               type="submit"
               disabled={isSubmitting}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-6 py-2.5 text-sm font-bold text-white shadow-lg shadow-blue-600/30 hover:bg-blue-500 disabled:opacity-50 transition cursor-pointer"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-7 py-3 text-sm font-bold text-white shadow-lg shadow-blue-600/30 hover:bg-blue-500 disabled:opacity-50 transition cursor-pointer"
             >
               {isSubmitting ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  <span>Evaluating & Submitting...</span>
+                  <span>Evaluating AI Rubric &amp; Submitting...</span>
                 </>
               ) : (
                 <>
                   <Send className="h-4 w-4" />
-                  <span>Submit application</span>
+                  <span>Submit Official Application</span>
                 </>
               )}
             </button>
