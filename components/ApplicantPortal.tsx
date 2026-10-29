@@ -9,9 +9,10 @@ import {
   Sparkles,
   Send,
   Loader2,
-  Printer,
   Eye,
   ArrowLeft,
+  FileDown,
+  X,
 } from 'lucide-react';
 import {
   ClubActivity,
@@ -23,6 +24,7 @@ import {
 } from '@/types/scholarship';
 import { saveNewApplication } from '@/lib/storage';
 import { sendApplicationToGoogleSheet } from '@/lib/googleSheet';
+import { exportApplicationsToPDF, openPdfViewerWindow } from '@/lib/pdfExport';
 
 interface ApplicantPortalProps {
   onSuccessSubmit: (app: ScholarshipApplication) => void;
@@ -146,6 +148,17 @@ export default function ApplicantPortal({
   const [submittedApp, setSubmittedApp] = useState<ScholarshipApplication | null>(null);
   const [showSubmittedForm, setShowSubmittedForm] = useState(false);
   const successContainerRef = React.useRef<HTMLDivElement>(null);
+
+  // PDF Export Ready Toast
+  const [pdfToast, setPdfToast] = useState<{ dataUri: string; name: string } | null>(null);
+
+  const handleDownloadPdf = (apps: ScholarshipApplication[]) => {
+    const res = exportApplicationsToPDF(apps);
+    if (res && res.dataUri) {
+      setPdfToast({ dataUri: res.dataUri, name: res.fileName });
+      setTimeout(() => setPdfToast(null), 20000);
+    }
+  };
 
   // Smooth scroll directly to the confirmation view upon submission
   React.useEffect(() => {
@@ -463,6 +476,14 @@ export default function ApplicantPortal({
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             <button
+              type="button"
+              onClick={() => handleDownloadPdf([submittedApp])}
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-5 py-2.5 text-xs sm:text-sm font-bold text-white shadow-lg shadow-emerald-600/30 hover:bg-emerald-500 transition cursor-pointer"
+            >
+              <FileDown className="h-4 w-4" />
+              <span>Download Application (PDF)</span>
+            </button>
+            <button
               onClick={handleResetForm}
               className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-xs sm:text-sm font-bold text-white shadow-lg shadow-blue-600/30 hover:bg-blue-500 transition cursor-pointer"
             >
@@ -479,14 +500,38 @@ export default function ApplicantPortal({
               <Eye className="h-4 w-4" />
               <span>Review Submitted Form</span>
             </button>
-            <button
-              onClick={() => window.print()}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl border border-slate-800 bg-slate-900/80 px-4 py-2.5 text-xs sm:text-sm font-semibold text-slate-400 hover:text-slate-200 transition cursor-pointer"
-            >
-              <Printer className="h-4 w-4" />
-              <span>Print Receipt</span>
-            </button>
           </div>
+
+          {pdfToast && (
+            <div className="mt-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-xl bg-gradient-to-r from-blue-950 via-indigo-950 to-slate-900 border border-blue-500 text-slate-100 text-xs shadow-xl animate-in fade-in text-left">
+              <div className="flex items-center gap-2.5">
+                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-blue-600/30 text-blue-400 border border-blue-500/40 shrink-0">
+                  <FileDown className="h-4 w-4" />
+                </div>
+                <div>
+                  <span className="font-bold text-white">Application PDF Ready!</span>
+                  <span className="text-slate-300 ml-1.5 hidden sm:inline">If your browser blocked the new window:</span>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => openPdfViewerWindow(pdfToast.dataUri, pdfToast.name, 1)}
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-3 py-1.5 font-bold text-white hover:bg-blue-500 transition shadow-sm cursor-pointer"
+                >
+                  <FileDown className="h-3.5 w-3.5" />
+                  <span>Click to Open &amp; Save PDF</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPdfToast(null)}
+                  className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition cursor-pointer"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     );
@@ -496,37 +541,78 @@ export default function ApplicantPortal({
     <div className="mx-auto max-w-4xl px-3 sm:px-6 py-6 sm:py-8">
       {/* Submitted Application Banner when reviewing */}
       {submittedApp && showSubmittedForm && (
-        <div className="mb-6 rounded-2xl border border-emerald-500/60 bg-gradient-to-r from-emerald-950/80 via-slate-900 to-slate-900 p-4 sm:p-5 text-slate-100 shadow-xl flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <CheckCircle2 className="h-7 w-7 text-emerald-400 shrink-0" />
-            <div>
-              <div className="font-bold text-white text-sm sm:text-base">
-                Application {submittedApp.applicationNumber} Submitted!
-              </div>
-              <div className="text-xs text-slate-300">
-                AI Score: <strong className="text-white">{submittedApp.aiScoring.totalScore}/50 pts</strong> ({submittedApp.aiScoring.ratingCategory}) • Synced with Google Sheet
+        <>
+          <div className="mb-4 rounded-2xl border border-emerald-500/60 bg-gradient-to-r from-emerald-950/80 via-slate-900 to-slate-900 p-4 sm:p-5 text-slate-100 shadow-xl flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <CheckCircle2 className="h-7 w-7 text-emerald-400 shrink-0" />
+              <div>
+                <div className="font-bold text-white text-sm sm:text-base">
+                  Application {submittedApp.applicationNumber} Submitted!
+                </div>
+                <div className="text-xs text-slate-300">
+                  AI Score: <strong className="text-white">{submittedApp.aiScoring.totalScore}/50 pts</strong> ({submittedApp.aiScoring.ratingCategory}) • Synced with Google Sheet
+                </div>
               </div>
             </div>
+            <div className="flex items-center gap-2 shrink-0">
+              <button
+                type="button"
+                onClick={() => handleDownloadPdf([submittedApp])}
+                className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3.5 py-2 text-xs font-bold text-white hover:bg-emerald-500 transition cursor-pointer shadow-md shadow-emerald-600/30"
+              >
+                <FileDown className="h-3.5 w-3.5" />
+                <span>Download PDF</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowSubmittedForm(false)}
+                className="inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-3.5 py-2 text-xs font-bold text-white hover:bg-blue-500 transition cursor-pointer shadow-md shadow-blue-600/30"
+              >
+                <ArrowLeft className="h-3.5 w-3.5" />
+                <span>Back to Confirmation</span>
+              </button>
+              <button
+                type="button"
+                onClick={handleResetForm}
+                className="inline-flex items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-xs font-semibold text-slate-300 hover:bg-slate-700 hover:text-white transition cursor-pointer"
+              >
+                <Plus className="h-3.5 w-3.5" />
+                <span>New Application</span>
+              </button>
+            </div>
           </div>
-          <div className="flex items-center gap-2 shrink-0">
-            <button
-              type="button"
-              onClick={() => setShowSubmittedForm(false)}
-              className="inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-3.5 py-2 text-xs font-bold text-white hover:bg-blue-500 transition cursor-pointer shadow-md shadow-blue-600/30"
-            >
-              <ArrowLeft className="h-3.5 w-3.5" />
-              <span>Back to Confirmation</span>
-            </button>
-            <button
-              type="button"
-              onClick={handleResetForm}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-xs font-semibold text-slate-300 hover:bg-slate-700 hover:text-white transition cursor-pointer"
-            >
-              <Plus className="h-3.5 w-3.5" />
-              <span>New Application</span>
-            </button>
-          </div>
-        </div>
+
+          {pdfToast && (
+            <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-xl bg-gradient-to-r from-blue-950 via-indigo-950 to-slate-900 border border-blue-500 text-slate-100 text-xs shadow-xl animate-in fade-in text-left">
+              <div className="flex items-center gap-2.5">
+                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-blue-600/30 text-blue-400 border border-blue-500/40 shrink-0">
+                  <FileDown className="h-4 w-4" />
+                </div>
+                <div>
+                  <span className="font-bold text-white">Application PDF Ready!</span>
+                  <span className="text-slate-300 ml-1.5 hidden sm:inline">If your browser blocked the new window:</span>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => openPdfViewerWindow(pdfToast.dataUri, pdfToast.name, 1)}
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-3 py-1.5 font-bold text-white hover:bg-blue-500 transition shadow-sm cursor-pointer"
+                >
+                  <FileDown className="h-3.5 w-3.5" />
+                  <span>Click to Open &amp; Save PDF</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPdfToast(null)}
+                  className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition cursor-pointer"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+          )}
+        </>
       )}
 
       {/* Title & Organization Header matching Client Mockup */}

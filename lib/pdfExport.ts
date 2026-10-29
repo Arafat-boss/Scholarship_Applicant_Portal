@@ -3,10 +3,53 @@ import autoTable from 'jspdf-autotable';
 import { ScholarshipApplication } from '@/types/scholarship';
 import { evaluateApplicationWithAI } from './aiScoring';
 
-export function exportApplicationsToPDF(applications: ScholarshipApplication[]): void {
+export interface PDFExportResult {
+  success: boolean;
+  blobUrl: string;
+  dataUri: string;
+  fileName: string;
+}
+
+export function exportApplicationsToPDF(
+  applications: ScholarshipApplication[]
+): PDFExportResult | void {
   if (!applications || applications.length === 0) {
     alert('No applications found to export!');
     return;
+  }
+
+  const isIframe = typeof window !== 'undefined' && window.self !== window.top;
+
+  // Open a top-level window synchronously to bypass Wix iframe sandbox download restrictions
+  let popupWin: Window | null = null;
+  if (isIframe) {
+    try {
+      popupWin = window.open('', '_blank');
+      if (popupWin) {
+        popupWin.document.write(`
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <title>Generating Scholarship PDF Dossier...</title>
+            <style>
+              body { background: #090d16; color: #f1f5f9; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+              .spinner { border: 3px solid rgba(255,255,255,0.15); border-top-color: #3b82f6; border-radius: 50%; width: 44px; height: 44px; animation: spin 0.8s linear infinite; margin: 0 auto 16px; }
+              @keyframes spin { to { transform: rotate(360deg); } }
+            </style>
+          </head>
+          <body>
+            <div style="text-align: center; max-width: 420px; padding: 24px;">
+              <div class="spinner"></div>
+              <h3 style="margin: 0 0 8px; font-size: 18px; color: #ffffff;">Generating Committee PDF Dossier...</h3>
+              <p style="color: #94a3b8; font-size: 13px; margin: 0; line-height: 1.5;">Preparing executive tables, rubric breakdowns, and applicant records.</p>
+            </div>
+          </body>
+          </html>
+        `);
+      }
+    } catch {
+      popupWin = null;
+    }
   }
 
   const doc = new jsPDF({
@@ -435,5 +478,222 @@ export function exportApplicationsToPDF(applications: ScholarshipApplication[]):
 
   // Save / Trigger Download
   const fileDate = now.toISOString().slice(0, 10);
-  doc.save(`Monday_Club_Scholarship_Applications_${fileDate}.pdf`);
+  const fileName =
+    applications.length === 1
+      ? `Scholarship_Application_${applications[0].applicant.firstName}_${applications[0].applicant.lastName}_${fileDate}.pdf`.replace(
+          /\s+/g,
+          '_'
+        )
+      : `Monday_Club_Scholarship_Applications_${fileDate}.pdf`;
+  const pdfBlob = doc.output('blob');
+  const blobUrl = URL.createObjectURL(pdfBlob);
+  const dataUri = doc.output('datauristring');
+
+  // Broadcast to parent Wix window just in case Wix parent listener is active
+  if (typeof window !== 'undefined') {
+    window.parent?.postMessage({ type: 'DOWNLOAD_PDF', fileName, dataUri }, '*');
+  }
+
+  if (isIframe && popupWin) {
+    populatePdfWindow(popupWin, dataUri, fileName, applications.length);
+    return { success: true, blobUrl, dataUri, fileName };
+  }
+
+  // Non-iframe or fallback direct download
+  if (!isIframe) {
+    try {
+      doc.save(fileName);
+    } catch {
+      if (typeof window !== 'undefined') {
+        window.open(blobUrl, '_blank');
+      }
+    }
+  }
+
+  return { success: true, blobUrl, dataUri, fileName };
+}
+
+export function populatePdfWindow(
+  win: Window,
+  dataUri: string,
+  fileName: string,
+  totalApps: number
+): void {
+  try {
+    // Pass PDF data safely to the popup window
+    // @ts-expect-error Custom popup window property
+    win.__PDF_DATA_URI__ = dataUri;
+    // @ts-expect-error Custom popup window property
+    win.__PDF_FILE_NAME__ = fileName;
+
+    const generatedDateStr = new Date().toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+
+    win.document.open();
+    win.document.write(`
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>${fileName}</title>
+        <style>
+          * { box-sizing: border-box; }
+          body {
+            margin: 0;
+            padding: 0;
+            background-color: #090d16;
+            color: #f8fafc;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+          }
+          .top-bar {
+            background: #0f172a;
+            border-bottom: 1px solid #1e293b;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            z-index: 10;
+          }
+          .brand h1 {
+            margin: 0;
+            font-size: 15px;
+            font-weight: 700;
+            color: #ffffff;
+          }
+          .brand p {
+            margin: 2px 0 0;
+            font-size: 12px;
+            color: #94a3b8;
+          }
+          .btn-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+          }
+          .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 9px 18px;
+            font-size: 13px;
+            font-weight: 600;
+            border-radius: 8px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            border: none;
+          }
+          .btn-download {
+            background: #2563eb;
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+          }
+          .btn-download:hover {
+            background: #1d4ed8;
+          }
+          .btn-print {
+            background: #1e293b;
+            color: #cbd5e1;
+            border: 1px solid #334155;
+          }
+          .btn-print:hover {
+            background: #334155;
+            color: #ffffff;
+          }
+          .viewer-frame {
+            flex: 1;
+            width: 100%;
+            height: 100%;
+            background: #1e293b;
+          }
+          iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="top-bar">
+          <div class="brand">
+            <h1>The Monday Club Scholarship — PDF Dossier</h1>
+            <p>${totalApps} Application(s) • Generated on ${generatedDateStr}</p>
+          </div>
+          <div class="btn-group">
+            <a id="auto-dl-link" class="btn btn-download" href="#">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              <span>Save PDF File</span>
+            </a>
+            <button class="btn btn-print" onclick="window.frames['pdf-frame'].contentWindow.print() || window.print()">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+              <span>Print Dossier</span>
+            </button>
+          </div>
+        </div>
+        <div class="viewer-frame">
+          <iframe id="pdf-frame"></iframe>
+        </div>
+        <script>
+          try {
+            var dataUri = window.__PDF_DATA_URI__ || '';
+            var fileName = window.__PDF_FILE_NAME__ || '${fileName}';
+            var parts = dataUri.split(';base64,');
+            var raw = window.atob(parts[1] || '');
+            var rawLength = raw.length;
+            var uInt8Array = new Uint8Array(rawLength);
+            for (var i = 0; i < rawLength; ++i) {
+              uInt8Array[i] = raw.charCodeAt(i);
+            }
+            var blob = new Blob([uInt8Array], { type: 'application/pdf' });
+            var url = URL.createObjectURL(blob);
+            
+            var dl = document.getElementById('auto-dl-link');
+            if (dl) {
+              dl.href = url;
+              dl.download = fileName;
+              setTimeout(function() {
+                dl.click();
+              }, 300);
+            }
+            var frame = document.getElementById('pdf-frame');
+            if (frame) {
+              frame.src = url;
+            }
+          } catch (err) {
+            console.error('PDF render error:', err);
+          }
+        <\/script>
+      </body>
+      </html>
+    `);
+    win.document.close();
+  } catch (err) {
+    console.error('Failed to populate PDF window:', err);
+  }
+}
+
+export function openPdfViewerWindow(
+  dataUri: string,
+  fileName: string,
+  totalApps: number
+): Window | null {
+  try {
+    const win = window.open('', '_blank');
+    if (!win) return null;
+    populatePdfWindow(win, dataUri, fileName, totalApps);
+    return win;
+  } catch (err) {
+    console.error('Failed to open PDF window on click:', err);
+    return null;
+  }
 }
