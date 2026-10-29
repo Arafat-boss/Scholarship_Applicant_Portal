@@ -78,21 +78,7 @@ function ExportPdfContent() {
         setPdfUrl(url);
         setIsGenerating(false);
 
-        // Auto download trigger on top-level un-sandboxed window
-        setTimeout(() => {
-          try {
-            doc.save(generatedFileName);
-            setDownloadTriggered(true);
-          } catch {
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = generatedFileName;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            setDownloadTriggered(true);
-          }
-        }, 150);
+        setIsGenerating(false);
       } catch (err) {
         console.error('Failed to generate PDF:', err);
         setIsGenerating(false);
@@ -187,11 +173,23 @@ function ExportPdfContent() {
             <p className="text-xs text-slate-400">Compiling rubric evaluations, profiles, and scorecards</p>
           </div>
         ) : pdfUrl ? (
-          <iframe
-            src={`${pdfUrl}#toolbar=1`}
-            className="w-full h-full border-0"
-            title="Scholarship PDF Dossier"
-          />
+          <object
+            data={pdfUrl}
+            type="application/pdf"
+            className="w-full h-full"
+          >
+            <div className="flex flex-col items-center justify-center h-full gap-4 p-8 text-center text-slate-300">
+              <p className="text-base font-semibold text-white">Your PDF Dossier is ready.</p>
+              <button
+                type="button"
+                onClick={handleManualDownload}
+                className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-6 py-3 text-sm font-bold text-white shadow-xl shadow-blue-600/30 hover:bg-blue-500 transition cursor-pointer"
+              >
+                <Download className="h-4 w-4" />
+                <span>Save PDF File ({fileName})</span>
+              </button>
+            </div>
+          </object>
         ) : (
           <div className="flex flex-col items-center justify-center h-full gap-2 text-slate-400">
             <p className="text-sm">No applications found to export.</p>

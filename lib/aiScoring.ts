@@ -3,22 +3,30 @@ import { ScholarshipApplication, AIScoringResult, RubricCriterion } from '@/type
 export function evaluateApplicationWithAI(
   app: Omit<ScholarshipApplication, 'aiScoring' | 'committeeReview'>
 ): AIScoringResult {
-  const gpaNum = parseFloat(app.schoolFamily.gpa) || 0;
-  const serviceHours = app.communityService.reduce(
+  const gpaNum = parseFloat(app.schoolFamily?.gpa || '') || 0;
+  const activities = app.activities || [];
+  const communityService = app.communityService || [];
+  const employment = app.employment || [];
+  const colleges = app.colleges || [];
+  const documents = app.documents || {};
+  const recLetters = documents.recommendationLetters || [];
+  const extraDocs = documents.extraDocuments || [];
+
+  const serviceHours = communityService.reduce(
     (sum, item) => sum + (parseFloat(item.totalHours) || 0),
     0
   );
-  const leadershipCount = app.activities.filter(
+  const leadershipCount = activities.filter(
     (a) => a.role && a.role.trim() !== '' && !a.role.toLowerCase().includes('member')
   ).length;
-  const hasJob = app.employment.length > 0;
-  const collegesAccepted = app.colleges.filter((c) => c.status === 'accepted').length;
-  const familyCollegeCount = parseInt(app.schoolFamily.familyMembersInCollege, 10) || 0;
-  const siblingsCount = parseInt(app.schoolFamily.numberOfSiblings, 10) || 0;
-  const recLetterCount = app.documents.recommendationLetters.length;
-  const hasTranscript = Boolean(app.documents.transcript);
-  const hasSAR = Boolean(app.documents.studentAidReport);
-  const extraDocsCount = app.documents.extraDocuments.length;
+  const hasJob = employment.length > 0;
+  const collegesAccepted = colleges.filter((c) => c.status === 'accepted').length;
+  const familyCollegeCount = parseInt(app.schoolFamily?.familyMembersInCollege || '0', 10) || 0;
+  const siblingsCount = parseInt(app.schoolFamily?.numberOfSiblings || '0', 10) || 0;
+  const recLetterCount = recLetters.length;
+  const hasTranscript = Boolean(documents.transcript);
+  const hasSAR = Boolean(documents.studentAidReport);
+  const extraDocsCount = extraDocs.length;
 
   const criteria: RubricCriterion[] = [];
   const strengths: string[] = [];

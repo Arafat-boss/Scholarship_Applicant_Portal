@@ -514,15 +514,14 @@ export default function ApplicantPortal({
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <a
-                  href={pdfToast.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <button
+                  type="button"
+                  onClick={() => handleDownloadPdf([submittedApp])}
                   className="inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-3 py-1.5 font-bold text-white hover:bg-blue-500 transition shadow-sm cursor-pointer"
                 >
                   <FileDown className="h-3.5 w-3.5" />
                   <span>Click to Open &amp; Save PDF</span>
-                </a>
+                </button>
                 <button
                   type="button"
                   onClick={() => setPdfToast(null)}
@@ -595,15 +594,14 @@ export default function ApplicantPortal({
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <a
-                  href={pdfToast.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <button
+                  type="button"
+                  onClick={() => handleDownloadPdf([submittedApp])}
                   className="inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-3 py-1.5 font-bold text-white hover:bg-blue-500 transition shadow-sm cursor-pointer"
                 >
                   <FileDown className="h-3.5 w-3.5" />
                   <span>Click to Open &amp; Save PDF</span>
-                </a>
+                </button>
                 <button
                   type="button"
                   onClick={() => setPdfToast(null)}

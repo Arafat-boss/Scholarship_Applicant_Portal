@@ -28,18 +28,33 @@ export function exportApplicationsToPDF(
       : `Monday_Club_Scholarship_Applications_${fileDate}.pdf`;
 
   const appId = applications.length === 1 ? applications[0].id : '';
-  const url = appId ? `/export-pdf?id=${encodeURIComponent(appId)}` : '/export-pdf?mode=all';
 
-  if (typeof window !== 'undefined') {
+  if (typeof document !== 'undefined') {
     try {
-      localStorage.setItem('monday_club_export_temp', JSON.stringify(applications));
-    } catch (e) {
-      console.warn('Failed to store temp export:', e);
+      // Form POST with target="_blank" is permitted by Wix sandbox (allow-forms allow-popups)
+      // and opens a clean, direct HTTP PDF stream in Chrome with zero client-side blocks
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = '/api/pdf';
+      form.target = '_blank';
+      form.style.display = 'none';
+
+      const input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = 'applications';
+      input.value = JSON.stringify(applications);
+
+      form.appendChild(input);
+      document.body.appendChild(form);
+      form.submit();
+      document.body.removeChild(form);
+    } catch {
+      const fallbackUrl = appId ? `/export-pdf?id=${encodeURIComponent(appId)}` : '/export-pdf?mode=all';
+      window.open(fallbackUrl, '_blank');
     }
-    window.open(url, '_blank');
   }
 
-  return { url, fileName };
+  return { url: '/api/pdf', fileName };
 }
 
 export function generateScholarshipJsPdf(applications: ScholarshipApplication[]): {
