@@ -475,14 +475,24 @@ export default function ApplicantPortal({
 
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-            <button
-              type="button"
-              onClick={() => handleDownloadPdf([submittedApp])}
+            <a
+              href={`/api/pdf?download=1&id=${encodeURIComponent(submittedApp.id)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              download={`Scholarship_Application_${submittedApp.applicant.firstName}_${submittedApp.applicant.lastName}.pdf`}
+              onClick={(e) => {
+                if (typeof window !== 'undefined' && window.self !== window.top && window.top) {
+                  try {
+                    window.top.location.href = `${window.location.origin}/api/pdf?download=1&id=${encodeURIComponent(submittedApp.id)}`;
+                    e.preventDefault();
+                  } catch {}
+                }
+              }}
               className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-5 py-2.5 text-xs sm:text-sm font-bold text-white shadow-lg shadow-emerald-600/30 hover:bg-emerald-500 transition cursor-pointer"
             >
               <FileDown className="h-4 w-4" />
               <span>Download Application (PDF)</span>
-            </button>
+            </a>
             <button
               onClick={handleResetForm}
               className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-xs sm:text-sm font-bold text-white shadow-lg shadow-blue-600/30 hover:bg-blue-500 transition cursor-pointer"
