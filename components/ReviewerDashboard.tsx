@@ -831,49 +831,6 @@ export default function ReviewerDashboard({
               <span>Download All (PDF)</span>
             </a>
 
-            {/* Interactive Preview & Print Tab */}
-            <a
-              href="/export-pdf"
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => {
-                try {
-                  const toExport = filteredApplications.length > 0 ? filteredApplications : applications;
-                  localStorage.setItem('monday_club_export_temp', JSON.stringify(toExport));
-                } catch {}
-              }}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-800/80 px-3 py-2 text-xs font-semibold text-slate-200 hover:bg-slate-700 hover:text-white transition cursor-pointer"
-              title="Open full interactive PDF previewer and print window"
-            >
-              <FileText className="h-4 w-4 text-blue-400" />
-              <span>Preview &amp; Print</span>
-            </a>
-
-            <button
-              type="button"
-              onClick={handleFetchFromGoogleSheet}
-              disabled={isFetchingSheet}
-              className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-3.5 py-2 text-xs font-bold text-white shadow-md shadow-emerald-600/30 hover:bg-emerald-500 disabled:opacity-50 transition cursor-pointer"
-              title="Sync live records directly from your Google Sheet"
-            >
-              <RotateCcw className={`h-4 w-4 ${isFetchingSheet ? 'animate-spin' : ''}`} />
-              <span>{isFetchingSheet ? 'Syncing...' : 'Sync from Google Sheet'}</span>
-            </button>
-            <button
-              onClick={() => setIsGoogleSheetModalOpen(true)}
-              className="inline-flex items-center gap-2 rounded-lg bg-[#0F9D58] px-3.5 py-2 text-xs font-bold text-white shadow-md shadow-green-700/20 hover:bg-[#0b8043] transition cursor-pointer"
-              title="Open and configure Google Sheet integration"
-            >
-              <ExternalLink className="h-4 w-4" />
-              <span>Google Sheet Settings</span>
-            </button>
-            <button
-              onClick={onOpenRubricInfo}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-800/80 px-3.5 py-2 text-xs font-semibold text-slate-200 hover:bg-slate-700 transition cursor-pointer"
-            >
-              <Sparkles className="h-3.5 w-3.5 text-amber-400" />
-              <span>Rubric Guide</span>
-            </button>
             {onLogout && (
               <button
                 onClick={onLogout}
