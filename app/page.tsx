@@ -11,16 +11,19 @@ import { FileText, ShieldCheck, Sparkles, Lock } from 'lucide-react';
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState<'applicant' | 'reviewer'>('applicant');
-  const [applications, setApplications] = useState<ScholarshipApplication[]>(() => {
-    return getStoredApplications();
-  });
+  const [applications, setApplications] = useState<ScholarshipApplication[]>([]);
   const [isRubricModalOpen, setIsRubricModalOpen] = useState(false);
-  const [isCommitteeAuthenticated, setIsCommitteeAuthenticated] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return sessionStorage.getItem('mc_committee_auth') === 'true';
+  const [isCommitteeAuthenticated, setIsCommitteeAuthenticated] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+
+  // Load client-only storage safely after mount to prevent hydration mismatch
+  useEffect(() => {
+    setIsMounted(true);
+    setApplications(getStoredApplications());
+    if (typeof window !== 'undefined' && sessionStorage.getItem('mc_committee_auth') === 'true') {
+      setIsCommitteeAuthenticated(true);
     }
-    return false;
-  });
+  }, []);
 
   // Auto-fetch live applications directly from Google Sheet on startup
   useEffect(() => {
@@ -111,13 +114,13 @@ export default function Home() {
                 : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
                 }`}
             >
-              {isCommitteeAuthenticated ? (
+              {isMounted && isCommitteeAuthenticated ? (
                 <ShieldCheck className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-emerald-400" />
               ) : (
                 <Lock className="h-3.5 w-3.5 text-amber-400" />
               )}
               <span>Reviewer Portal</span>
-              {applications.length > 0 && isCommitteeAuthenticated && (
+              {isMounted && applications.length > 0 && isCommitteeAuthenticated && (
                 <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-blue-400/20 px-1.5 text-xs font-bold text-blue-300">
                   {applications.length}
                 </span>
@@ -140,7 +143,7 @@ export default function Home() {
       <main className="w-full pb-6">
         {activeTab === 'applicant' ? (
           <ApplicantPortal onSuccessSubmit={handleSuccessSubmit} />
-        ) : !isCommitteeAuthenticated ? (
+        ) : !isMounted || !isCommitteeAuthenticated ? (
           <CommitteeLoginGate
             onAuthenticated={() => setIsCommitteeAuthenticated(true)}
             onBackToApplication={() => setActiveTab('applicant')}

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 import {
   ShieldCheck,
   Search,
@@ -81,13 +82,21 @@ export default function ReviewerDashboard({
 
   // Google Sheet Modal & Sync state
   const [isGoogleSheetModalOpen, setIsGoogleSheetModalOpen] = useState(false);
-  const [webhookUrl, setWebhookUrl] = useState(() => getStoredWebhookUrl());
+  const [webhookUrl, setWebhookUrl] = useState('');
   const [isSyncingSheet, setIsSyncingSheet] = useState(false);
   const [isFetchingSheet, setIsFetchingSheet] = useState(false);
   const [sheetSyncResult, setSheetSyncResult] = useState<{ text: string; isError: boolean } | null>(null);
   const [sheetSyncToast, setSheetSyncToast] = useState<{ text: string; isError: boolean } | null>(null);
   const [copiedScript, setCopiedScript] = useState(false);
-  const [showScriptGuide, setShowScriptGuide] = useState(() => !getStoredWebhookUrl());
+  const [showScriptGuide, setShowScriptGuide] = useState(false);
+
+  React.useEffect(() => {
+    const url = getStoredWebhookUrl();
+    setWebhookUrl(url);
+    if (!url) {
+      setShowScriptGuide(true);
+    }
+  }, []);
 
   // Live Sync directly from Google Sheet
   const handleFetchFromGoogleSheet = async () => {
@@ -344,9 +353,9 @@ export default function ReviewerDashboard({
               <span className="text-base font-black text-white">{selectedApp.aiScoring.totalScore} <span className="text-xs text-slate-400">/ 50</span></span>
             </div>
             <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${selectedApp.committeeReview.status === 'Approved' ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40' :
-                selectedApp.committeeReview.status === 'Shortlisted' ? 'bg-blue-500/20 text-blue-300 border border-blue-500/40' :
-                  selectedApp.committeeReview.status === 'Rejected' ? 'bg-red-500/20 text-red-300 border border-red-500/40' :
-                    'bg-amber-500/20 text-amber-300 border border-amber-500/40'
+              selectedApp.committeeReview.status === 'Shortlisted' ? 'bg-blue-500/20 text-blue-300 border border-blue-500/40' :
+                selectedApp.committeeReview.status === 'Rejected' ? 'bg-red-500/20 text-red-300 border border-red-500/40' :
+                  'bg-amber-500/20 text-amber-300 border border-amber-500/40'
               }`}>
               {selectedApp.committeeReview.status}
             </span>
@@ -378,7 +387,7 @@ export default function ReviewerDashboard({
                 onClick={() => {
                   try {
                     localStorage.setItem('monday_club_export_temp', JSON.stringify([selectedApp]));
-                  } catch {}
+                  } catch { }
                 }}
                 className="inline-flex items-center gap-1.5 rounded-xl border border-slate-700 bg-slate-800/90 px-3.5 py-2 text-xs font-bold text-slate-200 hover:bg-slate-700 hover:text-white transition cursor-pointer"
                 title="Download this applicant's dossier immediately as PDF"
@@ -522,9 +531,8 @@ export default function ReviewerDashboard({
                   {selectedApp.colleges.map((col, i) => (
                     <span key={i} className="inline-flex items-center gap-1.5 rounded bg-slate-950 px-2 py-1 text-xs border border-slate-800">
                       <span className="text-white font-medium">{col.college} ({col.cityState})</span>
-                      <span className={`text-[10px] font-semibold uppercase px-1 rounded ${
-                        col.status === 'accepted' ? 'text-emerald-400 bg-emerald-950' : 'text-slate-400 bg-slate-800'
-                      }`}>
+                      <span className={`text-[10px] font-semibold uppercase px-1 rounded ${col.status === 'accepted' ? 'text-emerald-400 bg-emerald-950' : 'text-slate-400 bg-slate-800'
+                        }`}>
                         {col.status}
                       </span>
                     </span>
@@ -798,17 +806,28 @@ export default function ReviewerDashboard({
       {/* Committee Portal Banner */}
       <div className="mb-6 rounded-2xl border border-slate-800 bg-gradient-to-r from-[#131b2e] via-[#0f172a] to-[#111827] p-4 sm:p-6 shadow-xl text-slate-100">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <div>
-            <div className="inline-flex items-center gap-2 rounded-full bg-blue-950 px-3 py-1 text-xs font-semibold text-blue-400 border border-blue-800/60 mb-2">
-              <ShieldCheck className="h-3.5 w-3.5 text-blue-400" />
-              <span>Reviewer & Committee Dashboard</span>
+          <div className="flex items-start gap-4">
+            <div className="flex h-16 w-16 sm:h-20 sm:w-20 items-center justify-center rounded-2xl border border-slate-700/60 bg-[#0d1629] p-2 shrink-0 shadow-md">
+              <Image
+                src="/Logo.png"
+                alt="The Monday Club Logo"
+                width={80}
+                height={80}
+                className="h-full w-full object-contain"
+              />
             </div>
-            <h2 className="text-xl sm:text-3xl font-extrabold tracking-tight text-white">
-              Application & AI Rubric Scoring Queue
-            </h2>
-            <p className="mt-1 text-xs sm:text-sm text-slate-400 leading-relaxed">
-              Inspect applicant records, analyze AI 10-criterion rubrics (0–50 pts), input committee overrides, and sync with Google Sheet.
-            </p>
+            <div>
+              <div className="inline-flex items-center gap-2 rounded-full bg-blue-950 px-3 py-1 text-xs font-semibold text-blue-400 border border-blue-800/60 mb-2">
+                <ShieldCheck className="h-3.5 w-3.5 text-blue-400" />
+                <span>Reviewer &amp; Committee Dashboard</span>
+              </div>
+              <h2 className="text-xl sm:text-3xl font-extrabold tracking-tight text-white">
+                Application &amp; AI Rubric Scoring Queue
+              </h2>
+              <p className="mt-1 text-xs sm:text-sm text-slate-400 leading-relaxed">
+                Inspect applicant records, analyze AI 10-criterion rubrics (0–50 pts), input committee overrides, and sync with Google Sheet.
+              </p>
+            </div>
           </div>
 
           <div className="flex flex-wrap items-center gap-2 sm:gap-3">
@@ -822,7 +841,7 @@ export default function ReviewerDashboard({
                 try {
                   const toExport = filteredApplications.length > 0 ? filteredApplications : applications;
                   localStorage.setItem('monday_club_export_temp', JSON.stringify(toExport));
-                } catch {}
+                } catch { }
               }}
               className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-3.5 py-2 text-xs font-bold text-white shadow-md shadow-indigo-600/30 hover:bg-indigo-500 transition cursor-pointer"
               title="Download all applications immediately into PDF"
@@ -873,8 +892,8 @@ export default function ReviewerDashboard({
       {sheetSyncToast && (
         <div
           className={`mb-4 flex items-center justify-between p-3 rounded-xl border text-xs font-semibold animate-in fade-in ${sheetSyncToast.isError
-              ? 'bg-amber-950/80 border-amber-800 text-amber-200'
-              : 'bg-emerald-950/80 border-emerald-800 text-emerald-200'
+            ? 'bg-amber-950/80 border-amber-800 text-amber-200'
+            : 'bg-emerald-950/80 border-emerald-800 text-emerald-200'
             }`}
         >
           <div className="flex items-center gap-2">
@@ -1001,8 +1020,8 @@ export default function ReviewerDashboard({
                     <tr
                       key={app.id}
                       className={`transition cursor-pointer ${appToDelete?.id === app.id
-                          ? 'bg-red-950/40 border-l-4 border-l-red-500'
-                          : 'hover:bg-slate-900/60'
+                        ? 'bg-red-950/40 border-l-4 border-l-red-500'
+                        : 'hover:bg-slate-900/60'
                         }`}
                       onClick={() => {
                         if (appToDelete?.id !== app.id) {
@@ -1046,14 +1065,14 @@ export default function ReviewerDashboard({
                           </span>
                           <span
                             className={`shrink-0 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border whitespace-nowrap ${app.aiScoring.ratingCategory === 'Exceptional'
-                                ? 'bg-emerald-950/90 text-emerald-300 border-emerald-700/80'
-                                : app.aiScoring.ratingCategory === 'High Merit'
-                                  ? 'bg-blue-950/90 text-blue-300 border-blue-700/80'
-                                  : app.aiScoring.ratingCategory === 'Recommended'
-                                    ? 'bg-amber-950/90 text-amber-300 border-amber-700/80'
-                                    : app.aiScoring.ratingCategory === 'Competitive'
-                                      ? 'bg-purple-950/90 text-purple-300 border-purple-700/80'
-                                      : 'bg-slate-800/90 text-slate-300 border-slate-700'
+                              ? 'bg-emerald-950/90 text-emerald-300 border-emerald-700/80'
+                              : app.aiScoring.ratingCategory === 'High Merit'
+                                ? 'bg-blue-950/90 text-blue-300 border-blue-700/80'
+                                : app.aiScoring.ratingCategory === 'Recommended'
+                                  ? 'bg-amber-950/90 text-amber-300 border-amber-700/80'
+                                  : app.aiScoring.ratingCategory === 'Competitive'
+                                    ? 'bg-purple-950/90 text-purple-300 border-purple-700/80'
+                                    : 'bg-slate-800/90 text-slate-300 border-slate-700'
                               }`}
                           >
                             {app.aiScoring.ratingCategory}
@@ -1064,12 +1083,12 @@ export default function ReviewerDashboard({
                       <td className="px-4 py-3 whitespace-nowrap w-[140px] min-w-[140px]">
                         <span
                           className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold whitespace-nowrap ${app.committeeReview.status === 'Approved'
-                              ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30'
-                              : app.committeeReview.status === 'Shortlisted'
-                                ? 'bg-blue-500/10 text-blue-400 border border-blue-500/30'
-                                : app.committeeReview.status === 'Rejected'
-                                  ? 'bg-red-500/10 text-red-400 border border-red-500/30'
-                                  : 'bg-amber-500/10 text-amber-400 border border-amber-500/30'
+                            ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30'
+                            : app.committeeReview.status === 'Shortlisted'
+                              ? 'bg-blue-500/10 text-blue-400 border border-blue-500/30'
+                              : app.committeeReview.status === 'Rejected'
+                                ? 'bg-red-500/10 text-red-400 border border-red-500/30'
+                                : 'bg-amber-500/10 text-amber-400 border border-amber-500/30'
                             }`}
                         >
                           {app.committeeReview.status}
@@ -1168,8 +1187,8 @@ export default function ReviewerDashboard({
                   <h3 className="text-lg font-bold text-white">Google Sheet Live Integration</h3>
                   <span
                     className={`text-[10px] font-semibold uppercase px-2.5 py-0.5 rounded-full border ${webhookUrl && webhookUrl.startsWith('http')
-                        ? 'bg-emerald-950 text-emerald-300 border-emerald-700'
-                        : 'bg-red-950 text-red-300 border-red-700'
+                      ? 'bg-emerald-950 text-emerald-300 border-emerald-700'
+                      : 'bg-red-950 text-red-300 border-red-700'
                       }`}
                   >
                     {webhookUrl && webhookUrl.startsWith('http') ? '✓ Connected' : '⚠️ Setup Required'}
@@ -1184,8 +1203,8 @@ export default function ReviewerDashboard({
             {sheetSyncResult && (
               <div
                 className={`mb-4 p-3 rounded-xl border text-xs font-medium text-center animate-in fade-in ${sheetSyncResult.isError
-                    ? 'bg-red-950/80 border-red-700 text-red-200'
-                    : 'bg-emerald-950/80 border-emerald-700 text-emerald-300'
+                  ? 'bg-red-950/80 border-red-700 text-red-200'
+                  : 'bg-emerald-950/80 border-emerald-700 text-emerald-300'
                   }`}
               >
                 {sheetSyncResult.text}
