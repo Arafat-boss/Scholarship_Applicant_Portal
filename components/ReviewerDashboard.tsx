@@ -82,21 +82,13 @@ export default function ReviewerDashboard({
 
   // Google Sheet Modal & Sync state
   const [isGoogleSheetModalOpen, setIsGoogleSheetModalOpen] = useState(false);
-  const [webhookUrl, setWebhookUrl] = useState('');
+  const [webhookUrl, setWebhookUrl] = useState(() => getStoredWebhookUrl());
   const [isSyncingSheet, setIsSyncingSheet] = useState(false);
   const [isFetchingSheet, setIsFetchingSheet] = useState(false);
   const [sheetSyncResult, setSheetSyncResult] = useState<{ text: string; isError: boolean } | null>(null);
   const [sheetSyncToast, setSheetSyncToast] = useState<{ text: string; isError: boolean } | null>(null);
   const [copiedScript, setCopiedScript] = useState(false);
-  const [showScriptGuide, setShowScriptGuide] = useState(false);
-
-  React.useEffect(() => {
-    const url = getStoredWebhookUrl();
-    setWebhookUrl(url);
-    if (!url) {
-      setShowScriptGuide(true);
-    }
-  }, []);
+  const [showScriptGuide, setShowScriptGuide] = useState(() => !getStoredWebhookUrl());
 
   // Live Sync directly from Google Sheet
   const handleFetchFromGoogleSheet = async () => {

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useSyncExternalStore } from 'react';
 import ApplicantPortal from '@/components/ApplicantPortal';
 import ReviewerDashboard from '@/components/ReviewerDashboard';
 import CommitteeLoginGate from '@/components/CommitteeLoginGate';
@@ -9,21 +9,27 @@ import { ScholarshipApplication } from '@/types/scholarship';
 import { getStoredApplications, saveApplicationsToStorage } from '@/lib/storage';
 import { FileText, ShieldCheck, Sparkles, Lock } from 'lucide-react';
 
+const emptySubscribe = () => () => {};
+
 export default function Home() {
+  const isMounted = useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false
+  );
+
+  const isStoredAuth = useSyncExternalStore(
+    emptySubscribe,
+    () => typeof window !== 'undefined' && sessionStorage.getItem('mc_committee_auth') === 'true',
+    () => false
+  );
+
   const [activeTab, setActiveTab] = useState<'applicant' | 'reviewer'>('applicant');
   const [applications, setApplications] = useState<ScholarshipApplication[]>([]);
   const [isRubricModalOpen, setIsRubricModalOpen] = useState(false);
-  const [isCommitteeAuthenticated, setIsCommitteeAuthenticated] = useState(false);
-  const [isMounted, setIsMounted] = useState(false);
+  const [committeeAuthOverride, setCommitteeAuthOverride] = useState<boolean | null>(null);
 
-  // Load client-only storage safely after mount to prevent hydration mismatch
-  useEffect(() => {
-    setIsMounted(true);
-    setApplications(getStoredApplications());
-    if (typeof window !== 'undefined' && sessionStorage.getItem('mc_committee_auth') === 'true') {
-      setIsCommitteeAuthenticated(true);
-    }
-  }, []);
+  const isCommitteeAuthenticated = committeeAuthOverride ?? isStoredAuth;
 
   // Auto-fetch live applications directly from Google Sheet on startup
   useEffect(() => {
@@ -33,9 +39,13 @@ export default function Home() {
         if (data && data.success && Array.isArray(data.applications)) {
           setApplications(data.applications);
           saveApplicationsToStorage(data.applications);
+        } else {
+          setApplications(getStoredApplications());
         }
       })
-      .catch(() => { });
+      .catch(() => {
+        setApplications(getStoredApplications());
+      });
   }, []);
 
   // Scroll to top ONLY when switching tabs
@@ -81,7 +91,7 @@ export default function Home() {
   };
 
   const handleLogout = () => {
-    setIsCommitteeAuthenticated(false);
+    setCommitteeAuthOverride(false);
     if (typeof window !== 'undefined') {
       sessionStorage.removeItem('mc_committee_auth');
     }
@@ -145,7 +155,7 @@ export default function Home() {
           <ApplicantPortal onSuccessSubmit={handleSuccessSubmit} />
         ) : !isMounted || !isCommitteeAuthenticated ? (
           <CommitteeLoginGate
-            onAuthenticated={() => setIsCommitteeAuthenticated(true)}
+            onAuthenticated={() => setCommitteeAuthOverride(true)}
             onBackToApplication={() => setActiveTab('applicant')}
           />
         ) : (

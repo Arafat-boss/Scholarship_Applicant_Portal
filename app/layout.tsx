@@ -30,6 +30,7 @@ export default function RootLayout({
       style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
     >
       <body
+        suppressHydrationWarning
         className="w-full bg-[#090d16] text-slate-100 selection:bg-blue-600 selection:text-white"
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
