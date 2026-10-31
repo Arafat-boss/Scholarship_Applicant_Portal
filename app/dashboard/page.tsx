@@ -9,7 +9,7 @@ import CommitteeLoginGate from '@/components/CommitteeLoginGate';
 import RubricInfoModal from '@/components/RubricInfoModal';
 import { ScholarshipApplication } from '@/types/scholarship';
 import { getStoredApplications, saveApplicationsToStorage } from '@/lib/storage';
-import { ArrowLeft, Sparkles, ShieldCheck, LogOut } from 'lucide-react';
+import { ShieldCheck } from 'lucide-react';
 
 const emptySubscribe = () => () => {};
 
@@ -135,15 +135,6 @@ export default function DashboardPage() {
     };
   }, [isAuthenticated, applications.length]);
 
-  const handleLogout = () => {
-    setAuthOverride(false);
-    if (typeof window !== 'undefined') {
-      sessionStorage.removeItem('mc_committee_auth');
-      localStorage.removeItem('mc_committee_auth');
-    }
-    router.push('/');
-  };
-
   return (
     <div className="min-h-screen w-full flex flex-col bg-[#090d16] text-slate-100 min-h-0 overflow-x-hidden">
       {/* Top Navigation Bar */}
@@ -173,40 +164,6 @@ export default function DashboardPage() {
               </div>
             </div>
           </Link>
-
-          {/* Action Buttons */}
-          <div className="flex items-center gap-2">
-            <Link
-              href="/"
-              className="inline-flex items-center gap-1.5 rounded-lg border border-slate-800 bg-slate-900/90 px-2.5 sm:px-3.5 py-1.5 sm:py-2 text-xs font-semibold text-slate-300 hover:border-slate-700 hover:bg-slate-800 hover:text-white transition cursor-pointer"
-            >
-              <ArrowLeft className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">Student Application</span>
-              <span className="sm:hidden">Student</span>
-            </Link>
-
-            <button
-              type="button"
-              onClick={() => setIsRubricModalOpen(true)}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-slate-800 bg-slate-900/90 px-2.5 sm:px-3.5 py-1.5 sm:py-2 text-xs font-semibold text-amber-400 hover:border-amber-700/60 hover:bg-amber-950/30 transition cursor-pointer"
-            >
-              <Sparkles className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">AI Rubric (50 pts)</span>
-              <span className="sm:hidden">Rubric</span>
-            </button>
-
-            {isAuthenticated && (
-              <button
-                type="button"
-                onClick={handleLogout}
-                className="inline-flex items-center gap-1.5 rounded-lg border border-red-900/50 bg-red-950/30 px-2.5 sm:px-3.5 py-1.5 sm:py-2 text-xs font-semibold text-red-300 hover:bg-red-900/60 hover:text-white transition cursor-pointer"
-                title="Log out of Reviewer Committee"
-              >
-                <LogOut className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline">Logout</span>
-              </button>
-            )}
-          </div>
         </div>
       </header>
 
@@ -232,7 +189,6 @@ export default function DashboardPage() {
               applications={applications}
               onRefreshApplications={setStoredApps}
               onOpenRubricInfo={() => setIsRubricModalOpen(true)}
-              onLogout={handleLogout}
             />
           </div>
         )}
