@@ -10,39 +10,34 @@ export interface PDFExportResult {
   fileName: string;
 }
 
+export function downloadScholarshipPDF(
+  applications: ScholarshipApplication[]
+): { success: boolean; fileName: string } {
+  if (!applications || applications.length === 0) {
+    if (typeof window !== 'undefined') {
+      alert('No applications found to download!');
+    }
+    return { success: false, fileName: '' };
+  }
+
+  try {
+    const { doc, fileName } = generateScholarshipJsPdf(applications);
+    doc.save(fileName);
+    return { success: true, fileName };
+  } catch (err) {
+    console.error('Direct PDF download error:', err);
+    if (typeof window !== 'undefined') {
+      alert('Could not generate PDF. Please try again.');
+    }
+    return { success: false, fileName: '' };
+  }
+}
+
 export function exportApplicationsToPDF(
   applications: ScholarshipApplication[]
 ): { url: string; fileName: string } | void {
-  if (!applications || applications.length === 0) {
-    alert('No applications found to export!');
-    return;
-  }
-
-  const fileDate = new Date().toISOString().slice(0, 10);
-  const fileName =
-    applications.length === 1
-      ? `Scholarship_Application_${applications[0].applicant.firstName}_${applications[0].applicant.lastName}_${fileDate}.pdf`.replace(
-          /\s+/g,
-          '_'
-        )
-      : `Monday_Club_Scholarship_Applications_${fileDate}.pdf`;
-
-  const appId = applications.length === 1 ? applications[0].id : '';
-
-  if (typeof window !== 'undefined') {
-    try {
-      localStorage.setItem('monday_club_export_temp', JSON.stringify(applications));
-    } catch {}
-
-    const exportUrl = appId ? `/export-pdf?id=${encodeURIComponent(appId)}` : '/export-pdf';
-    try {
-      window.open(exportUrl, '_blank');
-    } catch {
-      window.location.href = exportUrl;
-    }
-  }
-
-  return { url: '/export-pdf', fileName };
+  const result = downloadScholarshipPDF(applications);
+  return { url: '', fileName: result.fileName };
 }
 
 export function generateScholarshipJsPdf(applications: ScholarshipApplication[]): {

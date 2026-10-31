@@ -26,6 +26,7 @@ import {
   deleteApplication,
 } from '@/lib/storage';
 import { evaluateApplicationWithAI } from '@/lib/aiScoring';
+import { downloadScholarshipPDF } from '@/lib/pdfExport';
 
 interface ReviewerDashboardProps {
   applications: ScholarshipApplication[];
@@ -70,6 +71,29 @@ export default function ReviewerDashboard({
   const [appToDelete, setAppToDelete] = useState<ScholarshipApplication | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteSuccessToast, setDeleteSuccessToast] = useState<string | null>(null);
+
+  // Direct 1-Click In-Place PDF Download states
+  const [isDownloadingPdf, setIsDownloadingPdf] = useState(false);
+  const [isDownloadingSinglePdf, setIsDownloadingSinglePdf] = useState(false);
+
+  const handleDownloadAllPdf = () => {
+    setIsDownloadingPdf(true);
+    try {
+      const toExport = filteredApplications.length > 0 ? filteredApplications : applications;
+      downloadScholarshipPDF(toExport);
+    } finally {
+      setTimeout(() => setIsDownloadingPdf(false), 600);
+    }
+  };
+
+  const handleDownloadSinglePdf = (app: ScholarshipApplication) => {
+    setIsDownloadingSinglePdf(true);
+    try {
+      downloadScholarshipPDF([app]);
+    } finally {
+      setTimeout(() => setIsDownloadingSinglePdf(false), 600);
+    }
+  };
 
   // Modal ref for auto-scrolling directly into view when opened on Wix / iframes
   const reviewModalRef = React.useRef<HTMLDivElement>(null);
@@ -234,21 +258,25 @@ export default function ReviewerDashboard({
               </p>
             </div>
             <div className="flex items-center gap-2">
-              <a
-                href={`/export-pdf?id=${encodeURIComponent(selectedApp.id)}&download=1`}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() => {
-                  try {
-                    localStorage.setItem('monday_club_export_temp', JSON.stringify([selectedApp]));
-                  } catch { }
-                }}
-                className="inline-flex items-center gap-1.5 rounded-xl border border-slate-700 bg-slate-800/90 px-3.5 py-2 text-xs font-bold text-slate-200 hover:bg-slate-700 hover:text-white transition cursor-pointer"
+              <button
+                type="button"
+                onClick={() => handleDownloadSinglePdf(selectedApp)}
+                disabled={isDownloadingSinglePdf}
+                className="inline-flex items-center gap-1.5 rounded-xl border border-slate-700 bg-slate-800/90 px-3.5 py-2 text-xs font-bold text-slate-200 hover:bg-slate-700 hover:text-white disabled:opacity-50 transition cursor-pointer"
                 title="Download this applicant's dossier immediately as PDF"
               >
-                <FileDown className="h-4 w-4 text-indigo-400" />
-                <span>Download Dossier (PDF)</span>
-              </a>
+                {isDownloadingSinglePdf ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin text-indigo-400" />
+                    <span>Generating PDF...</span>
+                  </>
+                ) : (
+                  <>
+                    <FileDown className="h-4 w-4 text-indigo-400" />
+                    <span>Download Dossier (PDF)</span>
+                  </>
+                )}
+              </button>
               <button
                 onClick={handleSaveDecision}
                 className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-xs font-bold text-white shadow-lg shadow-blue-600/30 hover:bg-blue-500 transition cursor-pointer"
@@ -685,24 +713,27 @@ export default function ReviewerDashboard({
           </div>
 
           <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-            {/* Direct 1-Click Instant Download Button */}
-            <a
-              href="/export-pdf?download=1"
-              target="_blank"
-              rel="noopener noreferrer"
+            {/* Direct 1-Click In-Place Instant Download Button */}
+            <button
+              type="button"
               id="btn-download-all-pdf"
-              onClick={() => {
-                try {
-                  const toExport = filteredApplications.length > 0 ? filteredApplications : applications;
-                  localStorage.setItem('monday_club_export_temp', JSON.stringify(toExport));
-                } catch { }
-              }}
-              className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-3.5 py-2 text-xs font-bold text-white shadow-md shadow-indigo-600/30 hover:bg-indigo-500 transition cursor-pointer"
+              onClick={handleDownloadAllPdf}
+              disabled={isDownloadingPdf || applications.length === 0}
+              className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-3.5 py-2 text-xs font-bold text-white shadow-md shadow-indigo-600/30 hover:bg-indigo-500 disabled:opacity-50 transition cursor-pointer"
               title="Download all applications immediately into PDF"
             >
-              <FileDown className="h-4 w-4" />
-              <span>Download All (PDF)</span>
-            </a>
+              {isDownloadingPdf ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <span>Generating PDF...</span>
+                </>
+              ) : (
+                <>
+                  <FileDown className="h-4 w-4" />
+                  <span>Download All (PDF)</span>
+                </>
+              )}
+            </button>
 
             {onLogout && (
               <button

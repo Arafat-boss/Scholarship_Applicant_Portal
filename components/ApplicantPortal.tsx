@@ -24,7 +24,7 @@ import {
   ScholarshipApplication,
 } from '@/types/scholarship';
 import { saveNewApplication } from '@/lib/storage';
-import { exportApplicationsToPDF } from '@/lib/pdfExport';
+import { downloadScholarshipPDF } from '@/lib/pdfExport';
 
 interface ApplicantPortalProps {
   onSuccessSubmit: (app: ScholarshipApplication) => void;
@@ -182,11 +182,7 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
   const [pdfToast, setPdfToast] = useState<{ url: string; name: string } | null>(null);
 
   const handleDownloadPdf = (apps: ScholarshipApplication[]) => {
-    const res = exportApplicationsToPDF(apps);
-    if (res && res.url) {
-      setPdfToast({ url: res.url, name: res.fileName });
-      setTimeout(() => setPdfToast(null), 25000);
-    }
+    downloadScholarshipPDF(apps);
   };
 
   // Smooth scroll directly to the confirmation view upon submission
@@ -559,20 +555,14 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
 
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-            <a
-              href={`/export-pdf?id=${encodeURIComponent(submittedApp.id)}&download=1`}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => {
-                try {
-                  localStorage.setItem('monday_club_export_temp', JSON.stringify([submittedApp]));
-                } catch { }
-              }}
+            <button
+              type="button"
+              onClick={() => downloadScholarshipPDF([submittedApp])}
               className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-5 py-2.5 text-xs sm:text-sm font-bold text-white shadow-lg shadow-emerald-600/30 hover:bg-emerald-500 transition cursor-pointer"
             >
               <FileDown className="h-4 w-4" />
               <span>Download Application (PDF)</span>
-            </a>
+            </button>
             <button
               onClick={handleResetForm}
               className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-xs sm:text-sm font-bold text-white shadow-lg shadow-blue-600/30 hover:bg-blue-500 transition cursor-pointer"
