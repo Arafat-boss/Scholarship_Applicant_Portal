@@ -1,7 +1,8 @@
 'use client';
 
 import React from 'react';
-import { Award, FileText, ShieldCheck, Sparkles } from 'lucide-react';
+import Image from 'next/image';
+import { FileText, ShieldCheck, Sparkles } from 'lucide-react';
 
 interface NavbarProps {
   activeTab: 'applicant' | 'reviewer';
@@ -23,8 +24,14 @@ export default function Navbar({
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
         {/* Brand & Subtitle matching Client Spec */}
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-blue-700 to-indigo-500 shadow-md shadow-blue-500/20">
-            <Award className="h-5 w-5 text-white" />
+          <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-slate-700/60 bg-[#0d1629] p-1.5 shadow-md shrink-0">
+            <Image
+              src="/Logo.png"
+              alt="The Monday Club Logo"
+              width={44}
+              height={44}
+              className="h-full w-full object-contain"
+            />
           </div>
           <div>
             <div className="flex items-center gap-2">

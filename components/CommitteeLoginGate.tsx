@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Lock, KeyRound, ShieldAlert, Eye, EyeOff, ArrowLeft, CheckCircle2 } from 'lucide-react';
+import Image from 'next/image';
+import { KeyRound, ShieldAlert, Eye, EyeOff, ArrowLeft, CheckCircle2 } from 'lucide-react';
 
 interface CommitteeLoginGateProps {
   onAuthenticated: () => void;
@@ -47,9 +48,15 @@ export default function CommitteeLoginGate({
   return (
     <div className="mx-auto max-w-md px-3 sm:px-6 py-6 sm:py-8">
       <div className="rounded-2xl border border-slate-800 bg-gradient-to-b from-[#131b2e] to-[#0f172a] p-4 sm:p-8 shadow-2xl text-slate-100 text-center">
-        {/* Lock Icon */}
-        <div className="mx-auto flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-2xl bg-blue-600/20 text-blue-400 border border-blue-500/30 mb-4 shadow-lg shadow-blue-500/10">
-          <Lock className="h-6 w-6 sm:h-7 sm:w-7" />
+        {/* Logo and Emblem */}
+        <div className="mx-auto flex h-16 w-16 sm:h-20 sm:w-20 items-center justify-center rounded-2xl bg-[#0d1629] border border-slate-700/60 p-2 mb-4 shadow-lg">
+          <Image
+            src="/Logo.png"
+            alt="The Monday Club Logo"
+            width={80}
+            height={80}
+            className="h-full w-full object-contain"
+          />
         </div>
 
         <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-950 px-3 py-1 text-xs font-semibold text-blue-400 border border-blue-800/60 mb-2">
