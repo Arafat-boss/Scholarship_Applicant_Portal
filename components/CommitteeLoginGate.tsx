@@ -7,16 +7,17 @@ import { KeyRound, ShieldAlert, Eye, EyeOff, ArrowLeft, CheckCircle2 } from 'luc
 interface CommitteeLoginGateProps {
   onAuthenticated: () => void;
   onBackToApplication: () => void;
+  openInNewTab?: boolean;
 }
 
 export default function CommitteeLoginGate({
   onAuthenticated,
   onBackToApplication,
+  openInNewTab = false,
 }: CommitteeLoginGateProps) {
   const [passcode, setPasscode] = useState('');
   const [showPasscode, setShowPasscode] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
 
   // Default Committee Passcode
   const CORRECT_PASSCODE = 'monday2026';
@@ -24,20 +25,21 @@ export default function CommitteeLoginGate({
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg(null);
-    setIsLoading(true);
 
-    setTimeout(() => {
-      if (passcode.trim() === CORRECT_PASSCODE) {
-        setIsLoading(false);
-        if (typeof window !== 'undefined') {
-          sessionStorage.setItem('mc_committee_auth', 'true');
+    if (passcode.trim() === CORRECT_PASSCODE) {
+      if (typeof window !== 'undefined') {
+        sessionStorage.setItem('mc_committee_auth', 'true');
+        localStorage.setItem('mc_committee_auth', 'true');
+
+        if (openInNewTab) {
+          const targetUrl = `${window.location.origin}/dashboard?auth=monday2026`;
+          window.open(targetUrl, '_blank', 'noopener,noreferrer');
         }
-        onAuthenticated();
-      } else {
-        setIsLoading(false);
-        setErrorMsg('Invalid committee passcode. Access restricted to authorized reviewers.');
       }
-    }, 400);
+      onAuthenticated();
+    } else {
+      setErrorMsg('Invalid committee passcode. Access restricted to authorized reviewers.');
+    }
   };
 
   const handleQuickDemoFill = () => {
@@ -121,17 +123,11 @@ export default function CommitteeLoginGate({
           <button
             id="btn-unlock-reviewer"
             type="submit"
-            disabled={isLoading || !passcode}
+            disabled={!passcode.trim()}
             className="w-full flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-blue-600/30 hover:bg-blue-500 disabled:opacity-50 transition cursor-pointer"
           >
-            {isLoading ? (
-              <span>Verifying Authorization...</span>
-            ) : (
-              <>
-                <CheckCircle2 className="h-4 w-4" />
-                <span>Unlock Reviewer Portal</span>
-              </>
-            )}
+            <CheckCircle2 className="h-4 w-4" />
+            <span>Unlock Reviewer Portal</span>
           </button>
         </form>
 
