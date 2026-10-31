@@ -56,17 +56,6 @@ function ExportPdfContent() {
         apps = allStored;
       }
 
-      // 3. Fallback: fetch from Google Sheet API if empty
-      if (apps.length === 0) {
-        try {
-          const res = await fetch('/api/google-sheet?action=fetch');
-          const data = await res.json();
-          if (data && data.success && Array.isArray(data.applications)) {
-            apps = data.applications;
-          }
-        } catch {}
-      }
-
       if (!isMounted) return;
 
       if (apps.length === 0) {

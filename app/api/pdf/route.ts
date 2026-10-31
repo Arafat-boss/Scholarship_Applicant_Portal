@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { generateScholarshipJsPdf } from '@/lib/pdfExport';
 import { ScholarshipApplication } from '@/types/scholarship';
-import { GOOGLE_SHEET_ID, DEFAULT_WEBHOOK_URL, parseGoogleSheetCsv } from '@/lib/googleSheet';
 
 export async function POST(req: NextRequest) {
   try {
@@ -53,43 +52,6 @@ export async function GET(req: NextRequest) {
     const targetId = searchParams.get('id');
 
     let applications: ScholarshipApplication[] = [];
-
-    // 1. Fetch from Google Sheet webhook if available
-    const webhookUrl =
-      process.env.GOOGLE_SHEET_WEBHOOK_URL ||
-      process.env.NEXT_PUBLIC_GOOGLE_SHEET_WEBHOOK_URL ||
-      DEFAULT_WEBHOOK_URL;
-
-    if (webhookUrl) {
-      try {
-        const res = await fetch(`${webhookUrl}?action=fetch`, {
-          cache: 'no-store',
-        });
-        const data = await res.json();
-        if (data && data.success && Array.isArray(data.applications)) {
-          applications = data.applications;
-        }
-      } catch (err) {
-        console.warn('Could not fetch from Google Sheet in /api/pdf:', err);
-      }
-    }
-
-    // 2. Fallback to Google Sheet public CSV export if webhook is empty
-    if (applications.length === 0) {
-      try {
-        const csvUrl = `https://docs.google.com/spreadsheets/d/${GOOGLE_SHEET_ID}/export?format=csv`;
-        const csvRes = await fetch(csvUrl, { cache: 'no-store', redirect: 'follow' });
-        if (csvRes.status === 200) {
-          const csvText = await csvRes.text();
-          const parsed = parseGoogleSheetCsv(csvText);
-          if (parsed.length > 0) {
-            applications = parsed;
-          }
-        }
-      } catch (e) {
-        console.warn('Fallback CSV in /api/pdf error:', e);
-      }
-    }
 
     if (targetId && applications.length > 0) {
       const filtered = applications.filter(
