@@ -31,7 +31,7 @@ export default function RubricInfoModal({ isOpen, onClose }: RubricInfoModalProp
   ];
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto flex items-start justify-center p-3 sm:p-6 pt-4 sm:pt-8 bg-black/85 backdrop-blur-md animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 overflow-y-auto flex items-start justify-center p-3 sm:p-6 pt-4 sm:pt-8 bg-black/95 backdrop-blur-md animate-in fade-in duration-200">
       <div className="relative w-full max-w-3xl max-h-[90vh] overflow-y-auto rounded-2xl border border-slate-700 bg-[#0f172a] p-4 sm:p-8 shadow-2xl text-slate-100 mb-8">
         {/* Close Button */}
         <button
