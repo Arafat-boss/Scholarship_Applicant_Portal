@@ -18,10 +18,7 @@ export default function Home() {
   const [storedApps, setStoredApps] = useState<ScholarshipApplication[] | null>(null);
   const applications = storedApps !== null ? storedApps : (isMounted ? getStoredApplications() : []);
   const [isRubricModalOpen, setIsRubricModalOpen] = useState(false);
-  const [authOverride, setAuthOverride] = useState<boolean | null>(null);
-  const isCommitteeAuthenticated = authOverride !== null
-    ? authOverride
-    : (isMounted && typeof window !== 'undefined' ? sessionStorage.getItem('mc_committee_auth') === 'true' : false);
+  const isCommitteeAuthenticated = isMounted && typeof window !== 'undefined' ? sessionStorage.getItem('mc_committee_auth') === 'true' : false;
 
   // Scroll to top ONLY when switching tabs
   useEffect(() => {
@@ -63,13 +60,6 @@ export default function Home() {
   const handleSuccessSubmit = (newApp: ScholarshipApplication) => {
     const updated = [newApp, ...applications.filter((a) => a.id !== newApp.id)];
     setStoredApps(updated);
-  };
-
-  const handleLogout = () => {
-    setAuthOverride(false);
-    if (typeof window !== 'undefined') {
-      sessionStorage.removeItem('mc_committee_auth');
-    }
   };
 
   return (
@@ -134,38 +124,13 @@ export default function Home() {
       <main className="w-full pb-6">
         {activeTab === 'applicant' ? (
           <ApplicantPortal onSuccessSubmit={handleSuccessSubmit} />
-        ) : !isMounted || !isCommitteeAuthenticated ? (
+        ) : (
           <CommitteeLoginGate
             onAuthenticated={() => {
-              setAuthOverride(true);
               router.push('/dashboard');
             }}
             onBackToApplication={() => setActiveTab('applicant')}
           />
-        ) : (
-          <div className="mx-auto max-w-md py-12 px-4 text-center">
-            <div className="rounded-2xl border border-slate-800 bg-slate-900/90 p-6 shadow-2xl">
-              <ShieldCheck className="mx-auto h-12 w-12 text-emerald-400 mb-3" />
-              <h3 className="text-lg font-bold text-white mb-2">Reviewer Portal Unlocked</h3>
-              <p className="text-xs text-slate-400 mb-5">Click below to enter the dedicated reviewer dashboard.</p>
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => router.push('/dashboard')}
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-xs font-bold text-white hover:bg-blue-500 shadow-lg shadow-blue-600/30 transition cursor-pointer"
-                >
-                  <span>Open Dashboard (/dashboard)</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={handleLogout}
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl border border-slate-700 bg-slate-800 px-4 py-2.5 text-xs font-semibold text-slate-300 hover:text-white transition cursor-pointer"
-                >
-                  <span>Logout</span>
-                </button>
-              </div>
-            </div>
-          </div>
         )}
       </main>
 
