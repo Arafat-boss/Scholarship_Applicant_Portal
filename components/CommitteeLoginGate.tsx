@@ -32,6 +32,24 @@ export default function CommitteeLoginGate({
         localStorage.setItem('mc_committee_auth', 'true');
 
         if (openInNewTab) {
+          // Pre-sync all locally stored applications to the server before opening new tab
+          try {
+            const raw = localStorage.getItem('monday_club_scholarship_applications_v3');
+            if (raw) {
+              const apps = JSON.parse(raw);
+              if (Array.isArray(apps) && apps.length > 0) {
+                fetch('/api/applications', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ applications: apps }),
+                  keepalive: true,
+                }).catch(() => {});
+              }
+            }
+          } catch {
+            // ignore
+          }
+
           const targetUrl = `${window.location.origin}/dashboard?auth=monday2026`;
           window.open(targetUrl, '_blank', 'noopener,noreferrer');
         }

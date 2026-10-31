@@ -8,7 +8,7 @@ import ReviewerDashboard from '@/components/ReviewerDashboard';
 import CommitteeLoginGate from '@/components/CommitteeLoginGate';
 import RubricInfoModal from '@/components/RubricInfoModal';
 import { ScholarshipApplication } from '@/types/scholarship';
-import { getStoredApplications } from '@/lib/storage';
+import { getStoredApplications, saveApplicationsToStorage } from '@/lib/storage';
 import { ArrowLeft, Sparkles, ShieldCheck, LogOut } from 'lucide-react';
 
 const emptySubscribe = () => () => {};
@@ -49,6 +49,63 @@ export default function DashboardPage() {
   const [storedApps, setStoredApps] = useState<ScholarshipApplication[] | null>(null);
   const applications = storedApps !== null ? storedApps : (isMounted ? getStoredApplications() : []);
   const [isRubricModalOpen, setIsRubricModalOpen] = useState(false);
+
+  // Synchronize applications with server API (/api/applications) and cross-tab BroadcastChannel
+  useEffect(() => {
+    let isCancelled = false;
+
+    const syncFromServer = async () => {
+      try {
+        const res = await fetch('/api/applications', { cache: 'no-store' });
+        const data = await res.json();
+        if (!isCancelled && data.success && Array.isArray(data.applications)) {
+          const local = getStoredApplications();
+          const map = new Map<string, ScholarshipApplication>();
+          for (const a of local) {
+            if (a && a.id) map.set(a.id, a);
+          }
+          for (const a of data.applications) {
+            if (a && a.id) map.set(a.id, a);
+          }
+          const merged = Array.from(map.values()).sort(
+            (a, b) => new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime()
+          );
+          setStoredApps(merged);
+          saveApplicationsToStorage(merged);
+        }
+      } catch (err) {
+        console.warn('Dashboard sync notice:', err);
+      }
+    };
+
+    // Immediate initial sync
+    syncFromServer();
+
+    // Re-check periodically every 3 seconds for new student submissions
+    const interval = setInterval(syncFromServer, 3000);
+
+    // Re-sync whenever the reviewer switches focus to this browser tab
+    const handleFocus = () => syncFromServer();
+    window.addEventListener('focus', handleFocus);
+
+    // Listen to cross-tab BroadcastChannel
+    let channel: BroadcastChannel | null = null;
+    try {
+      channel = new BroadcastChannel('mc_scholarship_sync');
+      channel.onmessage = () => {
+        syncFromServer();
+      };
+    } catch {
+      // ignore
+    }
+
+    return () => {
+      isCancelled = true;
+      clearInterval(interval);
+      window.removeEventListener('focus', handleFocus);
+      channel?.close();
+    };
+  }, []);
 
   // Broadcast dynamic height to Wix / parent iframe so container fits content
   useEffect(() => {

@@ -5,7 +5,7 @@ import ApplicantPortal from '@/components/ApplicantPortal';
 import CommitteeLoginGate from '@/components/CommitteeLoginGate';
 import RubricInfoModal from '@/components/RubricInfoModal';
 import { ScholarshipApplication } from '@/types/scholarship';
-import { getStoredApplications } from '@/lib/storage';
+import { getStoredApplications, fetchApplicationsFromServer } from '@/lib/storage';
 import { FileText, Sparkles, Lock, ExternalLink, CheckCircle2, ArrowLeft } from 'lucide-react';
 
 const emptySubscribe = () => () => {};
@@ -17,6 +17,15 @@ export default function Home() {
   const [storedApps, setStoredApps] = useState<ScholarshipApplication[] | null>(null);
   const applications = storedApps !== null ? storedApps : (isMounted ? getStoredApplications() : []);
   const [isRubricModalOpen, setIsRubricModalOpen] = useState(false);
+
+  // Fetch stored applications from server on mount
+  useEffect(() => {
+    fetchApplicationsFromServer().then((apps) => {
+      if (apps && apps.length > 0) {
+        setStoredApps(apps);
+      }
+    });
+  }, []);
 
   // Scroll to top ONLY when switching tabs
   useEffect(() => {
