@@ -26,7 +26,7 @@ export default function CommitteeLoginGate({
     e.preventDefault();
     setErrorMsg(null);
 
-    if (passcode.trim() === "aaa") {
+    if (passcode.trim() === CORRECT_PASSCODE) {
       if (typeof window !== 'undefined') {
         sessionStorage.setItem('mc_committee_auth', 'true');
         localStorage.setItem('mc_committee_auth', 'true');
