@@ -554,11 +554,11 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
           </div>
 
           {/* Action Buttons */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-md mx-auto w-full pt-1">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 w-full max-w-xl mx-auto pt-2">
             <button
               type="button"
               onClick={handleResetForm}
-              className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-3 text-xs sm:text-sm font-bold text-white shadow-lg shadow-blue-600/30 hover:bg-blue-500 transition cursor-pointer"
+              className="w-full sm:flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 sm:px-5 py-3 text-xs sm:text-sm font-bold text-white shadow-lg shadow-blue-600/30 hover:bg-blue-500 transition cursor-pointer whitespace-nowrap"
             >
               <Plus className="h-4 w-4 shrink-0" />
               <span>Submit Another Application</span>
@@ -569,7 +569,7 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
                 setShowSubmittedForm(true);
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
-              className="w-full inline-flex items-center justify-center gap-2 rounded-xl border border-slate-700 bg-slate-800/90 px-4 py-3 text-xs sm:text-sm font-semibold text-slate-200 hover:bg-slate-700 hover:text-white transition cursor-pointer shadow-md"
+              className="w-full sm:flex-1 inline-flex items-center justify-center gap-2 rounded-xl border border-slate-700 bg-slate-800/90 px-4 sm:px-5 py-3 text-xs sm:text-sm font-semibold text-slate-200 hover:bg-slate-700 hover:text-white transition cursor-pointer shadow-md whitespace-nowrap"
             >
               <Eye className="h-4 w-4 shrink-0" />
               <span>Review Submitted Form</span>
