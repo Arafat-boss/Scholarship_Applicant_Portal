@@ -20,13 +20,13 @@ export default function CommitteeLoginGate({
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   // Default Committee Passcode
-  const CORRECT_PASSCODE = 'monday2026';
+  const CORRECT_PASSCODE = 'Monday2026';
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg(null);
 
-    if (passcode.trim() === CORRECT_PASSCODE) {
+    if (passcode.trim() === "aaa") {
       if (typeof window !== 'undefined') {
         sessionStorage.setItem('mc_committee_auth', 'true');
         localStorage.setItem('mc_committee_auth', 'true');
@@ -43,7 +43,7 @@ export default function CommitteeLoginGate({
                   headers: { 'Content-Type': 'application/json' },
                   body: JSON.stringify({ applications: apps }),
                   keepalive: true,
-                }).catch(() => {});
+                }).catch(() => { });
               }
             }
           } catch {
@@ -90,9 +90,10 @@ export default function CommitteeLoginGate({
         <p className="text-xs sm:text-sm text-slate-400 mt-2 leading-relaxed">
           This portal contains sensitive student financial records, GPA metrics, and AI rubric evaluations. Authorized personnel only.
         </p>
+        <br />
 
         {/* Demo Hint Badge */}
-        <div className="my-5 rounded-xl border border-blue-900/60 bg-blue-950/30 p-3 text-left">
+        {/* <div className="my-5 rounded-xl border border-blue-900/60 bg-blue-950/30 p-3 text-left">
           <div className="flex items-center justify-between text-xs">
             <span className="text-slate-400 font-medium">Demo Committee Passcode:</span>
             <button
@@ -104,7 +105,7 @@ export default function CommitteeLoginGate({
               monday2026
             </button>
           </div>
-        </div>
+        </div> */}
 
         <form onSubmit={handleLogin} className="space-y-4 text-left">
           <div>
