@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useState, useEffect, useSyncExternalStore } from 'react';
+import { useRouter } from 'next/navigation';
 import ApplicantPortal from '@/components/ApplicantPortal';
-import ReviewerDashboard from '@/components/ReviewerDashboard';
 import CommitteeLoginGate from '@/components/CommitteeLoginGate';
 import RubricInfoModal from '@/components/RubricInfoModal';
 import { ScholarshipApplication } from '@/types/scholarship';
@@ -12,6 +12,7 @@ import { FileText, ShieldCheck, Sparkles, Lock } from 'lucide-react';
 const emptySubscribe = () => () => {};
 
 export default function Home() {
+  const router = useRouter();
   const isMounted = useSyncExternalStore(emptySubscribe, () => true, () => false);
   const [activeTab, setActiveTab] = useState<'applicant' | 'reviewer'>('applicant');
   const [storedApps, setStoredApps] = useState<ScholarshipApplication[] | null>(null);
@@ -92,7 +93,13 @@ export default function Home() {
 
             <button
               id="tab-reviewer-portal"
-              onClick={() => setActiveTab('reviewer')}
+              onClick={() => {
+                if (isMounted && isCommitteeAuthenticated) {
+                  router.push('/dashboard');
+                } else {
+                  setActiveTab('reviewer');
+                }
+              }}
               className={`flex items-center gap-1.5 sm:gap-2 rounded-lg px-3 sm:px-4 py-2 text-xs sm:text-sm font-semibold transition-all cursor-pointer ${activeTab === 'reviewer'
                 ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30'
                 : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
@@ -129,16 +136,36 @@ export default function Home() {
           <ApplicantPortal onSuccessSubmit={handleSuccessSubmit} />
         ) : !isMounted || !isCommitteeAuthenticated ? (
           <CommitteeLoginGate
-            onAuthenticated={() => setAuthOverride(true)}
+            onAuthenticated={() => {
+              setAuthOverride(true);
+              router.push('/dashboard');
+            }}
             onBackToApplication={() => setActiveTab('applicant')}
           />
         ) : (
-          <ReviewerDashboard
-            applications={applications}
-            onRefreshApplications={setStoredApps}
-            onOpenRubricInfo={() => setIsRubricModalOpen(true)}
-            onLogout={handleLogout}
-          />
+          <div className="mx-auto max-w-md py-12 px-4 text-center">
+            <div className="rounded-2xl border border-slate-800 bg-slate-900/90 p-6 shadow-2xl">
+              <ShieldCheck className="mx-auto h-12 w-12 text-emerald-400 mb-3" />
+              <h3 className="text-lg font-bold text-white mb-2">Reviewer Portal Unlocked</h3>
+              <p className="text-xs text-slate-400 mb-5">Click below to enter the dedicated reviewer dashboard.</p>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => router.push('/dashboard')}
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-xs font-bold text-white hover:bg-blue-500 shadow-lg shadow-blue-600/30 transition cursor-pointer"
+                >
+                  <span>Open Dashboard (/dashboard)</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl border border-slate-700 bg-slate-800 px-4 py-2.5 text-xs font-semibold text-slate-300 hover:text-white transition cursor-pointer"
+                >
+                  <span>Logout</span>
+                </button>
+              </div>
+            </div>
+          </div>
         )}
       </main>
 

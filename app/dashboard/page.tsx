@@ -1,0 +1,166 @@
+'use client';
+
+import React, { useState, useEffect, useSyncExternalStore } from 'react';
+import { useRouter } from 'next/navigation';
+import Image from 'next/image';
+import Link from 'next/link';
+import ReviewerDashboard from '@/components/ReviewerDashboard';
+import CommitteeLoginGate from '@/components/CommitteeLoginGate';
+import RubricInfoModal from '@/components/RubricInfoModal';
+import { ScholarshipApplication } from '@/types/scholarship';
+import { getStoredApplications } from '@/lib/storage';
+import { ArrowLeft, Sparkles, ShieldCheck, LogOut } from 'lucide-react';
+
+const emptySubscribe = () => () => {};
+
+export default function DashboardPage() {
+  const router = useRouter();
+  const isMounted = useSyncExternalStore(emptySubscribe, () => true, () => false);
+
+  const [authOverride, setAuthOverride] = useState<boolean | null>(null);
+  const isAuthenticated = authOverride !== null
+    ? authOverride
+    : (isMounted && typeof window !== 'undefined' ? sessionStorage.getItem('mc_committee_auth') === 'true' : false);
+
+  const [storedApps, setStoredApps] = useState<ScholarshipApplication[] | null>(null);
+  const applications = storedApps !== null ? storedApps : (isMounted ? getStoredApplications() : []);
+  const [isRubricModalOpen, setIsRubricModalOpen] = useState(false);
+
+  // Broadcast dynamic height to Wix / parent iframe so container fits content
+  useEffect(() => {
+    const notifyHeight = () => {
+      if (typeof window === 'undefined') return;
+      const height = document.documentElement.scrollHeight || document.body.scrollHeight;
+      window.parent?.postMessage({ type: 'setHeight', height }, '*');
+      window.parent?.postMessage({ type: 'resize', height }, '*');
+      window.parent?.postMessage({ height }, '*');
+      window.parent?.postMessage(height, '*');
+    };
+
+    notifyHeight();
+    const timeout = setTimeout(notifyHeight, 200);
+
+    let resizeObserver: ResizeObserver | null = null;
+    if (typeof ResizeObserver !== 'undefined' && document.body) {
+      resizeObserver = new ResizeObserver(() => {
+        notifyHeight();
+      });
+      resizeObserver.observe(document.body);
+    }
+
+    return () => {
+      clearTimeout(timeout);
+      resizeObserver?.disconnect();
+    };
+  }, [isAuthenticated, applications.length]);
+
+  const handleLogout = () => {
+    setAuthOverride(false);
+    if (typeof window !== 'undefined') {
+      sessionStorage.removeItem('mc_committee_auth');
+    }
+    router.push('/');
+  };
+
+  return (
+    <div className="min-h-screen w-full flex flex-col bg-[#090d16] text-slate-100 min-h-0 overflow-x-hidden">
+      {/* Top Navigation Bar */}
+      <header className="sticky top-0 z-40 w-full border-b border-slate-800/80 bg-[#090d16]/95 backdrop-blur-md px-3 sm:px-6 py-2.5">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-3">
+          {/* Logo & Portal Branding */}
+          <Link
+            href="/"
+            className="flex items-center gap-2.5 group hover:opacity-90 transition cursor-pointer"
+          >
+            <div className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-slate-900 border border-slate-700/80 p-1 shadow-md">
+              <Image
+                src="/Logo.png"
+                alt="The Monday Club Logo"
+                width={40}
+                height={40}
+                className="h-full w-full object-contain"
+                priority
+              />
+            </div>
+            <div>
+              <div className="text-xs sm:text-sm font-bold text-white group-hover:text-blue-400 transition leading-tight">
+                The Monday Club, Inc.
+              </div>
+              <div className="text-[10px] sm:text-[11px] text-slate-400 font-medium">
+                Reviewer Committee Dashboard
+              </div>
+            </div>
+          </Link>
+
+          {/* Action Buttons */}
+          <div className="flex items-center gap-2">
+            <Link
+              href="/"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-slate-800 bg-slate-900/90 px-2.5 sm:px-3.5 py-1.5 sm:py-2 text-xs font-semibold text-slate-300 hover:border-slate-700 hover:bg-slate-800 hover:text-white transition cursor-pointer"
+            >
+              <ArrowLeft className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">Student Application</span>
+              <span className="sm:hidden">Student</span>
+            </Link>
+
+            <button
+              type="button"
+              onClick={() => setIsRubricModalOpen(true)}
+              className="inline-flex items-center gap-1.5 rounded-lg border border-slate-800 bg-slate-900/90 px-2.5 sm:px-3.5 py-1.5 sm:py-2 text-xs font-semibold text-amber-400 hover:border-amber-700/60 hover:bg-amber-950/30 transition cursor-pointer"
+            >
+              <Sparkles className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">AI Rubric (50 pts)</span>
+              <span className="sm:hidden">Rubric</span>
+            </button>
+
+            {isAuthenticated && (
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="inline-flex items-center gap-1.5 rounded-lg border border-red-900/50 bg-red-950/30 px-2.5 sm:px-3.5 py-1.5 sm:py-2 text-xs font-semibold text-red-300 hover:bg-red-900/60 hover:text-white transition cursor-pointer"
+                title="Log out of Reviewer Committee"
+              >
+                <LogOut className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">Logout</span>
+              </button>
+            )}
+          </div>
+        </div>
+      </header>
+
+      {/* Main Protected Content */}
+      <main className="w-full flex-1 pb-10">
+        {!isMounted || !isAuthenticated ? (
+          <div className="py-6 sm:py-10">
+            <div className="text-center mb-2">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-950/80 px-3 py-1 text-xs font-bold text-amber-300 border border-amber-700/70">
+                <ShieldCheck className="h-3.5 w-3.5" />
+                <span>Restricted Committee Route</span>
+              </span>
+            </div>
+            <CommitteeLoginGate
+              onAuthenticated={() => setAuthOverride(true)}
+              onBackToApplication={() => router.push('/')}
+            />
+          </div>
+        ) : (
+          <div className="w-full">
+            <ReviewerDashboard
+              applications={applications}
+              onRefreshApplications={setStoredApps}
+              onOpenRubricInfo={() => setIsRubricModalOpen(true)}
+              onLogout={handleLogout}
+            />
+          </div>
+        )}
+      </main>
+
+      {/* 10-Criterion Rubric Explainer Modal */}
+      <RubricInfoModal
+        isOpen={isRubricModalOpen}
+        onClose={() => setIsRubricModalOpen(false)}
+      />
+    </div>
+  );
+}
+
