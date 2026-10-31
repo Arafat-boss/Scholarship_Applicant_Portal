@@ -6,47 +6,21 @@ import ReviewerDashboard from '@/components/ReviewerDashboard';
 import CommitteeLoginGate from '@/components/CommitteeLoginGate';
 import RubricInfoModal from '@/components/RubricInfoModal';
 import { ScholarshipApplication } from '@/types/scholarship';
-import { getStoredApplications, saveApplicationsToStorage } from '@/lib/storage';
+import { getStoredApplications } from '@/lib/storage';
 import { FileText, ShieldCheck, Sparkles, Lock } from 'lucide-react';
 
 const emptySubscribe = () => () => {};
 
 export default function Home() {
-  const isMounted = useSyncExternalStore(
-    emptySubscribe,
-    () => true,
-    () => false
-  );
-
-  const isStoredAuth = useSyncExternalStore(
-    emptySubscribe,
-    () => typeof window !== 'undefined' && sessionStorage.getItem('mc_committee_auth') === 'true',
-    () => false
-  );
-
+  const isMounted = useSyncExternalStore(emptySubscribe, () => true, () => false);
   const [activeTab, setActiveTab] = useState<'applicant' | 'reviewer'>('applicant');
-  const [applications, setApplications] = useState<ScholarshipApplication[]>([]);
+  const [storedApps, setStoredApps] = useState<ScholarshipApplication[] | null>(null);
+  const applications = storedApps !== null ? storedApps : (isMounted ? getStoredApplications() : []);
   const [isRubricModalOpen, setIsRubricModalOpen] = useState(false);
-  const [committeeAuthOverride, setCommitteeAuthOverride] = useState<boolean | null>(null);
-
-  const isCommitteeAuthenticated = committeeAuthOverride ?? isStoredAuth;
-
-  // Auto-fetch live applications directly from Google Sheet on startup
-  useEffect(() => {
-    fetch('/api/google-sheet?action=fetch')
-      .then((r) => r.json())
-      .then((data) => {
-        if (data && data.success && Array.isArray(data.applications)) {
-          setApplications(data.applications);
-          saveApplicationsToStorage(data.applications);
-        } else {
-          setApplications(getStoredApplications());
-        }
-      })
-      .catch(() => {
-        setApplications(getStoredApplications());
-      });
-  }, []);
+  const [authOverride, setAuthOverride] = useState<boolean | null>(null);
+  const isCommitteeAuthenticated = authOverride !== null
+    ? authOverride
+    : (isMounted && typeof window !== 'undefined' ? sessionStorage.getItem('mc_committee_auth') === 'true' : false);
 
   // Scroll to top ONLY when switching tabs
   useEffect(() => {
@@ -87,11 +61,11 @@ export default function Home() {
 
   const handleSuccessSubmit = (newApp: ScholarshipApplication) => {
     const updated = [newApp, ...applications.filter((a) => a.id !== newApp.id)];
-    setApplications(updated);
+    setStoredApps(updated);
   };
 
   const handleLogout = () => {
-    setCommitteeAuthOverride(false);
+    setAuthOverride(false);
     if (typeof window !== 'undefined') {
       sessionStorage.removeItem('mc_committee_auth');
     }
@@ -155,13 +129,13 @@ export default function Home() {
           <ApplicantPortal onSuccessSubmit={handleSuccessSubmit} />
         ) : !isMounted || !isCommitteeAuthenticated ? (
           <CommitteeLoginGate
-            onAuthenticated={() => setCommitteeAuthOverride(true)}
+            onAuthenticated={() => setAuthOverride(true)}
             onBackToApplication={() => setActiveTab('applicant')}
           />
         ) : (
           <ReviewerDashboard
             applications={applications}
-            onRefreshApplications={setApplications}
+            onRefreshApplications={setStoredApps}
             onOpenRubricInfo={() => setIsRubricModalOpen(true)}
             onLogout={handleLogout}
           />
