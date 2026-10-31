@@ -9,18 +9,13 @@ import {
   Sparkles,
   CheckCircle2,
   UserCheck,
-  FileSpreadsheet,
-  RotateCcw,
   GraduationCap,
   Award,
   FileText,
   MapPin,
   X,
-  Copy,
-  ExternalLink,
   Lock,
   Trash2,
-  AlertTriangle,
   Loader2,
   ArrowLeft,
   FileDown,
@@ -29,18 +24,8 @@ import { ScholarshipApplication } from '@/types/scholarship';
 import {
   updateCommitteeReview,
   deleteApplication,
-  saveApplicationsToStorage,
 } from '@/lib/storage';
 import { evaluateApplicationWithAI } from '@/lib/aiScoring';
-import {
-  GOOGLE_SHEET_URL,
-  GOOGLE_APPS_SCRIPT_CODE,
-  getStoredWebhookUrl,
-  saveStoredWebhookUrl,
-  syncAllToGoogleSheet,
-  deleteApplicationFromGoogleSheet,
-  fetchApplicationsFromGoogleSheet,
-} from '@/lib/googleSheet';
 
 interface ReviewerDashboardProps {
   applications: ScholarshipApplication[];
@@ -81,54 +66,13 @@ export default function ReviewerDashboard({
   }, [selectedApp]);
 
   // Google Sheet Modal & Sync state
-  const [isGoogleSheetModalOpen, setIsGoogleSheetModalOpen] = useState(false);
-  const [webhookUrl, setWebhookUrl] = useState(() => getStoredWebhookUrl());
-  const [isSyncingSheet, setIsSyncingSheet] = useState(false);
-  const [isFetchingSheet, setIsFetchingSheet] = useState(false);
-  const [sheetSyncResult, setSheetSyncResult] = useState<{ text: string; isError: boolean } | null>(null);
-  const [sheetSyncToast, setSheetSyncToast] = useState<{ text: string; isError: boolean } | null>(null);
-  const [copiedScript, setCopiedScript] = useState(false);
-  const [showScriptGuide, setShowScriptGuide] = useState(() => !getStoredWebhookUrl());
-
-  // Live Sync directly from Google Sheet
-  const handleFetchFromGoogleSheet = async () => {
-    setIsFetchingSheet(true);
-    setSheetSyncToast(null);
-
-    try {
-      const res = await fetchApplicationsFromGoogleSheet();
-      if (res && res.success && Array.isArray(res.applications)) {
-        onRefreshApplications(res.applications);
-        saveApplicationsToStorage(res.applications);
-        setSheetSyncToast({
-          text: `✓ Google Sheet Live Sync Complete: Loaded ${res.applications.length} applications directly from your Google Sheet!`,
-          isError: false,
-        });
-      } else {
-        setSheetSyncToast({
-          text: res.message || 'Could not fetch from Google Sheet. Check webhook or link sharing settings.',
-          isError: true,
-        });
-      }
-    } catch {
-      setSheetSyncToast({
-        text: 'Network error connecting to Google Sheet.',
-        isError: true,
-      });
-    } finally {
-      setIsFetchingSheet(false);
-      setTimeout(() => setSheetSyncToast(null), 6000);
-    }
-  };
-
   // Delete modal state
   const [appToDelete, setAppToDelete] = useState<ScholarshipApplication | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteSuccessToast, setDeleteSuccessToast] = useState<string | null>(null);
 
-  // Modal refs for auto-scrolling directly into view when opened on Wix / iframes
+  // Modal ref for auto-scrolling directly into view when opened on Wix / iframes
   const reviewModalRef = React.useRef<HTMLDivElement>(null);
-  const googleSheetModalRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
     if (selectedApp) {
@@ -136,29 +80,6 @@ export default function ReviewerDashboard({
       reviewModalRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   }, [selectedApp]);
-
-  React.useEffect(() => {
-    if (isGoogleSheetModalOpen) {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      googleSheetModalRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  }, [isGoogleSheetModalOpen]);
-
-  // Check server-side webhook configuration on load
-  React.useEffect(() => {
-    fetch('/api/google-sheet')
-      .then((r) => r.json())
-      .then((data) => {
-        if (data.configured && data.webhookUrl) {
-          setWebhookUrl(data.webhookUrl);
-          setShowScriptGuide(false);
-          if (typeof window !== 'undefined') {
-            localStorage.setItem('mc_google_sheet_webhook_url', data.webhookUrl);
-          }
-        }
-      })
-      .catch(() => { });
-  }, []);
 
   // When opening modal, populate review state
   const handleOpenReview = (app: ScholarshipApplication) => {
@@ -190,7 +111,7 @@ export default function ReviewerDashboard({
 
 
 
-  // Delete Application (from state & Google Sheet)
+  // Delete Application (from state)
   const handleConfirmDelete = async () => {
     if (!appToDelete) return;
     setIsDeleting(true);
@@ -204,71 +125,12 @@ export default function ReviewerDashboard({
       setSelectedApp(null);
     }
 
-    // 2. Trigger deletion in Google Sheet
-    try {
-      await deleteApplicationFromGoogleSheet(targetApp.applicationNumber, targetApp.id);
-    } catch (e) {
-      console.warn('Google Sheet delete sync notice:', e);
-    }
-
     setIsDeleting(false);
     setAppToDelete(null);
     setDeleteSuccessToast(
-      `Application ${targetApp.applicationNumber} (${targetApp.applicant.firstName} ${targetApp.applicant.lastName}) deleted successfully from portal & Google Sheet.`
+      `Application ${targetApp.applicationNumber} (${targetApp.applicant.firstName} ${targetApp.applicant.lastName}) deleted successfully from portal.`
     );
     setTimeout(() => setDeleteSuccessToast(null), 5000);
-  };
-
-  // Save Webhook URL
-  const handleSaveWebhook = async (url: string) => {
-    const trimmed = url.trim();
-    if (!trimmed || !trimmed.startsWith('http')) {
-      setSheetSyncResult({
-        text: '⚠️ Please paste a valid Google Apps Script Web App URL (starts with https://script.google.com/...)',
-        isError: true,
-      });
-      setTimeout(() => setSheetSyncResult(null), 6000);
-      return;
-    }
-    setWebhookUrl(trimmed);
-    await saveStoredWebhookUrl(trimmed);
-    setShowScriptGuide(false);
-    setSheetSyncResult({
-      text: '✓ Webhook URL saved successfully and permanently stored! Now your submissions will mirror live to Google Sheet.',
-      isError: false,
-    });
-    setTimeout(() => setSheetSyncResult(null), 5000);
-  };
-
-  // Bulk sync to Google Sheet
-  const handleSyncAllToSheet = async () => {
-    if (!webhookUrl || !webhookUrl.trim().startsWith('http')) {
-      setSheetSyncResult({
-        text: '⚠️ Webhook URL is not connected yet! Follow the 4 steps below to deploy Apps Script on your Google Sheet.',
-        isError: true,
-      });
-      setShowScriptGuide(true);
-      setTimeout(() => setSheetSyncResult(null), 8000);
-      return;
-    }
-
-    setIsSyncingSheet(true);
-    setSheetSyncResult(null);
-    const result = await syncAllToGoogleSheet(applications);
-    setIsSyncingSheet(false);
-
-    if (result.success && result.webhookConfigured) {
-      setSheetSyncResult({
-        text: `✓ ${result.message || 'All applications successfully synced to Google Sheet!'}`,
-        isError: false,
-      });
-    } else {
-      setSheetSyncResult({
-        text: `⚠️ ${result.message || 'Failed to sync with Google Sheet. Please check your Web App URL.'}`,
-        isError: true,
-      });
-    }
-    setTimeout(() => setSheetSyncResult(null), 8000);
   };
 
   // Filter calculations
@@ -326,8 +188,8 @@ export default function ReviewerDashboard({
             <span className="rounded bg-blue-950 px-2.5 py-1 font-mono text-xs font-bold text-blue-400 border border-blue-800/80">
               {selectedApp.applicationNumber}
             </span>
-            <span className="text-xs text-slate-400 hidden sm:inline">
-              Submitted {new Date(selectedApp.submittedAt).toLocaleDateString()}
+            <span className="text-xs text-slate-400 hidden sm:inline" suppressHydrationWarning>
+              Submitted {selectedApp.submittedAt ? selectedApp.submittedAt.slice(0, 10) : ''}
             </span>
           </div>
 
@@ -880,27 +742,6 @@ export default function ReviewerDashboard({
         </div>
       </div>
 
-
-      {sheetSyncToast && (
-        <div
-          className={`mb-4 flex items-center justify-between p-3 rounded-xl border text-xs font-semibold animate-in fade-in ${sheetSyncToast.isError
-            ? 'bg-amber-950/80 border-amber-800 text-amber-200'
-            : 'bg-emerald-950/80 border-emerald-800 text-emerald-200'
-            }`}
-        >
-          <div className="flex items-center gap-2">
-            <RotateCcw className={`h-4 w-4 shrink-0 ${sheetSyncToast.isError ? 'text-amber-400' : 'text-emerald-400'}`} />
-            <span>{sheetSyncToast.text}</span>
-          </div>
-          <button
-            onClick={() => setSheetSyncToast(null)}
-            className="p-1 rounded cursor-pointer opacity-70 hover:opacity-100"
-          >
-            <X className="h-4 w-4" />
-          </button>
-        </div>
-      )}
-
       {deleteSuccessToast && (
         <div className="mb-4 flex items-center justify-between p-3 rounded-xl bg-red-950/80 border border-red-800 text-red-200 text-xs font-semibold animate-in fade-in">
           <div className="flex items-center gap-2">
@@ -986,15 +827,6 @@ export default function ReviewerDashboard({
                     {applications.length === 0 ? (
                       <div className="flex flex-col items-center justify-center gap-3">
                         <p className="text-sm text-slate-300 font-medium">No applications found in the portal yet.</p>
-                        <button
-                          type="button"
-                          onClick={handleFetchFromGoogleSheet}
-                          disabled={isFetchingSheet}
-                          className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-xs font-bold text-white hover:bg-emerald-500 transition shadow cursor-pointer disabled:opacity-60"
-                        >
-                          <RotateCcw className={`h-4 w-4 ${isFetchingSheet ? 'animate-spin' : ''}`} />
-                          <span>{isFetchingSheet ? 'Fetching from Google Sheet...' : 'Sync from Google Sheet'}</span>
-                        </button>
                       </div>
                     ) : (
                       'No applications found matching your criteria.'
@@ -1023,8 +855,8 @@ export default function ReviewerDashboard({
                     >
                       <td className="px-4 py-3 font-mono text-xs whitespace-nowrap w-[110px] min-w-[110px]">
                         <span className="font-bold text-blue-400">{app.applicationNumber}</span>
-                        <div className="text-[10px] text-slate-500">
-                          {new Date(app.submittedAt).toLocaleDateString()}
+                        <div className="text-[10px] text-slate-500" suppressHydrationWarning>
+                          {app.submittedAt ? app.submittedAt.slice(0, 10) : ''}
                         </div>
                       </td>
 
@@ -1155,209 +987,6 @@ export default function ReviewerDashboard({
           </table>
         </div>
       </div>
-
-      {/* ======================================================== */}
-      {/* GOOGLE SHEET INTEGRATION & LIVE SYNC MODAL */}
-      {/* ======================================================== */}
-      {isGoogleSheetModalOpen && (
-        <div className="fixed inset-0 z-50 overflow-y-auto flex items-start justify-center p-3 sm:p-6 pt-4 sm:pt-8 bg-black/85 backdrop-blur-md animate-in fade-in duration-200">
-          <div ref={googleSheetModalRef} className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl border border-slate-700 bg-[#0f172a] p-5 sm:p-7 shadow-2xl text-slate-100 mb-8">
-            <button
-              onClick={() => setIsGoogleSheetModalOpen(false)}
-              className="absolute top-4 right-4 p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition cursor-pointer"
-            >
-              <X className="h-5 w-5" />
-            </button>
-
-            {/* Header */}
-            <div className="flex items-center gap-3.5 mb-5 pr-8">
-              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#0F9D58]/20 text-[#34A853] border border-[#0F9D58]/40">
-                <FileSpreadsheet className="h-6 w-6" />
-              </div>
-              <div>
-                <div className="flex items-center gap-2">
-                  <h3 className="text-lg font-bold text-white">Google Sheet Live Integration</h3>
-                  <span
-                    className={`text-[10px] font-semibold uppercase px-2.5 py-0.5 rounded-full border ${webhookUrl && webhookUrl.startsWith('http')
-                      ? 'bg-emerald-950 text-emerald-300 border-emerald-700'
-                      : 'bg-red-950 text-red-300 border-red-700'
-                      }`}
-                  >
-                    {webhookUrl && webhookUrl.startsWith('http') ? '✓ Connected' : '⚠️ Setup Required'}
-                  </span>
-                </div>
-                <p className="text-xs text-slate-400 mt-0.5">
-                  Auto-records every applicant submission &amp; removes deleted records in real time.
-                </p>
-              </div>
-            </div>
-
-            {sheetSyncResult && (
-              <div
-                className={`mb-4 p-3 rounded-xl border text-xs font-medium text-center animate-in fade-in ${sheetSyncResult.isError
-                  ? 'bg-red-950/80 border-red-700 text-red-200'
-                  : 'bg-emerald-950/80 border-emerald-700 text-emerald-300'
-                  }`}
-              >
-                {sheetSyncResult.text}
-              </div>
-            )}
-
-            {/* Proactive Banner when Webhook is not connected */}
-            {(!webhookUrl || !webhookUrl.startsWith('http')) && (
-              <div className="mb-4 rounded-xl border border-amber-600/70 bg-amber-950/40 p-3.5 text-xs text-amber-200 leading-relaxed space-y-1.5">
-                <div className="flex items-center gap-1.5 font-bold text-amber-300">
-                  <AlertTriangle className="h-4 w-4 text-amber-400 shrink-0" />
-                  <span>গুগল শীটে সরাসরি ডাটা যাওয়ার জন্য ১-মিনিটের সেটআপ বাকি:</span>
-                </div>
-                <p className="text-slate-300">
-                  গুগল সিকিউরিটির জন্য বাইরের যেকোনো ওয়েবসাইট থেকে শীটে লিখতে হলে একটি <strong className="text-white">Apps Script Web App</strong> প্রয়োজন। নিচের ৪টি ধাপ সম্পন্ন করে পাওয়া URL-টি এখানে দিন।
-                </p>
-              </div>
-            )}
-
-            {/* Primary Actions: Open Sheet, Pull Live, Push All */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 mb-5">
-              <a
-                href={GOOGLE_SHEET_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 rounded-xl bg-[#0F9D58] px-3.5 py-2.5 text-xs font-bold text-white shadow-lg shadow-green-700/30 hover:bg-[#0b8043] transition cursor-pointer"
-              >
-                <ExternalLink className="h-4 w-4" />
-                <span>Open Google Sheet</span>
-              </a>
-
-              <button
-                type="button"
-                onClick={handleFetchFromGoogleSheet}
-                disabled={isFetchingSheet}
-                className="flex items-center justify-center gap-2 rounded-xl border border-emerald-600 bg-emerald-700/40 px-3.5 py-2.5 text-xs font-bold text-emerald-300 hover:bg-emerald-600 hover:text-white disabled:opacity-50 transition cursor-pointer"
-              >
-                <RotateCcw className={`h-4 w-4 ${isFetchingSheet ? 'animate-spin' : ''}`} />
-                <span>{isFetchingSheet ? 'Pulling...' : 'Pull from Sheet'}</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={handleSyncAllToSheet}
-                disabled={isSyncingSheet}
-                className="flex items-center justify-center gap-2 rounded-xl border border-slate-700 bg-slate-800/90 px-3.5 py-2.5 text-xs font-semibold text-slate-200 hover:bg-slate-700 hover:text-white disabled:opacity-50 transition cursor-pointer"
-              >
-                {isSyncingSheet ? (
-                  <span>Syncing...</span>
-                ) : (
-                  <>
-                    <CheckCircle2 className="h-4 w-4 text-emerald-400" />
-                    <span>Push to Sheet ({applications.length})</span>
-                  </>
-                )}
-              </button>
-            </div>
-
-            {/* Webhook Configuration Section */}
-            <div className="rounded-xl border border-slate-800 bg-slate-900/70 p-4 mb-4">
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                Google Apps Script Web App URL:
-              </label>
-              <div className="flex flex-col sm:flex-row gap-2">
-                <input
-                  type="url"
-                  value={webhookUrl}
-                  onChange={(e) => setWebhookUrl(e.target.value)}
-                  placeholder="https://script.google.com/macros/s/.../exec"
-                  className="flex-1 rounded-lg bg-slate-950 px-3 py-2 text-xs text-white border border-slate-800 focus:outline-none focus:border-emerald-500 font-mono"
-                />
-                <button
-                  onClick={() => handleSaveWebhook(webhookUrl)}
-                  className="rounded-lg bg-blue-600 px-4 py-2 text-xs font-bold text-white hover:bg-blue-500 transition cursor-pointer shrink-0"
-                >
-                  Save URL
-                </button>
-              </div>
-              <p className="text-[11px] text-slate-400 mt-1.5">
-                Connecting your Google Apps Script URL enables instant, bi-directional row creation and deletion in your Google Sheet.
-              </p>
-            </div>
-
-            {/* 2-Minute Setup Guide Accordion */}
-            <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-4">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-white">How to connect in 2 minutes:</span>
-                <button
-                  type="button"
-                  onClick={() => setShowScriptGuide(!showScriptGuide)}
-                  className="text-xs font-medium text-blue-400 hover:text-blue-300 underline cursor-pointer"
-                >
-                  {showScriptGuide ? 'Hide instructions' : 'View instructions & script'}
-                </button>
-              </div>
-
-              {showScriptGuide && (
-                <div className="mt-3.5 pt-3.5 border-t border-slate-800 space-y-3 text-xs text-slate-300">
-                  <ol className="list-decimal list-inside space-y-1.5 leading-relaxed text-slate-300">
-                    <li>
-                      Open your{' '}
-                      <a
-                        href={GOOGLE_SHEET_URL}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="text-emerald-400 underline font-medium"
-                      >
-                        Google Sheet
-                      </a>
-                      .
-                    </li>
-                    <li>
-                      Click menu <strong className="text-white">Extensions &gt; Apps Script</strong>.
-                    </li>
-                    <li>
-                      Delete any existing code, paste the script below, and click <strong className="text-white">Save</strong>.
-                    </li>
-                    <li>
-                      Click <strong className="text-white">Deploy &gt; New deployment</strong>.
-                    </li>
-                    <li>
-                      Select type <strong className="text-white">Web app</strong>, set <em>Who has access</em> to <strong className="text-white">Anyone</strong>, and click <strong className="text-white">Deploy</strong>.
-                    </li>
-                    <li>
-                      Copy the Web App URL (ends in <code className="text-amber-300">/exec</code>) and paste it into the box above!
-                    </li>
-                  </ol>
-
-                  <div className="mt-2">
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-[11px] font-semibold text-slate-400 uppercase">
-                        Apps Script Code:
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          navigator.clipboard.writeText(GOOGLE_APPS_SCRIPT_CODE);
-                          setCopiedScript(true);
-                          setTimeout(() => setCopiedScript(false), 3000);
-                        }}
-                        className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-400 hover:text-emerald-300 cursor-pointer"
-                      >
-                        <Copy className="h-3 w-3" />
-                        <span>{copiedScript ? '✓ Copied Script!' : 'Copy Entire Script'}</span>
-                      </button>
-                    </div>
-                    <textarea
-                      readOnly
-                      value={GOOGLE_APPS_SCRIPT_CODE}
-                      rows={5}
-                      className="w-full rounded-lg bg-slate-950 p-2.5 text-[10px] font-mono text-slate-400 border border-slate-800 focus:outline-none"
-                    />
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
-
-
     </div>
   );
 }

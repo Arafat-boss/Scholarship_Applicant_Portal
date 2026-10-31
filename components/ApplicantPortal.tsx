@@ -14,9 +14,6 @@ import {
   ArrowLeft,
   FileDown,
   X,
-  Mail,
-  ExternalLink,
-  Copy,
 } from 'lucide-react';
 import {
   ClubActivity,
@@ -27,86 +24,7 @@ import {
   ScholarshipApplication,
 } from '@/types/scholarship';
 import { saveNewApplication } from '@/lib/storage';
-import { sendApplicationToGoogleSheet } from '@/lib/googleSheet';
 import { exportApplicationsToPDF } from '@/lib/pdfExport';
-
-// Configurable Recipient Email (Change to client's email when ready)
-export const RECIPIENT_EMAIL = 'arafatsarker874@gmail.com';
-
-export function buildApplicationEmailUrl(
-  app: ScholarshipApplication,
-  clientType: 'mailto' | 'gmail' = 'mailto'
-): string {
-  const subject = `The Monday Club Scholarship Application - ${app.applicationNumber} - ${app.applicant.firstName} ${app.applicant.lastName}`;
-
-  const activitiesSummary =
-    app.activities.length > 0
-      ? app.activities.map((a) => `- ${a.activity} (${a.role || 'Member'}, Years: ${a.years})`).join('\n')
-      : 'None listed';
-
-  const serviceSummary =
-    app.communityService.length > 0
-      ? app.communityService
-          .map((cs) => `- ${cs.organization}: ${cs.description} (${cs.totalHours} hrs)`)
-          .join('\n')
-      : 'None listed';
-
-  const collegesSummary =
-    app.colleges.length > 0
-      ? app.colleges.map((c) => `- ${c.college} - ${c.cityState} (${c.status})`).join('\n')
-      : 'None listed';
-
-  const body = `Dear Scholarship Review Committee,
-
-Please find my completed official scholarship application below:
-
-========================================
-APPLICATION OVERVIEW
-========================================
-• Application Number: ${app.applicationNumber}
-• Submission Date: ${new Date(app.submittedAt).toLocaleDateString()}
-• Applicant: ${app.applicant.firstName} ${app.applicant.middleName ? app.applicant.middleName + ' ' : ''}${app.applicant.lastName}
-• Email: ${app.applicant.email}
-• Telephone: ${app.applicant.telephone}
-• Date of Birth: ${app.applicant.dateOfBirth} (Sex: ${app.applicant.sex || 'F'})
-• Address: ${app.applicant.streetAddress}, ${app.applicant.city}, ${app.applicant.state} ${app.applicant.zip}
-
-PARENT / GUARDIAN
-• Full Name: ${app.parentGuardian.fullName}
-• Phone: ${app.parentGuardian.phone}
-• Email: ${app.parentGuardian.email}
-
-ACADEMICS & FAMILY
-• Current High School: ${app.schoolFamily.currentHighSchool}
-• Cumulative GPA: ${app.schoolFamily.gpa}
-• Siblings: ${app.schoolFamily.numberOfSiblings} | Immediate Family: ${app.schoolFamily.immediateFamilyMembers} | In College: ${app.schoolFamily.familyMembersInCollege}
-
-EXTRACURRICULAR ACTIVITIES
-${activitiesSummary}
-
-COMMUNITY SERVICE & VOLUNTEERING
-${serviceSummary}
-
-COLLEGE ASPIRATIONS
-${collegesSummary}
-
-PERSONAL ESSAY (${app.essay?.wordCount || 0} words)
-${app.essay?.text || ''}
-
-CERTIFICATIONS & SIGNATURES
-• Applicant Legal Signature: ${app.certification.applicantSignature} (Date: ${app.certification.applicantSignatureDate || ''})
-• Parent/Guardian Permission: ${app.certification.parentSignature || ''} (Date: ${app.certification.parentSignatureDate || ''})
-
-Respectfully submitted,
-${app.applicant.firstName} ${app.applicant.lastName}
-${app.applicant.email} | ${app.applicant.telephone}`;
-
-  if (clientType === 'gmail') {
-    return `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(RECIPIENT_EMAIL)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-  }
-
-  return `mailto:${encodeURIComponent(RECIPIENT_EMAIL)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-}
 
 interface ApplicantPortalProps {
   onSuccessSubmit: (app: ScholarshipApplication) => void;
@@ -262,7 +180,6 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
 
   // PDF Export Ready Toast
   const [pdfToast, setPdfToast] = useState<{ url: string; name: string } | null>(null);
-  const [emailCopied, setEmailCopied] = useState(false);
 
   const handleDownloadPdf = (apps: ScholarshipApplication[]) => {
     const res = exportApplicationsToPDF(apps);
@@ -555,19 +472,6 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
         setIsSubmitting(false);
         setSubmittedApp(saved);
         onSuccessSubmit(saved);
-
-        // Sync application directly to Google Sheet in background
-        sendApplicationToGoogleSheet(saved).catch((err) => {
-          console.warn('Background Google Sheet sync notice:', err);
-        });
-
-        // Automatically open / redirect to email client prefilled with application details
-        try {
-          const mailUrl = buildApplicationEmailUrl(saved, 'mailto');
-          window.location.href = mailUrl;
-        } catch (mailErr) {
-          console.warn('Email redirect notice:', mailErr);
-        }
       } catch (err) {
         console.error(err);
         setIsSubmitting(false);
@@ -650,56 +554,6 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
             <div className="flex justify-between py-1">
               <span className="text-slate-400">Google Sheet Status:</span>
               <span className="font-semibold text-emerald-400">✓ Logged &amp; Synchronized</span>
-            </div>
-          </div>
-
-          {/* Email Delivery Card */}
-          <div className="mb-6 rounded-xl border border-indigo-500/50 bg-gradient-to-r from-indigo-950/70 via-slate-900 to-indigo-950/70 p-4 text-left shadow-lg">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2 pb-2 border-b border-indigo-900/60">
-              <div className="flex items-center gap-2">
-                <Mail className="h-5 w-5 text-indigo-400 shrink-0" />
-                <span className="font-bold text-white text-xs sm:text-sm">
-                  Official Application Email Submission
-                </span>
-              </div>
-              <span className="text-[11px] font-mono font-semibold text-indigo-300 bg-indigo-900/60 px-2.5 py-0.5 rounded border border-indigo-700/60 w-fit">
-                {RECIPIENT_EMAIL}
-              </span>
-            </div>
-            <p className="text-xs text-slate-300 leading-relaxed mb-3">
-              Application prefilled for <strong className="text-white">{RECIPIENT_EMAIL}</strong>. If your email composer did not open automatically, choose an option below to deliver:
-            </p>
-            <div className="flex flex-wrap items-center gap-2">
-              <a
-                href={buildApplicationEmailUrl(submittedApp, 'mailto')}
-                className="inline-flex items-center gap-1.5 rounded-lg bg-indigo-600 px-3.5 py-2 text-xs font-bold text-white shadow-md shadow-indigo-600/30 hover:bg-indigo-500 transition cursor-pointer"
-              >
-                <Mail className="h-3.5 w-3.5" />
-                <span>Open in Email App</span>
-              </a>
-              <a
-                href={buildApplicationEmailUrl(submittedApp, 'gmail')}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 rounded-lg border border-indigo-700 bg-indigo-900/60 px-3.5 py-2 text-xs font-semibold text-indigo-200 hover:bg-indigo-800 hover:text-white transition cursor-pointer"
-              >
-                <ExternalLink className="h-3.5 w-3.5" />
-                <span>Open in Gmail Web</span>
-              </a>
-              <button
-                type="button"
-                onClick={() => {
-                  if (typeof navigator !== 'undefined') {
-                    navigator.clipboard.writeText(RECIPIENT_EMAIL);
-                    setEmailCopied(true);
-                    setTimeout(() => setEmailCopied(false), 3000);
-                  }
-                }}
-                className="inline-flex items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-xs font-medium text-slate-300 hover:bg-slate-700 hover:text-white transition cursor-pointer"
-              >
-                {emailCopied ? <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" /> : <Copy className="h-3.5 w-3.5" />}
-                <span>{emailCopied ? 'Email Copied!' : 'Copy Email Address'}</span>
-              </button>
             </div>
           </div>
 
@@ -1828,7 +1682,7 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
             <div className="p-3 rounded-lg bg-blue-950/40 border border-blue-900/60 text-xs text-slate-300 space-y-1">
               <div className="font-bold text-blue-300">Physical &amp; Email Delivery Instructions:</div>
               <p>
-                All application materials must be emailed to <strong className="text-white">{RECIPIENT_EMAIL}</strong> or mailed to <strong className="text-white">4020 New Castle Ave, Wilmington, DE 19720</strong>.
+                All application materials must be emailed to <strong className="text-white">TheMCscholarships@gmail.com</strong> or mailed to <strong className="text-white">4020 New Castle Ave, Wilmington, DE 19720</strong>.
               </p>
               <p className="text-[11px] text-slate-400">
                 Questions? Contact Mr. Ken Snell: (302) 521-3798 &bull; Winners notified by May 1, 2026.
