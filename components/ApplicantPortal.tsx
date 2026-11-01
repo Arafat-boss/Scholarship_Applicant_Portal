@@ -773,7 +773,7 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
             <button
               type="button"
               onClick={handleAutofill}
-              className="inline-flex items-center gap-2 rounded-xl border border-blue-500/40 bg-blue-950/40 px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-semibold text-blue-300 shadow-sm shadow-blue-950/40 hover:bg-blue-900/60 hover:text-white transition cursor-pointer"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl border border-blue-500/40 bg-blue-950/40 px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-semibold text-blue-300 shadow-sm shadow-blue-950/40 hover:bg-blue-900/60 hover:text-white transition cursor-pointer"
             >
               <Sparkles className="h-4 w-4 text-amber-400 shrink-0" />
               <span>Pre-fill Sample Data (Madison Rae Tymes)</span>
@@ -821,7 +821,7 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
             <button
               type="button"
               onClick={handleCheckAllChecklist}
-              className="self-start sm:self-auto inline-flex items-center gap-1.5 rounded-lg border border-blue-600/60 bg-blue-950/70 px-3 py-1.5 text-xs font-bold text-blue-300 hover:bg-blue-900/80 hover:text-white transition cursor-pointer shadow-sm"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 rounded-lg border border-blue-600/60 bg-blue-950/70 px-3 py-1.5 text-xs font-bold text-blue-300 hover:bg-blue-900/80 hover:text-white transition cursor-pointer shadow-sm whitespace-nowrap"
               title="Click to check all 10 checklist items"
             >
               <CheckCircle2 className="h-3.5 w-3.5 text-blue-400" />
@@ -1112,7 +1112,7 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
                   type="date"
                   value={dateOfBirth}
                   onChange={(e) => setDateOfBirth(e.target.value)}
-                  className="w-full sm:w-1/3 rounded-lg px-3 py-2 text-sm text-white bg-slate-950 border border-slate-800"
+                  className="w-full sm:w-1/2 md:w-1/3 rounded-lg px-3 py-2 text-xs sm:text-sm text-white bg-slate-950 border border-slate-800 [color-scheme:dark] cursor-pointer focus:border-blue-500"
                   required
                 />
               </div>
@@ -1318,7 +1318,7 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
                         <button
                           type="button"
                           onClick={() => setActivities(activities.filter((_, i) => i !== index))}
-                          className="p-2 shrink-0 rounded-lg text-slate-400 hover:text-red-400 hover:bg-slate-800 transition cursor-pointer"
+                          className="p-2 shrink-0 rounded-lg text-slate-300 hover:text-red-400 bg-slate-900 hover:bg-slate-800 border border-slate-700/60 transition cursor-pointer flex items-center justify-center"
                           title="Remove"
                         >
                           <Trash2 className="h-4 w-4" />
@@ -1393,7 +1393,7 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
                         <button
                           type="button"
                           onClick={() => setCommunityService(communityService.filter((_, i) => i !== index))}
-                          className="p-2 shrink-0 rounded-lg text-slate-400 hover:text-red-400 hover:bg-slate-800 transition cursor-pointer"
+                          className="p-2 shrink-0 rounded-lg text-slate-300 hover:text-red-400 bg-slate-900 hover:bg-slate-800 border border-slate-700/60 transition cursor-pointer flex items-center justify-center"
                           title="Remove"
                         >
                           <Trash2 className="h-4 w-4" />
@@ -1471,7 +1471,7 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
                         <button
                           type="button"
                           onClick={() => setEmployment(employment.filter((_, i) => i !== index))}
-                          className="p-2 shrink-0 rounded-lg text-slate-400 hover:text-red-400 hover:bg-slate-800 transition cursor-pointer"
+                          className="p-2 shrink-0 rounded-lg text-slate-300 hover:text-red-400 bg-slate-900 hover:bg-slate-800 border border-slate-700/60 transition cursor-pointer flex items-center justify-center"
                           title="Remove"
                         >
                           <Trash2 className="h-4 w-4" />
@@ -1551,7 +1551,7 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
                         <button
                           type="button"
                           onClick={() => setColleges(colleges.filter((_, i) => i !== index))}
-                          className="p-2 shrink-0 rounded-lg text-slate-400 hover:text-red-400 hover:bg-slate-800 transition cursor-pointer"
+                          className="p-2 shrink-0 rounded-lg text-slate-300 hover:text-red-400 bg-slate-900 hover:bg-slate-800 border border-slate-700/60 transition cursor-pointer flex items-center justify-center"
                           title="Remove"
                         >
                           <Trash2 className="h-4 w-4" />
@@ -1643,26 +1643,28 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
           {/* 7. ESSAY SUBMISSION (Requirement #6, Page 3: Min 200 Words) */}
           {/* ======================================================== */}
           <div className="rounded-xl border border-slate-800 bg-[#0f172a] p-5 sm:p-6 shadow-md">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
-              <h3 className="text-base font-bold text-white flex items-center gap-2">
-                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-600/20 text-xs font-bold text-blue-400 border border-blue-500/30">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 mb-3">
+              <h3 className="text-sm sm:text-base font-bold text-white flex items-center gap-2">
+                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-600/20 text-xs font-bold text-blue-400 border border-blue-500/30 shrink-0">
                   7
                 </span>
-                <span>Essay Submission (Requirement #6 &ndash; Minimum 200 words)</span>
+                <span>Essay Submission (Requirement #6 &ndash; Min 200 words)</span>
               </h3>
-              {/* Live Word Count Indicator */}
+              {/* Live Word Count Indicator - Always single line with whitespace-nowrap */}
               {(() => {
                 const count = essayText.trim() ? essayText.trim().split(/\s+/).filter(Boolean).length : 0;
                 const isMet = count >= 200;
                 return (
                   <span
-                    className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold border ${isMet
+                    className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] sm:text-xs font-mono font-bold border whitespace-nowrap shrink-0 self-start sm:self-auto shadow-sm ${isMet
                       ? 'bg-emerald-950/80 text-emerald-300 border-emerald-700/60'
                       : 'bg-amber-950/80 text-amber-300 border-amber-700/60'
                       }`}
                   >
-                    <CheckCircle2 className={`h-3.5 w-3.5 ${isMet ? 'text-emerald-400' : 'text-amber-400'}`} />
-                    <span>{count} / 200 words required {isMet ? '(Criteria Met)' : `(${200 - count} words left)`}</span>
+                    <CheckCircle2 className={`h-3.5 w-3.5 shrink-0 ${isMet ? 'text-emerald-400' : 'text-amber-400'}`} />
+                    <span className="whitespace-nowrap">
+                      {count} / 200 words required {isMet ? '(Criteria Met)' : `(${200 - count} words left)`}
+                    </span>
                   </span>
                 );
               })()}
@@ -1678,11 +1680,11 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
             <div>
               <textarea
                 id="essay-text"
-                rows={9}
+                rows={5}
                 value={essayText}
                 onChange={(e) => setEssayText(e.target.value)}
                 placeholder="Type your minimum 200-word essay here describing your community involvement, school activities, and 10-year aspirations..."
-                className="w-full rounded-lg px-3.5 py-3 text-xs sm:text-sm text-white bg-slate-950 border border-slate-800 leading-relaxed focus:border-blue-500 font-sans"
+                className="w-full min-h-[115px] rounded-lg px-3.5 py-2.5 text-xs sm:text-sm text-white bg-slate-950 border border-slate-800 leading-relaxed focus:border-blue-500 font-sans"
                 required
               />
             </div>
@@ -1724,7 +1726,7 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
                       });
                     }
                   }}
-                  className="w-full text-slate-400 text-xs"
+                  className="w-full text-slate-300 text-xs file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border file:border-slate-700 file:text-xs file:font-semibold file:bg-slate-800 file:text-slate-200 hover:file:bg-slate-700 file:cursor-pointer"
                 />
                 {transcript && (
                   <div className="mt-1.5 flex items-center gap-2 text-xs text-emerald-400 font-medium">
@@ -1754,7 +1756,7 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
                       });
                     }
                   }}
-                  className="w-full text-slate-400 text-xs"
+                  className="w-full text-slate-300 text-xs file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border file:border-slate-700 file:text-xs file:font-semibold file:bg-slate-800 file:text-slate-200 hover:file:bg-slate-700 file:cursor-pointer"
                 />
                 {studentAidReport && (
                   <div className="mt-1.5 flex items-center gap-2 text-xs text-emerald-400 font-medium">
@@ -1787,7 +1789,7 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
                       setRecLetters(mapped);
                     }
                   }}
-                  className="w-full text-slate-400 text-xs"
+                  className="w-full text-slate-300 text-xs file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border file:border-slate-700 file:text-xs file:font-semibold file:bg-slate-800 file:text-slate-200 hover:file:bg-slate-700 file:cursor-pointer"
                 />
                 {recLetters.length > 0 && (
                   <div className="mt-1.5 flex items-center gap-2 text-xs text-emerald-400 font-medium">
@@ -1819,7 +1821,7 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
                       setExtraDocs(mapped);
                     }
                   }}
-                  className="w-full text-slate-400 text-xs"
+                  className="w-full text-slate-300 text-xs file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border file:border-slate-700 file:text-xs file:font-semibold file:bg-slate-800 file:text-slate-200 hover:file:bg-slate-700 file:cursor-pointer"
                 />
                 {extraDocs.length > 0 && (
                   <div className="mt-1.5 flex items-center gap-2 text-xs text-emerald-400 font-medium">
@@ -1917,7 +1919,7 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
                   type="date"
                   value={applicantSignatureDate}
                   onChange={(e) => setApplicantSignatureDate(e.target.value)}
-                  className="w-full rounded-lg px-3 py-2 text-sm text-white bg-slate-950 border border-slate-800"
+                  className="w-full rounded-lg px-3 py-2 text-xs sm:text-sm text-white bg-slate-950 border border-slate-800 [color-scheme:dark] cursor-pointer focus:border-blue-500"
                   required
                 />
               </div>
@@ -1973,7 +1975,7 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
                   type="date"
                   value={parentSignatureDate}
                   onChange={(e) => setParentSignatureDate(e.target.value)}
-                  className="w-full rounded-lg px-3 py-2 text-sm text-white bg-slate-950 border border-slate-800"
+                  className="w-full rounded-lg px-3 py-2 text-xs sm:text-sm text-white bg-slate-950 border border-slate-800 [color-scheme:dark] cursor-pointer focus:border-blue-500"
                   required
                 />
               </div>

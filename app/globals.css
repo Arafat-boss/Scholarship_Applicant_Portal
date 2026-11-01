@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
 :root {
+  color-scheme: dark;
   --background: #090d16;
   --foreground: #f1f5f9;
   --card-bg: #0f172a;
@@ -96,6 +97,30 @@ textarea:focus {
   border-color: #3b82f6;
   outline: none;
   box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25);
+}
+
+/* Ensure native date picker calendar icon is clearly visible and light on dark backgrounds */
+input[type="date"] {
+  color-scheme: dark;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.9) brightness(1.2);
+  cursor: pointer;
+  opacity: 0.85;
+  transition: opacity 0.2s ease, transform 0.15s ease;
+  padding: 2px;
+  border-radius: 4px;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
+  transform: scale(1.08);
+}
+
+/* Ensure select dropdown arrow is light on dark background */
+select {
+  color-scheme: dark;
 }
 
 /* Custom file input styling */
