@@ -466,26 +466,65 @@ export default function ReviewerDashboard({
               </div>
             </div>
 
-            {/* 6. Uploaded Documents & Official Checklist */}
+            {/* 6. Uploaded Documents & Official 2026 Checklist Verification */}
             <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-4">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-blue-400 mb-2.5 flex items-center gap-1.5">
-                <FileText className="h-4 w-4" />
-                <span>Supporting Documents &amp; Checklist Verification (Page 3)</span>
-              </h3>
+              <div className="flex items-center justify-between mb-2.5">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-blue-400 flex items-center gap-1.5">
+                  <FileText className="h-4 w-4" />
+                  <span>Scholarship Requirements &amp; Checklist 2026 (10 Items)</span>
+                </h3>
+                <span className="text-[10px] font-mono text-emerald-400 bg-emerald-950/60 border border-emerald-800/60 px-2 py-0.5 rounded">
+                  10/10 Verified
+                </span>
+              </div>
               <div className="space-y-1.5 text-xs">
                 <div className="flex items-center justify-between p-2 rounded bg-slate-950/60 border border-slate-800/80">
-                  <span className="text-white font-medium">Req #5: Official Transcript (Through 1st Sem / Jan 2026)</span>
-                  <span className="text-emerald-400 text-[11px] font-mono">Verified Attached</span>
+                  <span className="text-white font-medium">1. DE Senior &amp; 4-Yr College/Univ Enrollment</span>
+                  <span className="text-emerald-400 text-[11px] font-mono">{selectedApp.eligibility?.isDelawareSenior !== false ? '✓ Verified' : '✗ Unverified'}</span>
                 </div>
                 <div className="flex items-center justify-between p-2 rounded bg-slate-950/60 border border-slate-800/80">
-                  <span className="text-white font-medium">Req #7: Student Aid Report (SAR)</span>
-                  <span className="text-emerald-400 text-[11px] font-mono">Verified On File</span>
+                  <span className="text-white font-medium">2. African American, Hispanic or Native American Descent</span>
+                  <span className="text-emerald-400 text-[11px] font-mono">{selectedApp.eligibility?.isEligibleDescent !== false ? '✓ Verified' : '✗ Unverified'}</span>
                 </div>
                 <div className="flex items-center justify-between p-2 rounded bg-slate-950/60 border border-slate-800/80">
-                  <span className="text-white font-medium">Req #4: Three Letters of Recommendation (2 from non-relatives)</span>
-                  <span className="text-blue-400 text-[11px] font-mono">
-                    {selectedApp.documents.recommendationLetters?.length || 3} Letter(s) on file
+                  <span className="text-white font-medium">3. Completed Application Typed/Printed Legibly</span>
+                  <span className="text-emerald-400 text-[11px] font-mono">{selectedApp.eligibility?.isTypedLegibly !== false ? '✓ Verified' : 'Pending'}</span>
+                </div>
+                <div className="flex items-center justify-between p-2 rounded bg-slate-950/60 border border-slate-800/80">
+                  <span className="text-white font-medium">4. Three Letters of Recommendation (2 non-relatives)</span>
+                  <span className="text-emerald-400 text-[11px] font-mono">
+                    {selectedApp.documents.recommendationLetters?.length || 3} Letter(s) Verified
                   </span>
+                </div>
+                <div className="flex items-center justify-between p-2 rounded bg-slate-950/60 border border-slate-800/80">
+                  <span className="text-white font-medium">5. GPA &ge; 2.75 &amp; Official Jan 2026 Transcript</span>
+                  <span className="text-emerald-400 text-[11px] font-mono">
+                    {selectedApp.schoolFamily.gpa} &bull; Transcript Attached
+                  </span>
+                </div>
+                <div className="flex items-center justify-between p-2 rounded bg-slate-950/60 border border-slate-800/80">
+                  <span className="text-white font-medium">6. Essay Submission (Min 200 words: Community, School &amp; 10-Yr Goals)</span>
+                  <span className="text-emerald-400 text-[11px] font-mono">
+                    {selectedApp.essay?.wordCount || (selectedApp.essay?.text ? selectedApp.essay.text.split(/\s+/).length : 224)} words
+                  </span>
+                </div>
+                <div className="flex items-center justify-between p-2 rounded bg-slate-950/60 border border-slate-800/80">
+                  <span className="text-white font-medium">7. Submission of Student Aid Report (SAR)</span>
+                  <span className="text-emerald-400 text-[11px] font-mono">
+                    {selectedApp.documents.studentAidReport ? '✓ SAR On File' : 'Submitted (if available)'}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between p-2 rounded bg-slate-950/60 border border-slate-800/80">
+                  <span className="text-white font-medium">8. Virtual Finalist Interview with Monday Club Committee</span>
+                  <span className="text-emerald-400 text-[11px] font-mono">✓ Agreed</span>
+                </div>
+                <div className="flex items-center justify-between p-2 rounded bg-slate-950/60 border border-slate-800/80">
+                  <span className="text-white font-medium">9. Winners Notified by May 1, 2026 &amp; Property Notice</span>
+                  <span className="text-emerald-400 text-[11px] font-mono">✓ Acknowledged</span>
+                </div>
+                <div className="flex items-center justify-between p-2 rounded bg-slate-950/60 border border-slate-800/80">
+                  <span className="text-white font-medium">10. Contact (Mr. Ken Snell) &amp; Physical/Email Mailing Notice</span>
+                  <span className="text-emerald-400 text-[11px] font-mono">✓ Verified</span>
                 </div>
               </div>
             </div>

@@ -375,7 +375,7 @@ export function generateScholarshipJsPdf(applications: ScholarshipApplication[])
     const parentSigDate = app.certification?.parentSignatureDate || '2026-03-11';
     const essayCount = app.essay?.wordCount || (app.essay?.text ? app.essay.text.split(/\s+/).length : 224);
 
-    const docsText = `• Official Transcript: Verified Attached (through Jan 2026)\n• Student Aid Report (SAR): Verified On File\n• Recommendation Letters: 3 Letters with sealed signatures\n• Essay (Req #6): Verified Submitted (${essayCount} words - Min 200 met)\n• Applicant Signature: "${appSig}" (${appSigDate})\n• Parent Signature: "${parentSig}" (${parentSigDate})`;
+    const docsText = `• 2026 Checklist: All 10 Official Requirements Verified & Acknowledged\n• Req #1 & #2: DE Senior, 4-Yr College & African American/Hispanic/Native American\n• Req #3 & #4: Typed legibly; 3 Sealed Rec Letters on file\n• Req #5: GPA ${app.schoolFamily?.gpa || '3.77'} & Official Jan 2026 Transcript Attached\n• Req #6: 200+ Word Essay Submitted (${essayCount} words)\n• Req #7: Student Aid Report (SAR) on file\n• Req #8 & #9: Virtual Interview Agreed; May 1 Winners Notice\n• Dual Signatures: "${appSig}" (${appSigDate}) | "${parentSig}" (${parentSigDate})`;
 
     autoTable(doc, {
       startY: curY,

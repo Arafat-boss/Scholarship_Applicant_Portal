@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState } from 'react';
 import Image from 'next/image';
@@ -35,10 +35,17 @@ export default function ApplicantPortal({
   onSuccessSubmit,
   initialAutofill = false,
 }: ApplicantPortalProps) {
-  // 1. Eligibility
-  const [isDelawareSenior, setIsDelawareSenior] = useState(initialAutofill);
-  const [isEligibleDescent, setIsEligibleDescent] = useState(initialAutofill);
-  const [isMinGpa, setIsMinGpa] = useState(initialAutofill);
+  // 1. Scholarship Requirements & Checklist 2026 (Official 10 Items)
+  const [isDelawareSenior, setIsDelawareSenior] = useState(initialAutofill); // #1
+  const [isEligibleDescent, setIsEligibleDescent] = useState(initialAutofill); // #2
+  const [isTypedLegibly, setIsTypedLegibly] = useState(initialAutofill); // #3
+  const [isRecLettersSubmitted, setIsRecLettersSubmitted] = useState(initialAutofill); // #4
+  const [isMinGpa, setIsMinGpa] = useState(initialAutofill); // #5
+  const [isEssayAcknowledged, setIsEssayAcknowledged] = useState(initialAutofill); // #6
+  const [isSarAcknowledged, setIsSarAcknowledged] = useState(initialAutofill); // #7
+  const [isInterviewAgreed, setIsInterviewAgreed] = useState(initialAutofill); // #8
+  const [isWinnerNotificationUnderstood, setIsWinnerNotificationUnderstood] = useState(initialAutofill); // #9
+  const [isContactAndMailingAcknowledged, setIsContactAndMailingAcknowledged] = useState(initialAutofill); // #10
 
   // 2. Applicant (Page 1 of official physical form)
   const [firstName, setFirstName] = useState(initialAutofill ? 'Madison' : '');
@@ -193,11 +200,32 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
     }
   }, [submittedApp, showSubmittedForm]);
 
+  // Quick helper to check all 10 official checklist items
+  const handleCheckAllChecklist = () => {
+    setIsDelawareSenior(true);
+    setIsEligibleDescent(true);
+    setIsTypedLegibly(true);
+    setIsRecLettersSubmitted(true);
+    setIsMinGpa(true);
+    setIsEssayAcknowledged(true);
+    setIsSarAcknowledged(true);
+    setIsInterviewAgreed(true);
+    setIsWinnerNotificationUnderstood(true);
+    setIsContactAndMailingAcknowledged(true);
+  };
+
   // Clean reset form for a fresh applicant
   const handleResetForm = () => {
     setIsDelawareSenior(false);
     setIsEligibleDescent(false);
+    setIsTypedLegibly(false);
+    setIsRecLettersSubmitted(false);
     setIsMinGpa(false);
+    setIsEssayAcknowledged(false);
+    setIsSarAcknowledged(false);
+    setIsInterviewAgreed(false);
+    setIsWinnerNotificationUnderstood(false);
+    setIsContactAndMailingAcknowledged(false);
 
     setFirstName('');
     setMiddleName('');
@@ -253,7 +281,14 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
   const handleAutofill = () => {
     setIsDelawareSenior(true);
     setIsEligibleDescent(true);
+    setIsTypedLegibly(true);
+    setIsRecLettersSubmitted(true);
     setIsMinGpa(true);
+    setIsEssayAcknowledged(true);
+    setIsSarAcknowledged(true);
+    setIsInterviewAgreed(true);
+    setIsWinnerNotificationUnderstood(true);
+    setIsContactAndMailingAcknowledged(true);
 
     setFirstName('Madison');
     setMiddleName('Rae');
@@ -346,9 +381,14 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
     e.preventDefault();
     setFormError(null);
 
-    // Validation checks
+    // Validation checks: Official 2026 Checklist Verification
     if (!isDelawareSenior || !isEligibleDescent || !isMinGpa) {
-      setFormError('Please verify all 3 eligibility requirements to proceed.');
+      setFormError('Please verify core eligibility requirements (#1 Delaware Senior, #2 Descent, #5 Minimum 2.75 GPA) to proceed.');
+      return;
+    }
+
+    if (!isTypedLegibly || !isRecLettersSubmitted || !isInterviewAgreed || !isWinnerNotificationUnderstood || !isContactAndMailingAcknowledged) {
+      setFormError('Please review and check all mandatory items (#3, #4, #8, #9, #10) on the Official Scholarship Requirements & Checklist.');
       return;
     }
 
@@ -409,7 +449,14 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
           eligibility: {
             isDelawareSenior,
             isEligibleDescent,
+            isTypedLegibly,
+            isRecLettersSubmitted,
             isMinGpa,
+            isEssayAcknowledged,
+            isSarAcknowledged,
+            isInterviewAgreed,
+            isWinnerNotificationUnderstood,
+            isContactAndMailingAcknowledged,
           },
           applicant: {
             firstName: firstName.trim(),
@@ -753,20 +800,42 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
       {/* Main Application Form */}
       <form onSubmit={handleSubmit} className="space-y-6 text-slate-200">
         {/* ======================================================== */}
-        {/* 1. ELIGIBILITY */}
+        {/* 1. SCHOLARSHIP REQUIREMENTS AND CHECKLIST 2026 */}
         {/* ======================================================== */}
         <div className="rounded-xl border border-slate-800 bg-[#0f172a] p-4 sm:p-6 shadow-md">
-          <h3 className="text-base font-bold text-white mb-4 flex items-center gap-2">
-            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-600/20 text-xs font-bold text-blue-400 border border-blue-500/30 shrink-0">
-              1
-            </span>
-            <span>Scholarship Eligibility (Checklist Requirements #1, #2, #5)</span>
-          </h3>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4 border-b border-slate-800 pb-3.5">
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-600/20 text-xs font-bold text-blue-400 border border-blue-500/30 shrink-0">
+                  1
+                </span>
+                <h3 className="text-base font-bold text-white tracking-wide uppercase">
+                  Scholarship Requirements and Checklist 2026
+                </h3>
+              </div>
+              <p className="text-xs font-serif italic text-amber-400 mt-1 ml-8">
+                &ldquo;Spanning Three Centuries!&rdquo; &ndash; Official 10-Item Application Packet Verification
+              </p>
+            </div>
 
-          <div className="space-y-3 text-xs sm:text-sm text-slate-300">
             <label className="flex items-start gap-3 p-2.5 rounded-lg hover:bg-slate-900/60 transition cursor-pointer border border-transparent hover:border-slate-800">
+              <button
+                type="button"
+                onClick={handleCheckAllChecklist}
+                className="self-start sm:self-auto inline-flex items-center gap-1.5 rounded-lg border border-blue-600/60 bg-blue-950/70 px-3 py-1.5 text-xs font-bold text-blue-300 hover:bg-blue-900/80 hover:text-white transition cursor-pointer shadow-sm"
+                title="Click to check all 10 checklist items"
+              >
+                <CheckCircle2 className="h-3.5 w-3.5 text-blue-400" />
+                <span>Check All 10 Checklist Items</span>
+              </button>
+          </div>
+
+          <div className="space-y-2.5 text-xs sm:text-sm text-slate-300">
+            {/* Item 1 */}
+            <label className={`flex items-start gap-3 p-2.5 rounded-lg border transition cursor-pointer ${isDelawareSenior ? 'bg-blue-950/30 border-blue-900/60 text-white' : 'border-slate-800/80 hover:bg-slate-900/60'}`}>
               <input
                 id="eligibility-senior"
+                id="eligibility-item-1"
                 type="checkbox"
                 checked={isDelawareSenior}
                 onChange={(e) => setIsDelawareSenior(e.target.checked)}
@@ -774,1078 +843,1193 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
               />
               <span className="leading-relaxed">
                 <strong>1.</strong> Applicant(s) must be a senior attending a public/private/parochial/vocational high school in the State of Delaware. The applicant must be admitted to or seeking admission into a four-year college or university.
+                <strong className="text-blue-400">1.</strong> Applicant(s) must be a senior attending a public/private/parochial/vocational high school in the State of Delaware. The applicant must be admitted to or seeking admission into a four-year college or university. If selected for a scholarship the recipient must provide proof of admission and enrollment.
               </span>
             </label>
 
             <label className="flex items-start gap-3 p-2.5 rounded-lg hover:bg-slate-900/60 transition cursor-pointer border border-transparent hover:border-slate-800">
-              <input
-                id="eligibility-descent"
-                type="checkbox"
-                checked={isEligibleDescent}
-                onChange={(e) => setIsEligibleDescent(e.target.checked)}
-                className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-700 bg-slate-900 text-blue-600 focus:ring-blue-500"
-              />
-              <span className="leading-relaxed">
-                <strong>2.</strong> The applicant must be of African American, Hispanic or Native American descent.
-              </span>
-            </label>
+              {/* Item 2 */}
+              <label className={`flex items-start gap-3 p-2.5 rounded-lg border transition cursor-pointer ${isEligibleDescent ? 'bg-blue-950/30 border-blue-900/60 text-white' : 'border-slate-800/80 hover:bg-slate-900/60'}`}>
+                <input
+                  id="eligibility-descent"
+                  id="eligibility-item-2"
+                  type="checkbox"
+                  checked={isEligibleDescent}
+                  onChange={(e) => setIsEligibleDescent(e.target.checked)}
+                  className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-700 bg-slate-900 text-blue-600 focus:ring-blue-500"
+                />
+                <span className="leading-relaxed">
+                  <strong>2.</strong> The applicant must be of African American, Hispanic or Native American descent.
+                  <strong className="text-blue-400">2.</strong> The applicant must be of African American, Hispanic or Native American descent.
+                </span>
+              </label>
 
-            <label className="flex items-start gap-3 p-2.5 rounded-lg hover:bg-slate-900/60 transition cursor-pointer border border-transparent hover:border-slate-800">
-              <input
-                id="eligibility-gpa"
-                type="checkbox"
-                checked={isMinGpa}
-                onChange={(e) => setIsMinGpa(e.target.checked)}
-                className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-700 bg-slate-900 text-blue-600 focus:ring-blue-500"
-              />
-              <span className="leading-relaxed">
-                <strong>5.</strong> The applicant must have a grade point average of at least 2.75 on a 4.00 scale (official transcript through first semester required).
-              </span>
-            </label>
+              <label className="flex items-start gap-3 p-2.5 rounded-lg hover:bg-slate-900/60 transition cursor-pointer border border-transparent hover:border-slate-800">
+                {/* Item 3 */}
+                <label className={`flex items-start gap-3 p-2.5 rounded-lg border transition cursor-pointer ${isTypedLegibly ? 'bg-blue-950/30 border-blue-900/60 text-white' : 'border-slate-800/80 hover:bg-slate-900/60'}`}>
+                  <input
+                    id="eligibility-gpa"
+                    id="eligibility-item-3"
+                    type="checkbox"
+                    checked={isTypedLegibly}
+                    onChange={(e) => setIsTypedLegibly(e.target.checked)}
+                    className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-700 bg-slate-900 text-blue-600 focus:ring-blue-500"
+                  />
+                  <span className="leading-relaxed">
+                    <strong className="text-blue-400">3.</strong> The completed application must be typed or printed legibly!
+                  </span>
+                </label>
+
+                {/* Item 4 */}
+                <label className={`flex items-start gap-3 p-2.5 rounded-lg border transition cursor-pointer ${isRecLettersSubmitted ? 'bg-blue-950/30 border-blue-900/60 text-white' : 'border-slate-800/80 hover:bg-slate-900/60'}`}>
+                  <input
+                    id="eligibility-item-4"
+                    type="checkbox"
+                    checked={isRecLettersSubmitted}
+                    onChange={(e) => setIsRecLettersSubmitted(e.target.checked)}
+                    className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-700 bg-slate-900 text-blue-600 focus:ring-blue-500"
+                  />
+                  <span className="leading-relaxed">
+                    <strong className="text-blue-400">4.</strong> The applicant must submit three letters of recommendations (two from non-relatives) each in a sealed envelope with signature of the sender/writer over the flap of each envelope. These letters are to be submitted with completed application.
+                  </span>
+                </label>
+
+                {/* Item 5 */}
+                <label className={`flex items-start gap-3 p-2.5 rounded-lg border transition cursor-pointer ${isMinGpa ? 'bg-blue-950/30 border-blue-900/60 text-white' : 'border-slate-800/80 hover:bg-slate-900/60'}`}>
+                  <input
+                    id="eligibility-item-5"
+                    type="checkbox"
+                    checked={isMinGpa}
+                    onChange={(e) => setIsMinGpa(e.target.checked)}
+                    className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-700 bg-slate-900 text-blue-600 focus:ring-blue-500"
+                  />
+                  <span className="leading-relaxed">
+                    <strong>5.</strong> The applicant must have a grade point average of at least 2.75 on a 4.00 scale (official transcript through first semester required).
+                    <strong className="text-blue-400">5.</strong> The applicant must have a grade point average of at least: 2.75 on a 4.00 scale; An official copy of your transcript, through the first semester of the 2025-2026 school year (i.e., January 2026), must be submitted with the application packet. See your counselor NOW! Completion of requirements for high school graduation will be verified if selected as a scholarship recipient.
+                  </span>
+                </label>
+
+                {/* Item 6 */}
+                <label className={`flex items-start gap-3 p-2.5 rounded-lg border transition cursor-pointer ${isEssayAcknowledged ? 'bg-blue-950/30 border-blue-900/60 text-white' : 'border-slate-800/80 hover:bg-slate-900/60'}`}>
+                  <input
+                    id="eligibility-item-6"
+                    type="checkbox"
+                    checked={isEssayAcknowledged}
+                    onChange={(e) => setIsEssayAcknowledged(e.target.checked)}
+                    className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-700 bg-slate-900 text-blue-600 focus:ring-blue-500"
+                  />
+                  <span className="leading-relaxed">
+                    <strong className="text-blue-400">6.</strong> <strong>Essay Submission (minimum of 200 words):</strong> The applicant is to describe his/her community involvement (church, volunteering &amp; tutorial efforts), school activities (student government, honor society, band, sports, etc.) and proposed goals the applicant wants to accomplish in the next 10 years. The essay must be typed, double-spaced and in 12-point font. The essay will be evaluated on clarity, language usage, content, organization, and topic development. The essays will not be returned.
+                  </span>
+                </label>
+
+                {/* Item 7 */}
+                <label className={`flex items-start gap-3 p-2.5 rounded-lg border transition cursor-pointer ${isSarAcknowledged ? 'bg-blue-950/30 border-blue-900/60 text-white' : 'border-slate-800/80 hover:bg-slate-900/60'}`}>
+                  <input
+                    id="eligibility-item-7"
+                    type="checkbox"
+                    checked={isSarAcknowledged}
+                    onChange={(e) => setIsSarAcknowledged(e.target.checked)}
+                    className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-700 bg-slate-900 text-blue-600 focus:ring-blue-500"
+                  />
+                  <span className="leading-relaxed">
+                    <strong className="text-blue-400">7.</strong> Submission of a completed and processed copy of the Student Aid Report (SAR). (if available)
+                  </span>
+                </label>
+
+                {/* Item 8 */}
+                <label className={`flex items-start gap-3 p-2.5 rounded-lg border transition cursor-pointer ${isInterviewAgreed ? 'bg-blue-950/30 border-blue-900/60 text-white' : 'border-slate-800/80 hover:bg-slate-900/60'}`}>
+                  <input
+                    id="eligibility-item-8"
+                    type="checkbox"
+                    checked={isInterviewAgreed}
+                    onChange={(e) => setIsInterviewAgreed(e.target.checked)}
+                    className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-700 bg-slate-900 text-blue-600 focus:ring-blue-500"
+                  />
+                  <span className="leading-relaxed">
+                    <strong className="text-blue-400">8.</strong> The finalists of the scholarships may be asked to participate in an interview with members of The Monday Club. The finalists will be notified, and an interview will be held virtually by members of the Monday Club Scholarship Committee
+                  </span>
+                </label>
+
+                {/* Item 9 */}
+                <label className={`flex items-start gap-3 p-2.5 rounded-lg border transition cursor-pointer ${isWinnerNotificationUnderstood ? 'bg-blue-950/30 border-blue-900/60 text-white' : 'border-slate-800/80 hover:bg-slate-900/60'}`}>
+                  <input
+                    id="eligibility-item-9"
+                    type="checkbox"
+                    checked={isWinnerNotificationUnderstood}
+                    onChange={(e) => setIsWinnerNotificationUnderstood(e.target.checked)}
+                    className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-700 bg-slate-900 text-blue-600 focus:ring-blue-500"
+                  />
+                  <span className="leading-relaxed">
+                    <strong className="text-blue-400">9.</strong> Scholarship winners will be notified by May 1, 2026. All application packet documents submitted become the property of The Monday Club and will not be returned.
+                  </span>
+                </label>
+
+                {/* Item 10 */}
+                <label className={`flex items-start gap-3 p-2.5 rounded-lg border transition cursor-pointer ${isContactAndMailingAcknowledged ? 'bg-blue-950/30 border-blue-900/60 text-white' : 'border-slate-800/80 hover:bg-slate-900/60'}`}>
+                  <input
+                    id="eligibility-item-10"
+                    type="checkbox"
+                    checked={isContactAndMailingAcknowledged}
+                    onChange={(e) => setIsContactAndMailingAcknowledged(e.target.checked)}
+                    className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-700 bg-slate-900 text-blue-600 focus:ring-blue-500"
+                  />
+                  <span className="leading-relaxed">
+                    <strong className="text-blue-400">10.</strong> If you have questions, you may contact Mr. Ken Snell call (302) 521-3798 TheMCscholarships@gmail.com
+                  </span>
+                </label>
+              </div>
+
+              {/* Official Mailing Footnote from Document */}
+              <div className="mt-4 p-3 rounded-lg bg-blue-950/40 border border-blue-900/70 text-xs text-blue-200">
+                <span className="font-bold text-white">** All application materials must be mailed to </span>
+                <span className="font-mono text-emerald-400 font-bold">TheMCscholarships@gmail.com</span>
+                <span className="font-bold text-white"> or mailed to </span>
+                <span className="text-amber-300 font-semibold">4020 New Castle Ave Wilmington, DE 19720</span>
+              </div>
           </div>
-        </div>
 
-        {/* ======================================================== */}
-        {/* 2. APPLICANT (Page 1) */}
-        {/* ======================================================== */}
-        <div className="rounded-xl border border-slate-800 bg-[#0f172a] p-4 sm:p-6 shadow-md">
-          <h3 className="text-base font-bold text-white mb-4 flex items-center gap-2">
-            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-600/20 text-xs font-bold text-blue-400 border border-blue-500/30 shrink-0">
-              2
-            </span>
-            <span>Applicant Information (Form Page 1)</span>
-          </h3>
+          {/* ======================================================== */}
+          {/* 2. APPLICANT (Page 1) */}
+          {/* ======================================================== */}
+          <div className="rounded-xl border border-slate-800 bg-[#0f172a] p-4 sm:p-6 shadow-md">
+            <h3 className="text-base font-bold text-white mb-4 flex items-center gap-2">
+              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-600/20 text-xs font-bold text-blue-400 border border-blue-500/30 shrink-0">
+                2
+              </span>
+              <span>Applicant Information (Form Page 1)</span>
+            </h3>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs sm:text-sm">
-            <div>
-              <label className="block text-slate-400 font-medium mb-1.5">First Name</label>
-              <input
-                id="applicant-first-name"
-                type="text"
-                value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
-                placeholder="e.g. Madison"
-                className="w-full rounded-lg px-3 py-2 text-sm text-white bg-slate-950 border border-slate-800"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-slate-400 font-medium mb-1.5">Middle Name</label>
-              <input
-                id="applicant-middle-name"
-                type="text"
-                value={middleName}
-                onChange={(e) => setMiddleName(e.target.value)}
-                placeholder="e.g. Rae"
-                className="w-full rounded-lg px-3 py-2 text-sm text-white bg-slate-950 border border-slate-800"
-              />
-            </div>
-            <div>
-              <label className="block text-slate-400 font-medium mb-1.5">Last Name</label>
-              <input
-                id="applicant-last-name"
-                type="text"
-                value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
-                placeholder="e.g. Tymes"
-                className="w-full rounded-lg px-3 py-2 text-sm text-white bg-slate-950 border border-slate-800"
-                required
-              />
-            </div>
-
-            <div className="sm:col-span-2">
-              <label className="block text-slate-400 font-medium mb-1.5">Street Address</label>
-              <input
-                id="applicant-street-address"
-                type="text"
-                value={streetAddress}
-                onChange={(e) => setStreetAddress(e.target.value)}
-                placeholder="e.g. 12 Whitehaven Drive"
-                className="w-full rounded-lg px-3 py-2 text-sm text-white bg-slate-950 border border-slate-800"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-slate-400 font-medium mb-1.5">City, State and Zip Code</label>
-              <div className="grid grid-cols-5 gap-1.5">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs sm:text-sm">
+              <div>
+                <label className="block text-slate-400 font-medium mb-1.5">First Name</label>
                 <input
-                  id="applicant-city"
+                  id="applicant-first-name"
                   type="text"
-                  value={city}
-                  onChange={(e) => setCity(e.target.value)}
-                  placeholder="City"
-                  className="col-span-2 rounded-lg px-2.5 py-2 text-xs sm:text-sm text-white bg-slate-950 border border-slate-800"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  placeholder="e.g. Madison"
+                  className="w-full rounded-lg px-3 py-2 text-sm text-white bg-slate-950 border border-slate-800"
                   required
                 />
+              </div>
+              <div>
+                <label className="block text-slate-400 font-medium mb-1.5">Middle Name</label>
                 <input
-                  id="applicant-state"
+                  id="applicant-middle-name"
                   type="text"
-                  value={stateVal}
-                  onChange={(e) => setStateVal(e.target.value)}
-                  placeholder="DE"
-                  className="col-span-1 rounded-lg px-2 py-2 text-xs sm:text-sm text-white text-center bg-slate-950 border border-slate-800"
+                  value={middleName}
+                  onChange={(e) => setMiddleName(e.target.value)}
+                  placeholder="e.g. Rae"
+                  className="w-full rounded-lg px-3 py-2 text-sm text-white bg-slate-950 border border-slate-800"
+                />
+              </div>
+              <div>
+                <label className="block text-slate-400 font-medium mb-1.5">Last Name</label>
+                <input
+                  id="applicant-last-name"
+                  type="text"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  placeholder="e.g. Tymes"
+                  className="w-full rounded-lg px-3 py-2 text-sm text-white bg-slate-950 border border-slate-800"
                   required
                 />
+              </div>
+
+              <div className="sm:col-span-2">
+                <label className="block text-slate-400 font-medium mb-1.5">Street Address</label>
                 <input
-                  id="applicant-zip"
+                  id="applicant-street-address"
                   type="text"
-                  value={zip}
-                  onChange={(e) => setZip(e.target.value)}
-                  placeholder="Zip"
-                  className="col-span-2 rounded-lg px-2.5 py-2 text-xs sm:text-sm text-white bg-slate-950 border border-slate-800"
+                  value={streetAddress}
+                  onChange={(e) => setStreetAddress(e.target.value)}
+                  placeholder="e.g. 12 Whitehaven Drive"
+                  className="w-full rounded-lg px-3 py-2 text-sm text-white bg-slate-950 border border-slate-800"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-slate-400 font-medium mb-1.5">City, State and Zip Code</label>
+                <div className="grid grid-cols-5 gap-1.5">
+                  <input
+                    id="applicant-city"
+                    type="text"
+                    value={city}
+                    onChange={(e) => setCity(e.target.value)}
+                    placeholder="City"
+                    className="col-span-2 rounded-lg px-2.5 py-2 text-xs sm:text-sm text-white bg-slate-950 border border-slate-800"
+                    required
+                  />
+                  <input
+                    id="applicant-state"
+                    type="text"
+                    value={stateVal}
+                    onChange={(e) => setStateVal(e.target.value)}
+                    placeholder="DE"
+                    className="col-span-1 rounded-lg px-2 py-2 text-xs sm:text-sm text-white text-center bg-slate-950 border border-slate-800"
+                    required
+                  />
+                  <input
+                    id="applicant-zip"
+                    type="text"
+                    value={zip}
+                    onChange={(e) => setZip(e.target.value)}
+                    placeholder="Zip"
+                    className="col-span-2 rounded-lg px-2.5 py-2 text-xs sm:text-sm text-white bg-slate-950 border border-slate-800"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-slate-400 font-medium mb-1.5">Telephone Number</label>
+                <input
+                  id="applicant-telephone"
+                  type="tel"
+                  value={telephone}
+                  onChange={(e) => setTelephone(e.target.value)}
+                  placeholder="e.g. 302-229-1408"
+                  className="w-full rounded-lg px-3 py-2 text-sm text-white bg-slate-950 border border-slate-800"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-slate-400 font-medium mb-1.5">Sex</label>
+                <select
+                  id="applicant-sex"
+                  value={sex}
+                  onChange={(e) => setSex(e.target.value)}
+                  className="w-full rounded-lg px-3 py-2 text-sm text-white bg-slate-950 border border-slate-800"
+                >
+                  <option value="F">F (Female)</option>
+                  <option value="M">M (Male)</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-slate-400 font-medium mb-1.5">Email Address</label>
+                <input
+                  id="applicant-email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="e.g. maddietymes12@gmail.com"
+                  className="w-full rounded-lg px-3 py-2 text-sm text-white bg-slate-950 border border-slate-800"
+                  required
+                />
+              </div>
+
+              <div className="sm:col-span-3">
+                <label className="block text-slate-400 font-medium mb-1.5">Date of Birth (mm/dd/yyyy)</label>
+                <input
+                  id="applicant-dob"
+                  type="date"
+                  value={dateOfBirth}
+                  onChange={(e) => setDateOfBirth(e.target.value)}
+                  className="w-full sm:w-1/3 rounded-lg px-3 py-2 text-sm text-white bg-slate-950 border border-slate-800"
+                  required
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* ======================================================== */}
+          {/* 3. PARENT / GUARDIAN (Page 1) */}
+          {/* ======================================================== */}
+          <div className="rounded-xl border border-slate-800 bg-[#0f172a] p-5 sm:p-6 shadow-md">
+            <h3 className="text-base font-bold text-white mb-4 flex items-center gap-2">
+              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-600/20 text-xs font-bold text-blue-400 border border-blue-500/30">
+                3
+              </span>
+              <span>Parent(s) / Guardian(s) Information (Form Page 1)</span>
+            </h3>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs sm:text-sm">
+              <div>
+                <label className="block text-slate-400 font-medium mb-1.5">Parent(s)/Guardian(s) Name</label>
+                <input
+                  id="parent-name"
+                  type="text"
+                  value={parentName}
+                  onChange={(e) => setParentName(e.target.value)}
+                  placeholder="e.g. Shira Tymes"
+                  className="w-full rounded-lg px-3 py-2 text-sm text-white bg-slate-950 border border-slate-800"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-slate-400 font-medium mb-1.5">Parent Telephone Number</label>
+                <input
+                  id="parent-phone"
+                  type="tel"
+                  value={parentPhone}
+                  onChange={(e) => setParentPhone(e.target.value)}
+                  placeholder="e.g. 302-229-1408"
+                  className="w-full rounded-lg px-3 py-2 text-sm text-white bg-slate-950 border border-slate-800"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-slate-400 font-medium mb-1.5">Parent Email Address</label>
+                <input
+                  id="parent-email"
+                  type="email"
+                  value={parentEmail}
+                  onChange={(e) => setParentEmail(e.target.value)}
+                  placeholder="e.g. shiratymes@gmail.com"
+                  className="w-full rounded-lg px-3 py-2 text-sm text-white bg-slate-950 border border-slate-800"
+                  required
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* ======================================================== */}
+          {/* 4. SCHOOL & FAMILY CONTEXT (Page 1) */}
+          {/* ======================================================== */}
+          <div className="rounded-xl border border-slate-800 bg-[#0f172a] p-5 sm:p-6 shadow-md">
+            <h3 className="text-base font-bold text-white mb-4 flex items-center gap-2">
+              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-600/20 text-xs font-bold text-blue-400 border border-blue-500/30">
+                4
+              </span>
+              <span>School & Family Demographics (Form Page 1)</span>
+            </h3>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs sm:text-sm">
+              <div>
+                <label className="block text-slate-400 font-medium mb-1.5">Current High School Attending</label>
+                <input
+                  id="school-name"
+                  type="text"
+                  value={currentHighSchool}
+                  onChange={(e) => setCurrentHighSchool(e.target.value)}
+                  placeholder="e.g. Padua Academy"
+                  className="w-full rounded-lg px-3 py-2 text-sm text-white bg-slate-950 border border-slate-800"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-slate-400 font-medium mb-1.5">Grade Point Average (as of 1/31/2026)</label>
+                <input
+                  id="school-gpa"
+                  type="text"
+                  value={gpa}
+                  onChange={(e) => setGpa(e.target.value)}
+                  placeholder="e.g. 3.77"
+                  className="w-full rounded-lg px-3 py-2 text-sm text-white bg-slate-950 border border-slate-800"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-slate-400 font-medium mb-1.5">Number of Siblings</label>
+                <input
+                  id="siblings-count"
+                  type="number"
+                  min="0"
+                  value={numberOfSiblings}
+                  onChange={(e) => setNumberOfSiblings(e.target.value)}
+                  placeholder="0"
+                  className="w-full rounded-lg px-3 py-2 text-sm text-white bg-slate-950 border border-slate-800"
+                />
+              </div>
+              <div>
+                <label className="block text-slate-400 font-medium mb-1.5">Number of Immediate Family Members (including yourself)</label>
+                <input
+                  id="family-members-count"
+                  type="number"
+                  min="1"
+                  value={immediateFamilyMembers}
+                  onChange={(e) => setImmediateFamilyMembers(e.target.value)}
+                  placeholder="e.g. 2"
+                  className="w-full rounded-lg px-3 py-2 text-sm text-white bg-slate-950 border border-slate-800"
+                />
+              </div>
+
+              <div className="sm:col-span-2">
+                <label className="block text-slate-400 font-medium mb-1.5">
+                  Number of Immediate Family Members (including yourself) attending college/university for the 2025-2026 academic year
+                </label>
+                <input
+                  id="family-in-college"
+                  type="number"
+                  min="0"
+                  value={familyMembersInCollege}
+                  onChange={(e) => setFamilyMembersInCollege(e.target.value)}
+                  placeholder="e.g. 1"
+                  className="w-full sm:w-1/2 rounded-lg px-3 py-2 text-sm text-white bg-slate-950 border border-slate-800"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* ======================================================== */}
+          {/* 5. ACTIVITIES, SERVICE, EMPLOYMENT & COLLEGES */}
+          {/* ======================================================== */}
+          <div className="rounded-xl border border-slate-800 bg-[#0f172a] p-5 sm:p-6 shadow-md space-y-6">
+            <div>
+              <h3 className="text-base font-bold text-white flex items-center gap-2">
+                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-600/20 text-xs font-bold text-blue-400 border border-blue-500/30">
+                  5
+                </span>
+                <span>Activities, Community Service, Employment & Colleges</span>
+              </h3>
+              <p className="text-xs text-slate-400 mt-1">
+                Directly aligned with Page 1 and Page 2 of the official physical form.
+              </p>
+            </div>
+
+            {/* School Clubs/Activities */}
+            <div>
+              <label className="block text-xs sm:text-sm font-semibold text-slate-300 mb-2">
+                School Clubs/Activities in which you participate (include leadership positions held)
+              </label>
+              <div className="space-y-3">
+                {activities.map((item, index) => (
+                  <div
+                    key={item.id}
+                    className="grid grid-cols-1 sm:grid-cols-12 gap-2 p-2.5 sm:p-0 rounded-xl sm:rounded-none bg-slate-900/60 sm:bg-transparent border border-slate-800/80 sm:border-0"
+                  >
+                    <div className="sm:col-span-5">
+                      <input
+                        type="text"
+                        placeholder="e.g. Varsity Soccer (4yr)"
+                        value={item.activity}
+                        onChange={(e) => {
+                          const updated = [...activities];
+                          updated[index].activity = e.target.value;
+                          setActivities(updated);
+                        }}
+                        className="w-full rounded-lg px-3 py-2 text-xs sm:text-sm text-white bg-slate-950 border border-slate-800"
+                      />
+                    </div>
+                    <div className="sm:col-span-4">
+                      <input
+                        type="text"
+                        placeholder="e.g. Team Captain / Officer"
+                        value={item.role}
+                        onChange={(e) => {
+                          const updated = [...activities];
+                          updated[index].role = e.target.value;
+                          setActivities(updated);
+                        }}
+                        className="w-full rounded-lg px-3 py-2 text-xs sm:text-sm text-white bg-slate-950 border border-slate-800"
+                      />
+                    </div>
+                    <div className="flex items-center gap-2 sm:col-span-3">
+                      <input
+                        type="text"
+                        placeholder="Years (e.g. 9-12)"
+                        value={item.years}
+                        onChange={(e) => {
+                          const updated = [...activities];
+                          updated[index].years = e.target.value;
+                          setActivities(updated);
+                        }}
+                        className="w-full rounded-lg px-3 py-2 text-xs sm:text-sm text-white bg-slate-950 border border-slate-800"
+                      />
+                      {activities.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => setActivities(activities.filter((_, i) => i !== index))}
+                          className="p-2 shrink-0 rounded-lg text-slate-400 hover:text-red-400 hover:bg-slate-800 transition cursor-pointer"
+                          title="Remove"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <button
+                type="button"
+                onClick={() =>
+                  setActivities([...activities, { id: String(Date.now()), activity: '', role: '', years: '' }])
+                }
+                className="mt-2.5 inline-flex items-center gap-1.5 text-xs font-semibold text-blue-400 hover:text-blue-300 px-2 py-1 rounded hover:bg-slate-800 transition cursor-pointer"
+              >
+                <Plus className="h-3.5 w-3.5" />
+                <span>Add activity/club</span>
+              </button>
+            </div>
+
+            {/* Community Service/Church/Volunteer Activities */}
+            <div className="pt-3 border-t border-slate-800/80">
+              <label className="block text-xs sm:text-sm font-semibold text-slate-300 mb-2">
+                Community Service/Church/Volunteer Activities
+              </label>
+              <div className="space-y-3">
+                {communityService.map((item, index) => (
+                  <div
+                    key={item.id}
+                    className="grid grid-cols-1 sm:grid-cols-12 gap-2 p-2.5 sm:p-0 rounded-xl sm:rounded-none bg-slate-900/60 sm:bg-transparent border border-slate-800/80 sm:border-0"
+                  >
+                    <div className="sm:col-span-5">
+                      <input
+                        type="text"
+                        placeholder="Organization / church (e.g. Habitat for Humanity)"
+                        value={item.organization}
+                        onChange={(e) => {
+                          const updated = [...communityService];
+                          updated[index].organization = e.target.value;
+                          setCommunityService(updated);
+                        }}
+                        className="w-full rounded-lg px-3 py-2 text-xs sm:text-sm text-white bg-slate-950 border border-slate-800"
+                      />
+                    </div>
+                    <div className="sm:col-span-4">
+                      <input
+                        type="text"
+                        placeholder="Description of volunteer role"
+                        value={item.description}
+                        onChange={(e) => {
+                          const updated = [...communityService];
+                          updated[index].description = e.target.value;
+                          setCommunityService(updated);
+                        }}
+                        className="w-full rounded-lg px-3 py-2 text-xs sm:text-sm text-white bg-slate-950 border border-slate-800"
+                      />
+                    </div>
+                    <div className="flex items-center gap-2 sm:col-span-3">
+                      <input
+                        type="number"
+                        placeholder="Hours"
+                        value={item.totalHours}
+                        onChange={(e) => {
+                          const updated = [...communityService];
+                          updated[index].totalHours = e.target.value;
+                          setCommunityService(updated);
+                        }}
+                        className="w-full rounded-lg px-3 py-2 text-xs sm:text-sm text-white bg-slate-950 border border-slate-800"
+                      />
+                      {communityService.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => setCommunityService(communityService.filter((_, i) => i !== index))}
+                          className="p-2 shrink-0 rounded-lg text-slate-400 hover:text-red-400 hover:bg-slate-800 transition cursor-pointer"
+                          title="Remove"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <button
+                type="button"
+                onClick={() =>
+                  setCommunityService([
+                    ...communityService,
+                    { id: String(Date.now()), organization: '', description: '', totalHours: '' },
+                  ])
+                }
+                className="mt-2.5 inline-flex items-center gap-1.5 text-xs font-semibold text-blue-400 hover:text-blue-300 px-2 py-1 rounded hover:bg-slate-800 transition cursor-pointer"
+              >
+                <Plus className="h-3.5 w-3.5" />
+                <span>Add volunteer activity</span>
+              </button>
+            </div>
+
+            {/* Applicant's Employment History */}
+            <div className="pt-3 border-t border-slate-800/80">
+              <label className="block text-xs sm:text-sm font-semibold text-slate-300 mb-2">
+                Applicant&apos;s Employment History (Employers, Positions, Dates of Employment)
+              </label>
+              <div className="space-y-3">
+                {employment.map((item, index) => (
+                  <div
+                    key={item.id}
+                    className="grid grid-cols-1 sm:grid-cols-12 gap-2 p-2.5 sm:p-0 rounded-xl sm:rounded-none bg-slate-900/60 sm:bg-transparent border border-slate-800/80 sm:border-0"
+                  >
+                    <div className="sm:col-span-5">
+                      <input
+                        type="text"
+                        placeholder="Employer (e.g. Nothing Bundt Cakes)"
+                        value={item.employer}
+                        onChange={(e) => {
+                          const updated = [...employment];
+                          updated[index].employer = e.target.value;
+                          setEmployment(updated);
+                        }}
+                        className="w-full rounded-lg px-3 py-2 text-xs sm:text-sm text-white bg-slate-950 border border-slate-800"
+                      />
+                    </div>
+                    <div className="sm:col-span-4">
+                      <input
+                        type="text"
+                        placeholder="Position (e.g. Cake Froster / Hostess)"
+                        value={item.position}
+                        onChange={(e) => {
+                          const updated = [...employment];
+                          updated[index].position = e.target.value;
+                          setEmployment(updated);
+                        }}
+                        className="w-full rounded-lg px-3 py-2 text-xs sm:text-sm text-white bg-slate-950 border border-slate-800"
+                      />
+                    </div>
+                    <div className="flex items-center gap-2 sm:col-span-3">
+                      <input
+                        type="text"
+                        placeholder="Dates (e.g. July 2023 - Oct 2023)"
+                        value={item.dates}
+                        onChange={(e) => {
+                          const updated = [...employment];
+                          updated[index].dates = e.target.value;
+                          setEmployment(updated);
+                        }}
+                        className="w-full rounded-lg px-3 py-2 text-xs sm:text-sm text-white bg-slate-950 border border-slate-800"
+                      />
+                      {employment.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => setEmployment(employment.filter((_, i) => i !== index))}
+                          className="p-2 shrink-0 rounded-lg text-slate-400 hover:text-red-400 hover:bg-slate-800 transition cursor-pointer"
+                          title="Remove"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <button
+                type="button"
+                onClick={() =>
+                  setEmployment([
+                    ...employment,
+                    { id: String(Date.now()), employer: '', position: '', dates: '' },
+                  ])
+                }
+                className="mt-2.5 inline-flex items-center gap-1.5 text-xs font-semibold text-blue-400 hover:text-blue-300 px-2 py-1 rounded hover:bg-slate-800 transition cursor-pointer"
+              >
+                <Plus className="h-3.5 w-3.5" />
+                <span>Add employer</span>
+              </button>
+            </div>
+
+            {/* Colleges and Universities applied, accepted and/or waiting */}
+            <div className="pt-3 border-t border-slate-800/80">
+              <label className="block text-xs sm:text-sm font-semibold text-slate-300 mb-2">
+                List the colleges and universities to which you have applied, have been accepted and/or are waiting for acceptance
+              </label>
+              <div className="space-y-3">
+                {colleges.map((item, index) => (
+                  <div
+                    key={item.id}
+                    className="grid grid-cols-1 sm:grid-cols-12 gap-2 p-2.5 sm:p-0 rounded-xl sm:rounded-none bg-slate-900/60 sm:bg-transparent border border-slate-800/80 sm:border-0"
+                  >
+                    <div className="sm:col-span-5">
+                      <input
+                        type="text"
+                        placeholder="College / University (e.g. Howard University)"
+                        value={item.college}
+                        onChange={(e) => {
+                          const updated = [...colleges];
+                          updated[index].college = e.target.value;
+                          setColleges(updated);
+                        }}
+                        className="w-full rounded-lg px-3 py-2 text-xs sm:text-sm text-white bg-slate-950 border border-slate-800"
+                      />
+                    </div>
+                    <div className="sm:col-span-4">
+                      <input
+                        type="text"
+                        placeholder="City/State (e.g. Washington DC)"
+                        value={item.cityState}
+                        onChange={(e) => {
+                          const updated = [...colleges];
+                          updated[index].cityState = e.target.value;
+                          setColleges(updated);
+                        }}
+                        className="w-full rounded-lg px-3 py-2 text-xs sm:text-sm text-white bg-slate-950 border border-slate-800"
+                      />
+                    </div>
+                    <div className="flex items-center gap-2 sm:col-span-3">
+                      <select
+                        value={item.status}
+                        onChange={(e) => {
+                          const updated = [...colleges];
+                          updated[index].status = e.target.value as CollegePlan['status'];
+                          setColleges(updated);
+                        }}
+                        className="w-full rounded-lg px-3 py-2 text-xs sm:text-sm text-white capitalize bg-slate-950 border border-slate-800"
+                      >
+                        <option value="applied">Applied</option>
+                        <option value="accepted">Accepted</option>
+                        <option value="waiting">Waiting for acceptance</option>
+                      </select>
+                      {colleges.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => setColleges(colleges.filter((_, i) => i !== index))}
+                          className="p-2 shrink-0 rounded-lg text-slate-400 hover:text-red-400 hover:bg-slate-800 transition cursor-pointer"
+                          title="Remove"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <button
+                type="button"
+                onClick={() =>
+                  setColleges([
+                    ...colleges,
+                    { id: String(Date.now()), college: '', cityState: '', status: 'applied' },
+                  ])
+                }
+                className="mt-2.5 inline-flex items-center gap-1.5 text-xs font-semibold text-blue-400 hover:text-blue-300 px-2 py-1 rounded hover:bg-slate-800 transition"
+              >
+                <Plus className="h-3.5 w-3.5" />
+                <span>Add college</span>
+              </button>
+            </div>
+          </div>
+
+          {/* ======================================================== */}
+          {/* 6. REFERRAL SOURCE (Page 2) */}
+          {/* ======================================================== */}
+          <div className="rounded-xl border border-slate-800 bg-[#0f172a] p-5 sm:p-6 shadow-md">
+            <h3 className="text-base font-bold text-white mb-2 flex items-center gap-2">
+              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-600/20 text-xs font-bold text-blue-400 border border-blue-500/30">
+                6
+              </span>
+              <span>How did you find out about this scholarship? (Check all that apply &ndash; Page 2)</span>
+            </h3>
+            <p className="text-xs text-slate-400 mb-4">
+              Select all sources where you learned about The Monday Club Scholarship.
+            </p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2.5 text-xs text-slate-300">
+              {[
+                'High School',
+                'Church',
+                'Personal Friend',
+                'Another Organization',
+                'Parent/Guardian',
+                'Family/Friend',
+                'Recreation/Community Center',
+                'Member of THE MONDAY CLUB',
+              ].map((source) => (
+                <label
+                  key={source}
+                  className="flex items-center gap-2.5 p-2.5 rounded-lg border border-slate-800/80 bg-slate-950/40 hover:bg-slate-900 transition cursor-pointer"
+                >
+                  <input
+                    type="checkbox"
+                    checked={referralSources.includes(source)}
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setReferralSources([...referralSources, source]);
+                      } else {
+                        setReferralSources(referralSources.filter((s) => s !== source));
+                      }
+                    }}
+                    className="h-4 w-4 rounded border-slate-700 bg-slate-900 text-blue-600 focus:ring-blue-500"
+                  />
+                  <span className="font-medium text-slate-200">{source}</span>
+                </label>
+              ))}
+            </div>
+
+            {referralSources.includes('Member of THE MONDAY CLUB') && (
+              <div className="mt-4 pt-3 border-t border-slate-800/60 max-w-md animate-in fade-in">
+                <label className="block text-slate-400 text-xs font-medium mb-1.5">
+                  Member of THE MONDAY CLUB (Name of member):
+                </label>
+                <input
+                  type="text"
+                  value={mondayClubMemberName}
+                  onChange={(e) => setMondayClubMemberName(e.target.value)}
+                  placeholder="Name of Monday Club member"
+                  className="w-full rounded-lg px-3 py-2 text-xs sm:text-sm text-white bg-slate-950 border border-slate-800"
+                />
+              </div>
+            )}
+          </div>
+
+          {/* ======================================================== */}
+          {/* 7. ESSAY SUBMISSION (Requirement #6, Page 3: Min 200 Words) */}
+          {/* ======================================================== */}
+          <div className="rounded-xl border border-slate-800 bg-[#0f172a] p-5 sm:p-6 shadow-md">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
+              <h3 className="text-base font-bold text-white flex items-center gap-2">
+                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-600/20 text-xs font-bold text-blue-400 border border-blue-500/30">
+                  7
+                </span>
+                <span>Essay Submission (Requirement #6 &ndash; Minimum 200 words)</span>
+              </h3>
+              {/* Live Word Count Indicator */}
+              {(() => {
+                const count = essayText.trim() ? essayText.trim().split(/\s+/).filter(Boolean).length : 0;
+                const isMet = count >= 200;
+                return (
+                  <span
+                    className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold border ${isMet
+                      ? 'bg-emerald-950/80 text-emerald-300 border-emerald-700/60'
+                      : 'bg-amber-950/80 text-amber-300 border-amber-700/60'
+                      }`}
+                  >
+                    <CheckCircle2 className={`h-3.5 w-3.5 ${isMet ? 'text-emerald-400' : 'text-amber-400'}`} />
+                    <span>{count} / 200 words required {isMet ? '(Criteria Met)' : `(${200 - count} words left)`}</span>
+                  </span>
+                );
+              })()}
+            </div>
+
+            <div className="rounded-lg bg-blue-950/30 border border-blue-900/50 p-3 mb-4 text-xs text-slate-300 leading-relaxed">
+              <strong className="text-blue-300">Requirement #6 Guidelines (from Form Page 3):</strong>
+              <p className="mt-1">
+                The applicant is to describe his/her community involvement (church, volunteering &amp; tutorial efforts), school activities (student government, honor society, band, sports, etc.) and proposed goals the applicant wants to accomplish in the next 10 years. The essay must be typed, double-spaced and in 12-point font. The essay will be evaluated on clarity, language usage, content, organization, and topic development. The essays will not be returned.
+              </p>
+            </div>
+
+            <div>
+              <textarea
+                id="essay-text"
+                rows={9}
+                value={essayText}
+                onChange={(e) => setEssayText(e.target.value)}
+                placeholder="Type your minimum 200-word essay here describing your community involvement, school activities, and 10-year aspirations..."
+                className="w-full rounded-lg px-3.5 py-3 text-xs sm:text-sm text-white bg-slate-950 border border-slate-800 leading-relaxed focus:border-blue-500 font-sans"
+                required
+              />
+            </div>
+          </div>
+
+          {/* ======================================================== */}
+          {/* 8. SUPPORTING DOCUMENTS & CHECKLIST (Page 3) */}
+          {/* ======================================================== */}
+          <div className="rounded-xl border border-slate-800 bg-[#0f172a] p-5 sm:p-6 shadow-md">
+            <h3 className="text-base font-bold text-white mb-2 flex items-center gap-2">
+              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-600/20 text-xs font-bold text-blue-400 border border-blue-500/30">
+                8
+              </span>
+              <span>Supporting Documents &amp; Official Checklist (Form Page 3)</span>
+            </h3>
+            <p className="text-xs text-slate-400 mb-4">
+              Upload digital files or verify that documents will be submitted with your completed application packet.
+            </p>
+
+            <div className="space-y-4 text-xs sm:text-sm">
+              {/* Official transcript */}
+              <div className="p-3 rounded-lg bg-slate-950/60 border border-slate-800/80">
+                <label className="block text-slate-300 font-semibold mb-1">
+                  Requirement #5: Official copy of your transcript through 1st semester (Jan 2026)
+                </label>
+                <p className="text-[11px] text-slate-400 mb-2">Must verify GPA of at least 2.75 on a 4.00 scale.</p>
+                <input
+                  id="file-transcript"
+                  type="file"
+                  accept=".pdf,.png,.jpg,.jpeg"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      setTranscript({
+                        name: file.name,
+                        size: file.size,
+                        type: file.type,
+                        uploadedAt: new Date().toISOString(),
+                      });
+                    }
+                  }}
+                  className="w-full text-slate-400 text-xs"
+                />
+                {transcript && (
+                  <div className="mt-1.5 flex items-center gap-2 text-xs text-emerald-400 font-medium">
+                    <CheckCircle2 className="h-3.5 w-3.5" />
+                    <span>Attached: {transcript.name}</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Student Aid Report */}
+              <div className="p-3 rounded-lg bg-slate-950/60 border border-slate-800/80">
+                <label className="block text-slate-300 font-semibold mb-1">
+                  Requirement #7: Completed and processed copy of the Student Aid Report (SAR) (if available)
+                </label>
+                <input
+                  id="file-sar"
+                  type="file"
+                  accept=".pdf,.png,.jpg,.jpeg"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      setStudentAidReport({
+                        name: file.name,
+                        size: file.size,
+                        type: file.type,
+                        uploadedAt: new Date().toISOString(),
+                      });
+                    }
+                  }}
+                  className="w-full text-slate-400 text-xs"
+                />
+                {studentAidReport && (
+                  <div className="mt-1.5 flex items-center gap-2 text-xs text-emerald-400 font-medium">
+                    <CheckCircle2 className="h-3.5 w-3.5" />
+                    <span>Attached: {studentAidReport.name}</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Three recommendation letters */}
+              <div className="p-3 rounded-lg bg-slate-950/60 border border-slate-800/80">
+                <label className="block text-slate-300 font-semibold mb-1">
+                  Requirement #4: Three letters of recommendation (two from non-relatives)
+                </label>
+                <p className="text-[11px] text-slate-400 mb-2">Each with signature of the sender/writer over the flap of envelope.</p>
+                <input
+                  id="file-recommendations"
+                  type="file"
+                  multiple
+                  accept=".pdf,.doc,.docx"
+                  onChange={(e) => {
+                    const files = Array.from(e.target.files || []);
+                    if (files.length > 0) {
+                      const mapped: UploadedDocument[] = files.map((f) => ({
+                        name: f.name,
+                        size: f.size,
+                        type: f.type,
+                        uploadedAt: new Date().toISOString(),
+                      }));
+                      setRecLetters(mapped);
+                    }
+                  }}
+                  className="w-full text-slate-400 text-xs"
+                />
+                {recLetters.length > 0 && (
+                  <div className="mt-1.5 flex items-center gap-2 text-xs text-emerald-400 font-medium">
+                    <CheckCircle2 className="h-3.5 w-3.5" />
+                    <span>{recLetters.length} recommendation letter(s) attached</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Extra Documents */}
+              <div className="p-3 rounded-lg bg-slate-950/60 border border-slate-800/80">
+                <label className="block text-slate-300 font-semibold mb-1">
+                  Supplemental Documents &amp; Certificates (Optional)
+                </label>
+                <input
+                  id="file-extra"
+                  type="file"
+                  multiple
+                  accept=".pdf,.png,.jpg,.jpeg,.doc,.docx"
+                  onChange={(e) => {
+                    const files = Array.from(e.target.files || []);
+                    if (files.length > 0) {
+                      const mapped: UploadedDocument[] = files.map((f) => ({
+                        name: f.name,
+                        size: f.size,
+                        type: f.type,
+                        uploadedAt: new Date().toISOString(),
+                      }));
+                      setExtraDocs(mapped);
+                    }
+                  }}
+                  className="w-full text-slate-400 text-xs"
+                />
+                {extraDocs.length > 0 && (
+                  <div className="mt-1.5 flex items-center gap-2 text-xs text-emerald-400 font-medium">
+                    <CheckCircle2 className="h-3.5 w-3.5" />
+                    <span>{extraDocs.length} supplemental document(s) uploaded</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Official Contact & Mailing Notice */}
+              <div className="p-3 rounded-lg bg-blue-950/40 border border-blue-900/60 text-xs text-slate-300 space-y-1">
+                <div className="font-bold text-blue-300">Physical &amp; Email Delivery Instructions:</div>
+                <p>
+                  All application materials must be emailed to <strong className="text-white">TheMCscholarships@gmail.com</strong> or mailed to <strong className="text-white">4020 New Castle Ave, Wilmington, DE 19720</strong>.
+                </p>
+                <p className="text-[11px] text-slate-400">
+                  Questions? Contact Mr. Ken Snell: (302) 521-3798 &bull; Winners notified by May 1, 2026.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* ======================================================== */}
+          {/* 9. THE MONDAY CLUB RULES AND REGULATIONS & DUAL SIGNATURES (Page 2) */}
+          {/* ======================================================== */}
+          <div className="rounded-xl border border-slate-800 bg-[#0f172a] p-5 sm:p-6 shadow-md">
+            <h3 className="text-base font-bold text-white mb-3 flex items-center gap-2">
+              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-600/20 text-xs font-bold text-blue-400 border border-blue-500/30">
+                9
+              </span>
+              <span>THE MONDAY CLUB Scholarship Rules and Regulations &amp; Official Signatures (Page 2)</span>
+            </h3>
+
+            {/* Rules Statement verbatim from physical form */}
+            <div className="rounded-lg bg-slate-950 p-4 border border-slate-800 text-xs text-slate-300 leading-relaxed space-y-2 mb-4">
+              <div className="font-bold text-white uppercase tracking-wider text-[11px]">
+                The Monday Club Scholarship Rules and Regulations:
+              </div>
+              <p>
+                The signatures of the persons below indicate accurate and honest information has been submitted and that the completion of this application and the accompanying materials are the work of the applicant. Furthermore, the applicant understands that if selected for a scholarship, the scholarship monies will be disbursed after August 15, 2026. All scholarship checks will be made payable to and sent directly to the college/university where the recipient will be admitted and enrolled, to matriculate. A notation on the scholarship check will indicate the name of the student to which the scholarship money is to be credited and the institution of attendance. Each scholarship recipient will be requested to supply the complete name, address, and telephone number of the business or bursar&apos;s office of the college/university that the recipient will be attending in Fall 2026 to The Monday Club.
+              </p>
+            </div>
+
+            {/* Acknowledgement Checkboxes */}
+            <div className="space-y-3 text-xs sm:text-sm text-slate-300 mb-5">
+              <label className="flex items-start gap-3 cursor-pointer">
+                <input
+                  id="cert-rules"
+                  type="checkbox"
+                  checked={rulesAcknowledged}
+                  onChange={(e) => setRulesAcknowledged(e.target.checked)}
+                  className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-700 bg-slate-900 text-blue-600 focus:ring-blue-500"
+                />
+                <span className="leading-relaxed">
+                  I have read, understood, and agree to The Monday Club Scholarship Rules and Regulations.
+                </span>
+              </label>
+
+              <label className="flex items-start gap-3 cursor-pointer">
+                <input
+                  id="cert-accurate"
+                  type="checkbox"
+                  checked={isInfoAccurate}
+                  onChange={(e) => setIsInfoAccurate(e.target.checked)}
+                  className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-700 bg-slate-900 text-blue-600 focus:ring-blue-500"
+                />
+                <span className="leading-relaxed">
+                  Accurate and honest information has been submitted and the completion of this application is my own work.
+                </span>
+              </label>
+            </div>
+
+            {/* Applicant Signature & Date */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6 p-3.5 rounded-lg bg-slate-950/60 border border-slate-800">
+              <div className="sm:col-span-2">
+                <label className="block text-slate-400 font-medium mb-1.5 text-xs sm:text-sm">
+                  Applicant&apos;s Signature (Type Full Legal Name)
+                </label>
+                <input
+                  id="applicant-signature"
+                  type="text"
+                  value={applicantSignature}
+                  onChange={(e) => setApplicantSignature(e.target.value)}
+                  placeholder="e.g. Madison Rae Tymes"
+                  className="w-full rounded-lg px-3 py-2 text-sm text-white font-mono bg-slate-950 border border-slate-800"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-slate-400 font-medium mb-1.5 text-xs sm:text-sm">
+                  Date (Applicant)
+                </label>
+                <input
+                  id="applicant-signature-date"
+                  type="date"
+                  value={applicantSignatureDate}
+                  onChange={(e) => setApplicantSignatureDate(e.target.value)}
+                  className="w-full rounded-lg px-3 py-2 text-sm text-white bg-slate-950 border border-slate-800"
                   required
                 />
               </div>
             </div>
 
-            <div>
-              <label className="block text-slate-400 font-medium mb-1.5">Telephone Number</label>
-              <input
-                id="applicant-telephone"
-                type="tel"
-                value={telephone}
-                onChange={(e) => setTelephone(e.target.value)}
-                placeholder="e.g. 302-229-1408"
-                className="w-full rounded-lg px-3 py-2 text-sm text-white bg-slate-950 border border-slate-800"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-slate-400 font-medium mb-1.5">Sex</label>
-              <select
-                id="applicant-sex"
-                value={sex}
-                onChange={(e) => setSex(e.target.value)}
-                className="w-full rounded-lg px-3 py-2 text-sm text-white bg-slate-950 border border-slate-800"
-              >
-                <option value="F">F (Female)</option>
-                <option value="M">M (Male)</option>
-                <option value="Other">Other</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-slate-400 font-medium mb-1.5">Email Address</label>
-              <input
-                id="applicant-email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="e.g. maddietymes12@gmail.com"
-                className="w-full rounded-lg px-3 py-2 text-sm text-white bg-slate-950 border border-slate-800"
-                required
-              />
-            </div>
-
-            <div className="sm:col-span-3">
-              <label className="block text-slate-400 font-medium mb-1.5">Date of Birth (mm/dd/yyyy)</label>
-              <input
-                id="applicant-dob"
-                type="date"
-                value={dateOfBirth}
-                onChange={(e) => setDateOfBirth(e.target.value)}
-                className="w-full sm:w-1/3 rounded-lg px-3 py-2 text-sm text-white bg-slate-950 border border-slate-800"
-                required
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* ======================================================== */}
-        {/* 3. PARENT / GUARDIAN (Page 1) */}
-        {/* ======================================================== */}
-        <div className="rounded-xl border border-slate-800 bg-[#0f172a] p-5 sm:p-6 shadow-md">
-          <h3 className="text-base font-bold text-white mb-4 flex items-center gap-2">
-            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-600/20 text-xs font-bold text-blue-400 border border-blue-500/30">
-              3
-            </span>
-            <span>Parent(s) / Guardian(s) Information (Form Page 1)</span>
-          </h3>
-
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs sm:text-sm">
-            <div>
-              <label className="block text-slate-400 font-medium mb-1.5">Parent(s)/Guardian(s) Name</label>
-              <input
-                id="parent-name"
-                type="text"
-                value={parentName}
-                onChange={(e) => setParentName(e.target.value)}
-                placeholder="e.g. Shira Tymes"
-                className="w-full rounded-lg px-3 py-2 text-sm text-white bg-slate-950 border border-slate-800"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-slate-400 font-medium mb-1.5">Parent Telephone Number</label>
-              <input
-                id="parent-phone"
-                type="tel"
-                value={parentPhone}
-                onChange={(e) => setParentPhone(e.target.value)}
-                placeholder="e.g. 302-229-1408"
-                className="w-full rounded-lg px-3 py-2 text-sm text-white bg-slate-950 border border-slate-800"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-slate-400 font-medium mb-1.5">Parent Email Address</label>
-              <input
-                id="parent-email"
-                type="email"
-                value={parentEmail}
-                onChange={(e) => setParentEmail(e.target.value)}
-                placeholder="e.g. shiratymes@gmail.com"
-                className="w-full rounded-lg px-3 py-2 text-sm text-white bg-slate-950 border border-slate-800"
-                required
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* ======================================================== */}
-        {/* 4. SCHOOL & FAMILY CONTEXT (Page 1) */}
-        {/* ======================================================== */}
-        <div className="rounded-xl border border-slate-800 bg-[#0f172a] p-5 sm:p-6 shadow-md">
-          <h3 className="text-base font-bold text-white mb-4 flex items-center gap-2">
-            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-600/20 text-xs font-bold text-blue-400 border border-blue-500/30">
-              4
-            </span>
-            <span>School & Family Demographics (Form Page 1)</span>
-          </h3>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs sm:text-sm">
-            <div>
-              <label className="block text-slate-400 font-medium mb-1.5">Current High School Attending</label>
-              <input
-                id="school-name"
-                type="text"
-                value={currentHighSchool}
-                onChange={(e) => setCurrentHighSchool(e.target.value)}
-                placeholder="e.g. Padua Academy"
-                className="w-full rounded-lg px-3 py-2 text-sm text-white bg-slate-950 border border-slate-800"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-slate-400 font-medium mb-1.5">Grade Point Average (as of 1/31/2026)</label>
-              <input
-                id="school-gpa"
-                type="text"
-                value={gpa}
-                onChange={(e) => setGpa(e.target.value)}
-                placeholder="e.g. 3.77"
-                className="w-full rounded-lg px-3 py-2 text-sm text-white bg-slate-950 border border-slate-800"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-slate-400 font-medium mb-1.5">Number of Siblings</label>
-              <input
-                id="siblings-count"
-                type="number"
-                min="0"
-                value={numberOfSiblings}
-                onChange={(e) => setNumberOfSiblings(e.target.value)}
-                placeholder="0"
-                className="w-full rounded-lg px-3 py-2 text-sm text-white bg-slate-950 border border-slate-800"
-              />
-            </div>
-            <div>
-              <label className="block text-slate-400 font-medium mb-1.5">Number of Immediate Family Members (including yourself)</label>
-              <input
-                id="family-members-count"
-                type="number"
-                min="1"
-                value={immediateFamilyMembers}
-                onChange={(e) => setImmediateFamilyMembers(e.target.value)}
-                placeholder="e.g. 2"
-                className="w-full rounded-lg px-3 py-2 text-sm text-white bg-slate-950 border border-slate-800"
-              />
-            </div>
-
-            <div className="sm:col-span-2">
-              <label className="block text-slate-400 font-medium mb-1.5">
-                Number of Immediate Family Members (including yourself) attending college/university for the 2025-2026 academic year
-              </label>
-              <input
-                id="family-in-college"
-                type="number"
-                min="0"
-                value={familyMembersInCollege}
-                onChange={(e) => setFamilyMembersInCollege(e.target.value)}
-                placeholder="e.g. 1"
-                className="w-full sm:w-1/2 rounded-lg px-3 py-2 text-sm text-white bg-slate-950 border border-slate-800"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* ======================================================== */}
-        {/* 5. ACTIVITIES, SERVICE, EMPLOYMENT & COLLEGES */}
-        {/* ======================================================== */}
-        <div className="rounded-xl border border-slate-800 bg-[#0f172a] p-5 sm:p-6 shadow-md space-y-6">
-          <div>
-            <h3 className="text-base font-bold text-white flex items-center gap-2">
-              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-600/20 text-xs font-bold text-blue-400 border border-blue-500/30">
-                5
-              </span>
-              <span>Activities, Community Service, Employment & Colleges</span>
-            </h3>
-            <p className="text-xs text-slate-400 mt-1">
-              Directly aligned with Page 1 and Page 2 of the official physical form.
-            </p>
-          </div>
-
-          {/* School Clubs/Activities */}
-          <div>
-            <label className="block text-xs sm:text-sm font-semibold text-slate-300 mb-2">
-              School Clubs/Activities in which you participate (include leadership positions held)
-            </label>
-            <div className="space-y-3">
-              {activities.map((item, index) => (
-                <div
-                  key={item.id}
-                  className="grid grid-cols-1 sm:grid-cols-12 gap-2 p-2.5 sm:p-0 rounded-xl sm:rounded-none bg-slate-900/60 sm:bg-transparent border border-slate-800/80 sm:border-0"
-                >
-                  <div className="sm:col-span-5">
-                    <input
-                      type="text"
-                      placeholder="e.g. Varsity Soccer (4yr)"
-                      value={item.activity}
-                      onChange={(e) => {
-                        const updated = [...activities];
-                        updated[index].activity = e.target.value;
-                        setActivities(updated);
-                      }}
-                      className="w-full rounded-lg px-3 py-2 text-xs sm:text-sm text-white bg-slate-950 border border-slate-800"
-                    />
-                  </div>
-                  <div className="sm:col-span-4">
-                    <input
-                      type="text"
-                      placeholder="e.g. Team Captain / Officer"
-                      value={item.role}
-                      onChange={(e) => {
-                        const updated = [...activities];
-                        updated[index].role = e.target.value;
-                        setActivities(updated);
-                      }}
-                      className="w-full rounded-lg px-3 py-2 text-xs sm:text-sm text-white bg-slate-950 border border-slate-800"
-                    />
-                  </div>
-                  <div className="flex items-center gap-2 sm:col-span-3">
-                    <input
-                      type="text"
-                      placeholder="Years (e.g. 9-12)"
-                      value={item.years}
-                      onChange={(e) => {
-                        const updated = [...activities];
-                        updated[index].years = e.target.value;
-                        setActivities(updated);
-                      }}
-                      className="w-full rounded-lg px-3 py-2 text-xs sm:text-sm text-white bg-slate-950 border border-slate-800"
-                    />
-                    {activities.length > 1 && (
-                      <button
-                        type="button"
-                        onClick={() => setActivities(activities.filter((_, i) => i !== index))}
-                        className="p-2 shrink-0 rounded-lg text-slate-400 hover:text-red-400 hover:bg-slate-800 transition cursor-pointer"
-                        title="Remove"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-            <button
-              type="button"
-              onClick={() =>
-                setActivities([...activities, { id: String(Date.now()), activity: '', role: '', years: '' }])
-              }
-              className="mt-2.5 inline-flex items-center gap-1.5 text-xs font-semibold text-blue-400 hover:text-blue-300 px-2 py-1 rounded hover:bg-slate-800 transition cursor-pointer"
-            >
-              <Plus className="h-3.5 w-3.5" />
-              <span>Add activity/club</span>
-            </button>
-          </div>
-
-          {/* Community Service/Church/Volunteer Activities */}
-          <div className="pt-3 border-t border-slate-800/80">
-            <label className="block text-xs sm:text-sm font-semibold text-slate-300 mb-2">
-              Community Service/Church/Volunteer Activities
-            </label>
-            <div className="space-y-3">
-              {communityService.map((item, index) => (
-                <div
-                  key={item.id}
-                  className="grid grid-cols-1 sm:grid-cols-12 gap-2 p-2.5 sm:p-0 rounded-xl sm:rounded-none bg-slate-900/60 sm:bg-transparent border border-slate-800/80 sm:border-0"
-                >
-                  <div className="sm:col-span-5">
-                    <input
-                      type="text"
-                      placeholder="Organization / church (e.g. Habitat for Humanity)"
-                      value={item.organization}
-                      onChange={(e) => {
-                        const updated = [...communityService];
-                        updated[index].organization = e.target.value;
-                        setCommunityService(updated);
-                      }}
-                      className="w-full rounded-lg px-3 py-2 text-xs sm:text-sm text-white bg-slate-950 border border-slate-800"
-                    />
-                  </div>
-                  <div className="sm:col-span-4">
-                    <input
-                      type="text"
-                      placeholder="Description of volunteer role"
-                      value={item.description}
-                      onChange={(e) => {
-                        const updated = [...communityService];
-                        updated[index].description = e.target.value;
-                        setCommunityService(updated);
-                      }}
-                      className="w-full rounded-lg px-3 py-2 text-xs sm:text-sm text-white bg-slate-950 border border-slate-800"
-                    />
-                  </div>
-                  <div className="flex items-center gap-2 sm:col-span-3">
-                    <input
-                      type="number"
-                      placeholder="Hours"
-                      value={item.totalHours}
-                      onChange={(e) => {
-                        const updated = [...communityService];
-                        updated[index].totalHours = e.target.value;
-                        setCommunityService(updated);
-                      }}
-                      className="w-full rounded-lg px-3 py-2 text-xs sm:text-sm text-white bg-slate-950 border border-slate-800"
-                    />
-                    {communityService.length > 1 && (
-                      <button
-                        type="button"
-                        onClick={() => setCommunityService(communityService.filter((_, i) => i !== index))}
-                        className="p-2 shrink-0 rounded-lg text-slate-400 hover:text-red-400 hover:bg-slate-800 transition cursor-pointer"
-                        title="Remove"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-            <button
-              type="button"
-              onClick={() =>
-                setCommunityService([
-                  ...communityService,
-                  { id: String(Date.now()), organization: '', description: '', totalHours: '' },
-                ])
-              }
-              className="mt-2.5 inline-flex items-center gap-1.5 text-xs font-semibold text-blue-400 hover:text-blue-300 px-2 py-1 rounded hover:bg-slate-800 transition cursor-pointer"
-            >
-              <Plus className="h-3.5 w-3.5" />
-              <span>Add volunteer activity</span>
-            </button>
-          </div>
-
-          {/* Applicant's Employment History */}
-          <div className="pt-3 border-t border-slate-800/80">
-            <label className="block text-xs sm:text-sm font-semibold text-slate-300 mb-2">
-              Applicant&apos;s Employment History (Employers, Positions, Dates of Employment)
-            </label>
-            <div className="space-y-3">
-              {employment.map((item, index) => (
-                <div
-                  key={item.id}
-                  className="grid grid-cols-1 sm:grid-cols-12 gap-2 p-2.5 sm:p-0 rounded-xl sm:rounded-none bg-slate-900/60 sm:bg-transparent border border-slate-800/80 sm:border-0"
-                >
-                  <div className="sm:col-span-5">
-                    <input
-                      type="text"
-                      placeholder="Employer (e.g. Nothing Bundt Cakes)"
-                      value={item.employer}
-                      onChange={(e) => {
-                        const updated = [...employment];
-                        updated[index].employer = e.target.value;
-                        setEmployment(updated);
-                      }}
-                      className="w-full rounded-lg px-3 py-2 text-xs sm:text-sm text-white bg-slate-950 border border-slate-800"
-                    />
-                  </div>
-                  <div className="sm:col-span-4">
-                    <input
-                      type="text"
-                      placeholder="Position (e.g. Cake Froster / Hostess)"
-                      value={item.position}
-                      onChange={(e) => {
-                        const updated = [...employment];
-                        updated[index].position = e.target.value;
-                        setEmployment(updated);
-                      }}
-                      className="w-full rounded-lg px-3 py-2 text-xs sm:text-sm text-white bg-slate-950 border border-slate-800"
-                    />
-                  </div>
-                  <div className="flex items-center gap-2 sm:col-span-3">
-                    <input
-                      type="text"
-                      placeholder="Dates (e.g. July 2023 - Oct 2023)"
-                      value={item.dates}
-                      onChange={(e) => {
-                        const updated = [...employment];
-                        updated[index].dates = e.target.value;
-                        setEmployment(updated);
-                      }}
-                      className="w-full rounded-lg px-3 py-2 text-xs sm:text-sm text-white bg-slate-950 border border-slate-800"
-                    />
-                    {employment.length > 1 && (
-                      <button
-                        type="button"
-                        onClick={() => setEmployment(employment.filter((_, i) => i !== index))}
-                        className="p-2 shrink-0 rounded-lg text-slate-400 hover:text-red-400 hover:bg-slate-800 transition cursor-pointer"
-                        title="Remove"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-            <button
-              type="button"
-              onClick={() =>
-                setEmployment([
-                  ...employment,
-                  { id: String(Date.now()), employer: '', position: '', dates: '' },
-                ])
-              }
-              className="mt-2.5 inline-flex items-center gap-1.5 text-xs font-semibold text-blue-400 hover:text-blue-300 px-2 py-1 rounded hover:bg-slate-800 transition cursor-pointer"
-            >
-              <Plus className="h-3.5 w-3.5" />
-              <span>Add employer</span>
-            </button>
-          </div>
-
-          {/* Colleges and Universities applied, accepted and/or waiting */}
-          <div className="pt-3 border-t border-slate-800/80">
-            <label className="block text-xs sm:text-sm font-semibold text-slate-300 mb-2">
-              List the colleges and universities to which you have applied, have been accepted and/or are waiting for acceptance
-            </label>
-            <div className="space-y-3">
-              {colleges.map((item, index) => (
-                <div
-                  key={item.id}
-                  className="grid grid-cols-1 sm:grid-cols-12 gap-2 p-2.5 sm:p-0 rounded-xl sm:rounded-none bg-slate-900/60 sm:bg-transparent border border-slate-800/80 sm:border-0"
-                >
-                  <div className="sm:col-span-5">
-                    <input
-                      type="text"
-                      placeholder="College / University (e.g. Howard University)"
-                      value={item.college}
-                      onChange={(e) => {
-                        const updated = [...colleges];
-                        updated[index].college = e.target.value;
-                        setColleges(updated);
-                      }}
-                      className="w-full rounded-lg px-3 py-2 text-xs sm:text-sm text-white bg-slate-950 border border-slate-800"
-                    />
-                  </div>
-                  <div className="sm:col-span-4">
-                    <input
-                      type="text"
-                      placeholder="City/State (e.g. Washington DC)"
-                      value={item.cityState}
-                      onChange={(e) => {
-                        const updated = [...colleges];
-                        updated[index].cityState = e.target.value;
-                        setColleges(updated);
-                      }}
-                      className="w-full rounded-lg px-3 py-2 text-xs sm:text-sm text-white bg-slate-950 border border-slate-800"
-                    />
-                  </div>
-                  <div className="flex items-center gap-2 sm:col-span-3">
-                    <select
-                      value={item.status}
-                      onChange={(e) => {
-                        const updated = [...colleges];
-                        updated[index].status = e.target.value as CollegePlan['status'];
-                        setColleges(updated);
-                      }}
-                      className="w-full rounded-lg px-3 py-2 text-xs sm:text-sm text-white capitalize bg-slate-950 border border-slate-800"
-                    >
-                      <option value="applied">Applied</option>
-                      <option value="accepted">Accepted</option>
-                      <option value="waiting">Waiting for acceptance</option>
-                    </select>
-                    {colleges.length > 1 && (
-                      <button
-                        type="button"
-                        onClick={() => setColleges(colleges.filter((_, i) => i !== index))}
-                        className="p-2 shrink-0 rounded-lg text-slate-400 hover:text-red-400 hover:bg-slate-800 transition cursor-pointer"
-                        title="Remove"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-            <button
-              type="button"
-              onClick={() =>
-                setColleges([
-                  ...colleges,
-                  { id: String(Date.now()), college: '', cityState: '', status: 'applied' },
-                ])
-              }
-              className="mt-2.5 inline-flex items-center gap-1.5 text-xs font-semibold text-blue-400 hover:text-blue-300 px-2 py-1 rounded hover:bg-slate-800 transition"
-            >
-              <Plus className="h-3.5 w-3.5" />
-              <span>Add college</span>
-            </button>
-          </div>
-        </div>
-
-        {/* ======================================================== */}
-        {/* 6. REFERRAL SOURCE (Page 2) */}
-        {/* ======================================================== */}
-        <div className="rounded-xl border border-slate-800 bg-[#0f172a] p-5 sm:p-6 shadow-md">
-          <h3 className="text-base font-bold text-white mb-2 flex items-center gap-2">
-            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-600/20 text-xs font-bold text-blue-400 border border-blue-500/30">
-              6
-            </span>
-            <span>How did you find out about this scholarship? (Check all that apply &ndash; Page 2)</span>
-          </h3>
-          <p className="text-xs text-slate-400 mb-4">
-            Select all sources where you learned about The Monday Club Scholarship.
-          </p>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2.5 text-xs text-slate-300">
-            {[
-              'High School',
-              'Church',
-              'Personal Friend',
-              'Another Organization',
-              'Parent/Guardian',
-              'Family/Friend',
-              'Recreation/Community Center',
-              'Member of THE MONDAY CLUB',
-            ].map((source) => (
-              <label
-                key={source}
-                className="flex items-center gap-2.5 p-2.5 rounded-lg border border-slate-800/80 bg-slate-950/40 hover:bg-slate-900 transition cursor-pointer"
-              >
-                <input
-                  type="checkbox"
-                  checked={referralSources.includes(source)}
-                  onChange={(e) => {
-                    if (e.target.checked) {
-                      setReferralSources([...referralSources, source]);
-                    } else {
-                      setReferralSources(referralSources.filter((s) => s !== source));
-                    }
-                  }}
-                  className="h-4 w-4 rounded border-slate-700 bg-slate-900 text-blue-600 focus:ring-blue-500"
-                />
-                <span className="font-medium text-slate-200">{source}</span>
-              </label>
-            ))}
-          </div>
-
-          {referralSources.includes('Member of THE MONDAY CLUB') && (
-            <div className="mt-4 pt-3 border-t border-slate-800/60 max-w-md animate-in fade-in">
-              <label className="block text-slate-400 text-xs font-medium mb-1.5">
-                Member of THE MONDAY CLUB (Name of member):
-              </label>
-              <input
-                type="text"
-                value={mondayClubMemberName}
-                onChange={(e) => setMondayClubMemberName(e.target.value)}
-                placeholder="Name of Monday Club member"
-                className="w-full rounded-lg px-3 py-2 text-xs sm:text-sm text-white bg-slate-950 border border-slate-800"
-              />
-            </div>
-          )}
-        </div>
-
-        {/* ======================================================== */}
-        {/* 7. ESSAY SUBMISSION (Requirement #6, Page 3: Min 200 Words) */}
-        {/* ======================================================== */}
-        <div className="rounded-xl border border-slate-800 bg-[#0f172a] p-5 sm:p-6 shadow-md">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
-            <h3 className="text-base font-bold text-white flex items-center gap-2">
-              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-600/20 text-xs font-bold text-blue-400 border border-blue-500/30">
-                7
-              </span>
-              <span>Essay Submission (Requirement #6 &ndash; Minimum 200 words)</span>
-            </h3>
-            {/* Live Word Count Indicator */}
-            {(() => {
-              const count = essayText.trim() ? essayText.trim().split(/\s+/).filter(Boolean).length : 0;
-              const isMet = count >= 200;
-              return (
-                <span
-                  className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold border ${isMet
-                    ? 'bg-emerald-950/80 text-emerald-300 border-emerald-700/60'
-                    : 'bg-amber-950/80 text-amber-300 border-amber-700/60'
-                    }`}
-                >
-                  <CheckCircle2 className={`h-3.5 w-3.5 ${isMet ? 'text-emerald-400' : 'text-amber-400'}`} />
-                  <span>{count} / 200 words required {isMet ? '(Criteria Met)' : `(${200 - count} words left)`}</span>
-                </span>
-              );
-            })()}
-          </div>
-
-          <div className="rounded-lg bg-blue-950/30 border border-blue-900/50 p-3 mb-4 text-xs text-slate-300 leading-relaxed">
-            <strong className="text-blue-300">Requirement #6 Guidelines (from Form Page 3):</strong>
-            <p className="mt-1">
-              The applicant is to describe his/her community involvement (church, volunteering &amp; tutorial efforts), school activities (student government, honor society, band, sports, etc.) and proposed goals the applicant wants to accomplish in the next 10 years. The essay must be typed, double-spaced and in 12-point font. The essay will be evaluated on clarity, language usage, content, organization, and topic development. The essays will not be returned.
-            </p>
-          </div>
-
-          <div>
-            <textarea
-              id="essay-text"
-              rows={9}
-              value={essayText}
-              onChange={(e) => setEssayText(e.target.value)}
-              placeholder="Type your minimum 200-word essay here describing your community involvement, school activities, and 10-year aspirations..."
-              className="w-full rounded-lg px-3.5 py-3 text-xs sm:text-sm text-white bg-slate-950 border border-slate-800 leading-relaxed focus:border-blue-500 font-sans"
-              required
-            />
-          </div>
-        </div>
-
-        {/* ======================================================== */}
-        {/* 8. SUPPORTING DOCUMENTS & CHECKLIST (Page 3) */}
-        {/* ======================================================== */}
-        <div className="rounded-xl border border-slate-800 bg-[#0f172a] p-5 sm:p-6 shadow-md">
-          <h3 className="text-base font-bold text-white mb-2 flex items-center gap-2">
-            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-600/20 text-xs font-bold text-blue-400 border border-blue-500/30">
-              8
-            </span>
-            <span>Supporting Documents &amp; Official Checklist (Form Page 3)</span>
-          </h3>
-          <p className="text-xs text-slate-400 mb-4">
-            Upload digital files or verify that documents will be submitted with your completed application packet.
-          </p>
-
-          <div className="space-y-4 text-xs sm:text-sm">
-            {/* Official transcript */}
-            <div className="p-3 rounded-lg bg-slate-950/60 border border-slate-800/80">
-              <label className="block text-slate-300 font-semibold mb-1">
-                Requirement #5: Official copy of your transcript through 1st semester (Jan 2026)
-              </label>
-              <p className="text-[11px] text-slate-400 mb-2">Must verify GPA of at least 2.75 on a 4.00 scale.</p>
-              <input
-                id="file-transcript"
-                type="file"
-                accept=".pdf,.png,.jpg,.jpeg"
-                onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  if (file) {
-                    setTranscript({
-                      name: file.name,
-                      size: file.size,
-                      type: file.type,
-                      uploadedAt: new Date().toISOString(),
-                    });
-                  }
-                }}
-                className="w-full text-slate-400 text-xs"
-              />
-              {transcript && (
-                <div className="mt-1.5 flex items-center gap-2 text-xs text-emerald-400 font-medium">
-                  <CheckCircle2 className="h-3.5 w-3.5" />
-                  <span>Attached: {transcript.name}</span>
-                </div>
-              )}
-            </div>
-
-            {/* Student Aid Report */}
-            <div className="p-3 rounded-lg bg-slate-950/60 border border-slate-800/80">
-              <label className="block text-slate-300 font-semibold mb-1">
-                Requirement #7: Completed and processed copy of the Student Aid Report (SAR) (if available)
-              </label>
-              <input
-                id="file-sar"
-                type="file"
-                accept=".pdf,.png,.jpg,.jpeg"
-                onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  if (file) {
-                    setStudentAidReport({
-                      name: file.name,
-                      size: file.size,
-                      type: file.type,
-                      uploadedAt: new Date().toISOString(),
-                    });
-                  }
-                }}
-                className="w-full text-slate-400 text-xs"
-              />
-              {studentAidReport && (
-                <div className="mt-1.5 flex items-center gap-2 text-xs text-emerald-400 font-medium">
-                  <CheckCircle2 className="h-3.5 w-3.5" />
-                  <span>Attached: {studentAidReport.name}</span>
-                </div>
-              )}
-            </div>
-
-            {/* Three recommendation letters */}
-            <div className="p-3 rounded-lg bg-slate-950/60 border border-slate-800/80">
-              <label className="block text-slate-300 font-semibold mb-1">
-                Requirement #4: Three letters of recommendation (two from non-relatives)
-              </label>
-              <p className="text-[11px] text-slate-400 mb-2">Each with signature of the sender/writer over the flap of envelope.</p>
-              <input
-                id="file-recommendations"
-                type="file"
-                multiple
-                accept=".pdf,.doc,.docx"
-                onChange={(e) => {
-                  const files = Array.from(e.target.files || []);
-                  if (files.length > 0) {
-                    const mapped: UploadedDocument[] = files.map((f) => ({
-                      name: f.name,
-                      size: f.size,
-                      type: f.type,
-                      uploadedAt: new Date().toISOString(),
-                    }));
-                    setRecLetters(mapped);
-                  }
-                }}
-                className="w-full text-slate-400 text-xs"
-              />
-              {recLetters.length > 0 && (
-                <div className="mt-1.5 flex items-center gap-2 text-xs text-emerald-400 font-medium">
-                  <CheckCircle2 className="h-3.5 w-3.5" />
-                  <span>{recLetters.length} recommendation letter(s) attached</span>
-                </div>
-              )}
-            </div>
-
-            {/* Extra Documents */}
-            <div className="p-3 rounded-lg bg-slate-950/60 border border-slate-800/80">
-              <label className="block text-slate-300 font-semibold mb-1">
-                Supplemental Documents &amp; Certificates (Optional)
-              </label>
-              <input
-                id="file-extra"
-                type="file"
-                multiple
-                accept=".pdf,.png,.jpg,.jpeg,.doc,.docx"
-                onChange={(e) => {
-                  const files = Array.from(e.target.files || []);
-                  if (files.length > 0) {
-                    const mapped: UploadedDocument[] = files.map((f) => ({
-                      name: f.name,
-                      size: f.size,
-                      type: f.type,
-                      uploadedAt: new Date().toISOString(),
-                    }));
-                    setExtraDocs(mapped);
-                  }
-                }}
-                className="w-full text-slate-400 text-xs"
-              />
-              {extraDocs.length > 0 && (
-                <div className="mt-1.5 flex items-center gap-2 text-xs text-emerald-400 font-medium">
-                  <CheckCircle2 className="h-3.5 w-3.5" />
-                  <span>{extraDocs.length} supplemental document(s) uploaded</span>
-                </div>
-              )}
-            </div>
-
-            {/* Official Contact & Mailing Notice */}
-            <div className="p-3 rounded-lg bg-blue-950/40 border border-blue-900/60 text-xs text-slate-300 space-y-1">
-              <div className="font-bold text-blue-300">Physical &amp; Email Delivery Instructions:</div>
+            {/* Parent/Guardian Permission Statement */}
+            <div className="rounded-lg bg-slate-950 p-4 border border-slate-800 text-xs text-slate-300 leading-relaxed mb-4">
+              <div className="font-bold text-white uppercase tracking-wider text-[11px] mb-1">
+                Parent/Guardian Verification Statement:
+              </div>
               <p>
-                All application materials must be emailed to <strong className="text-white">TheMCscholarships@gmail.com</strong> or mailed to <strong className="text-white">4020 New Castle Ave, Wilmington, DE 19720</strong>.
-              </p>
-              <p className="text-[11px] text-slate-400">
-                Questions? Contact Mr. Ken Snell: (302) 521-3798 &bull; Winners notified by May 1, 2026.
+                &ldquo;I hereby verify that I am the parent(s)/guardian(s) of this student and grant permission for his/her participation in this competition and understand the rules above and that the decision of the judges is FINAL.&rdquo;
               </p>
             </div>
-          </div>
-        </div>
 
-        {/* ======================================================== */}
-        {/* 9. THE MONDAY CLUB RULES AND REGULATIONS & DUAL SIGNATURES (Page 2) */}
-        {/* ======================================================== */}
-        <div className="rounded-xl border border-slate-800 bg-[#0f172a] p-5 sm:p-6 shadow-md">
-          <h3 className="text-base font-bold text-white mb-3 flex items-center gap-2">
-            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-600/20 text-xs font-bold text-blue-400 border border-blue-500/30">
-              9
-            </span>
-            <span>THE MONDAY CLUB Scholarship Rules and Regulations &amp; Official Signatures (Page 2)</span>
-          </h3>
-
-          {/* Rules Statement verbatim from physical form */}
-          <div className="rounded-lg bg-slate-950 p-4 border border-slate-800 text-xs text-slate-300 leading-relaxed space-y-2 mb-4">
-            <div className="font-bold text-white uppercase tracking-wider text-[11px]">
-              The Monday Club Scholarship Rules and Regulations:
-            </div>
-            <p>
-              The signatures of the persons below indicate accurate and honest information has been submitted and that the completion of this application and the accompanying materials are the work of the applicant. Furthermore, the applicant understands that if selected for a scholarship, the scholarship monies will be disbursed after August 15, 2026. All scholarship checks will be made payable to and sent directly to the college/university where the recipient will be admitted and enrolled, to matriculate. A notation on the scholarship check will indicate the name of the student to which the scholarship money is to be credited and the institution of attendance. Each scholarship recipient will be requested to supply the complete name, address, and telephone number of the business or bursar&apos;s office of the college/university that the recipient will be attending in Fall 2026 to The Monday Club.
-            </p>
-          </div>
-
-          {/* Acknowledgement Checkboxes */}
-          <div className="space-y-3 text-xs sm:text-sm text-slate-300 mb-5">
-            <label className="flex items-start gap-3 cursor-pointer">
-              <input
-                id="cert-rules"
-                type="checkbox"
-                checked={rulesAcknowledged}
-                onChange={(e) => setRulesAcknowledged(e.target.checked)}
-                className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-700 bg-slate-900 text-blue-600 focus:ring-blue-500"
-              />
-              <span className="leading-relaxed">
-                I have read, understood, and agree to The Monday Club Scholarship Rules and Regulations.
-              </span>
-            </label>
-
-            <label className="flex items-start gap-3 cursor-pointer">
-              <input
-                id="cert-accurate"
-                type="checkbox"
-                checked={isInfoAccurate}
-                onChange={(e) => setIsInfoAccurate(e.target.checked)}
-                className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-700 bg-slate-900 text-blue-600 focus:ring-blue-500"
-              />
-              <span className="leading-relaxed">
-                Accurate and honest information has been submitted and the completion of this application is my own work.
-              </span>
-            </label>
-          </div>
-
-          {/* Applicant Signature & Date */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6 p-3.5 rounded-lg bg-slate-950/60 border border-slate-800">
-            <div className="sm:col-span-2">
-              <label className="block text-slate-400 font-medium mb-1.5 text-xs sm:text-sm">
-                Applicant&apos;s Signature (Type Full Legal Name)
+            <div className="mb-4 text-xs sm:text-sm text-slate-300">
+              <label className="flex items-start gap-3 cursor-pointer">
+                <input
+                  id="cert-permission"
+                  type="checkbox"
+                  checked={parentGrantsPermission}
+                  onChange={(e) => setParentGrantsPermission(e.target.checked)}
+                  className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-700 bg-slate-900 text-blue-600 focus:ring-blue-500"
+                />
+                <span className="leading-relaxed">
+                  I hereby verify that I am the parent(s)/guardian(s) of this student and grant permission for his/her participation in this competition and understand that the decision of the judges is FINAL.
+                </span>
               </label>
-              <input
-                id="applicant-signature"
-                type="text"
-                value={applicantSignature}
-                onChange={(e) => setApplicantSignature(e.target.value)}
-                placeholder="e.g. Madison Rae Tymes"
-                className="w-full rounded-lg px-3 py-2 text-sm text-white font-mono bg-slate-950 border border-slate-800"
-                required
-              />
             </div>
-            <div>
-              <label className="block text-slate-400 font-medium mb-1.5 text-xs sm:text-sm">
-                Date (Applicant)
-              </label>
-              <input
-                id="applicant-signature-date"
-                type="date"
-                value={applicantSignatureDate}
-                onChange={(e) => setApplicantSignatureDate(e.target.value)}
-                className="w-full rounded-lg px-3 py-2 text-sm text-white bg-slate-950 border border-slate-800"
-                required
-              />
+
+            {/* Parent Signature & Date */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6 p-3.5 rounded-lg bg-slate-950/60 border border-slate-800">
+              <div className="sm:col-span-2">
+                <label className="block text-slate-400 font-medium mb-1.5 text-xs sm:text-sm">
+                  Parent/Guardian&apos;s Signature (Type Full Legal Name)
+                </label>
+                <input
+                  id="parent-signature"
+                  type="text"
+                  value={parentSignature}
+                  onChange={(e) => setParentSignature(e.target.value)}
+                  placeholder="e.g. Shira Tymes"
+                  className="w-full rounded-lg px-3 py-2 text-sm text-white font-mono bg-slate-950 border border-slate-800"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-slate-400 font-medium mb-1.5 text-xs sm:text-sm">
+                  Date (Parent/Guardian)
+                </label>
+                <input
+                  id="parent-signature-date"
+                  type="date"
+                  value={parentSignatureDate}
+                  onChange={(e) => setParentSignatureDate(e.target.value)}
+                  className="w-full rounded-lg px-3 py-2 text-sm text-white bg-slate-950 border border-slate-800"
+                  required
+                />
+              </div>
             </div>
-          </div>
 
-          {/* Parent/Guardian Permission Statement */}
-          <div className="rounded-lg bg-slate-950 p-4 border border-slate-800 text-xs text-slate-300 leading-relaxed mb-4">
-            <div className="font-bold text-white uppercase tracking-wider text-[11px] mb-1">
-              Parent/Guardian Verification Statement:
+            {/* Centered Footer Motto from Physical Form */}
+            <div className="text-center py-2 text-xs font-serif italic text-amber-300/80 border-t border-slate-800/80 mb-5">
+              &ldquo;Spanning Three Centuries!&rdquo;
             </div>
-            <p>
-              &ldquo;I hereby verify that I am the parent(s)/guardian(s) of this student and grant permission for his/her participation in this competition and understand the rules above and that the decision of the judges is FINAL.&rdquo;
-            </p>
-          </div>
 
-          <div className="mb-4 text-xs sm:text-sm text-slate-300">
-            <label className="flex items-start gap-3 cursor-pointer">
-              <input
-                id="cert-permission"
-                type="checkbox"
-                checked={parentGrantsPermission}
-                onChange={(e) => setParentGrantsPermission(e.target.checked)}
-                className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-700 bg-slate-900 text-blue-600 focus:ring-blue-500"
-              />
-              <span className="leading-relaxed">
-                I hereby verify that I am the parent(s)/guardian(s) of this student and grant permission for his/her participation in this competition and understand that the decision of the judges is FINAL.
-              </span>
-            </label>
-          </div>
+            {/* Submit Action & Validation Banner */}
+            <div className="flex flex-col sm:flex-row sm:items-center gap-4 pt-2 border-t border-slate-800/80">
+              <button
+                id="btn-submit-application"
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-7 py-3 text-sm font-bold text-white shadow-lg shadow-blue-600/30 hover:bg-blue-500 disabled:opacity-50 transition cursor-pointer"
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <span>Evaluating AI Rubric &amp; Submitting...</span>
+                  </>
+                ) : (
+                  <>
+                    <Send className="h-4 w-4" />
+                    <span>Submit Official Application</span>
+                  </>
+                )}
+              </button>
 
-          {/* Parent Signature & Date */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6 p-3.5 rounded-lg bg-slate-950/60 border border-slate-800">
-            <div className="sm:col-span-2">
-              <label className="block text-slate-400 font-medium mb-1.5 text-xs sm:text-sm">
-                Parent/Guardian&apos;s Signature (Type Full Legal Name)
-              </label>
-              <input
-                id="parent-signature"
-                type="text"
-                value={parentSignature}
-                onChange={(e) => setParentSignature(e.target.value)}
-                placeholder="e.g. Shira Tymes"
-                className="w-full rounded-lg px-3 py-2 text-sm text-white font-mono bg-slate-950 border border-slate-800"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-slate-400 font-medium mb-1.5 text-xs sm:text-sm">
-                Date (Parent/Guardian)
-              </label>
-              <input
-                id="parent-signature-date"
-                type="date"
-                value={parentSignatureDate}
-                onChange={(e) => setParentSignatureDate(e.target.value)}
-                className="w-full rounded-lg px-3 py-2 text-sm text-white bg-slate-950 border border-slate-800"
-                required
-              />
-            </div>
-          </div>
-
-          {/* Centered Footer Motto from Physical Form */}
-          <div className="text-center py-2 text-xs font-serif italic text-amber-300/80 border-t border-slate-800/80 mb-5">
-            &ldquo;Spanning Three Centuries!&rdquo;
-          </div>
-
-          {/* Submit Action & Validation Banner */}
-          <div className="flex flex-col sm:flex-row sm:items-center gap-4 pt-2 border-t border-slate-800/80">
-            <button
-              id="btn-submit-application"
-              type="submit"
-              disabled={isSubmitting}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-7 py-3 text-sm font-bold text-white shadow-lg shadow-blue-600/30 hover:bg-blue-500 disabled:opacity-50 transition cursor-pointer"
-            >
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  <span>Evaluating AI Rubric &amp; Submitting...</span>
-                </>
-              ) : (
-                <>
-                  <Send className="h-4 w-4" />
-                  <span>Submit Official Application</span>
-                </>
+              {formError && (
+                <span className="text-xs font-medium text-red-400 flex items-center gap-1.5">
+                  <AlertCircle className="h-4 w-4 shrink-0" />
+                  <span>{formError}</span>
+                </span>
               )}
-            </button>
-
-            {formError && (
-              <span className="text-xs font-medium text-red-400 flex items-center gap-1.5">
-                <AlertCircle className="h-4 w-4 shrink-0" />
-                <span>{formError}</span>
-              </span>
-            )}
+            </div>
           </div>
-        </div>
       </form>
 
 

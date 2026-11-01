@@ -67,11 +67,18 @@ export interface ScholarshipApplication {
   applicationNumber: string; // e.g. "MC-2026-001"
   submittedAt: string;
 
-  // 1. Eligibility
+  // 1. Scholarship Requirements & Checklist (Official 2026 Sheet - 10 Items)
   eligibility: {
-    isDelawareSenior: boolean;
-    isEligibleDescent: boolean;
-    isMinGpa: boolean;
+    isDelawareSenior: boolean; // #1: DE senior attending high school & 4-year college/university admission
+    isEligibleDescent: boolean; // #2: African American, Hispanic or Native American descent
+    isTypedLegibly?: boolean; // #3: Application typed or printed legibly
+    isRecLettersSubmitted?: boolean; // #4: 3 recommendation letters (2 non-relatives) in sealed envelope
+    isMinGpa: boolean; // #5: GPA >= 2.75 on 4.00 scale & Jan 2026 official transcript
+    isEssayAcknowledged?: boolean; // #6: Essay submission (min 200 words, community, activities, 10-yr goals)
+    isSarAcknowledged?: boolean; // #7: Submission of Student Aid Report (SAR) if available
+    isInterviewAgreed?: boolean; // #8: Virtual interview participation with Monday Club committee
+    isWinnerNotificationUnderstood?: boolean; // #9: Winners notified by May 1, 2026 & materials property of Club
+    isContactAndMailingAcknowledged?: boolean; // #10: Questions contact Mr. Ken Snell & mailing instructions
   };
 
   // 2. Applicant
