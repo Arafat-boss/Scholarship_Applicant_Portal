@@ -818,23 +818,21 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
               </p>
             </div>
 
-            <label className="flex items-start gap-3 p-2.5 rounded-lg hover:bg-slate-900/60 transition cursor-pointer border border-transparent hover:border-slate-800">
-              <button
-                type="button"
-                onClick={handleCheckAllChecklist}
-                className="self-start sm:self-auto inline-flex items-center gap-1.5 rounded-lg border border-blue-600/60 bg-blue-950/70 px-3 py-1.5 text-xs font-bold text-blue-300 hover:bg-blue-900/80 hover:text-white transition cursor-pointer shadow-sm"
-                title="Click to check all 10 checklist items"
-              >
-                <CheckCircle2 className="h-3.5 w-3.5 text-blue-400" />
-                <span>Check All 10 Checklist Items</span>
-              </button>
+            <button
+              type="button"
+              onClick={handleCheckAllChecklist}
+              className="self-start sm:self-auto inline-flex items-center gap-1.5 rounded-lg border border-blue-600/60 bg-blue-950/70 px-3 py-1.5 text-xs font-bold text-blue-300 hover:bg-blue-900/80 hover:text-white transition cursor-pointer shadow-sm"
+              title="Click to check all 10 checklist items"
+            >
+              <CheckCircle2 className="h-3.5 w-3.5 text-blue-400" />
+              <span>Check All 10 Checklist Items</span>
+            </button>
           </div>
 
           <div className="space-y-2.5 text-xs sm:text-sm text-slate-300">
             {/* Item 1 */}
             <label className={`flex items-start gap-3 p-2.5 rounded-lg border transition cursor-pointer ${isDelawareSenior ? 'bg-blue-950/30 border-blue-900/60 text-white' : 'border-slate-800/80 hover:bg-slate-900/60'}`}>
               <input
-                id="eligibility-senior"
                 id="eligibility-item-1"
                 type="checkbox"
                 checked={isDelawareSenior}
@@ -842,152 +840,137 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
                 className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-700 bg-slate-900 text-blue-600 focus:ring-blue-500"
               />
               <span className="leading-relaxed">
-                <strong>1.</strong> Applicant(s) must be a senior attending a public/private/parochial/vocational high school in the State of Delaware. The applicant must be admitted to or seeking admission into a four-year college or university.
                 <strong className="text-blue-400">1.</strong> Applicant(s) must be a senior attending a public/private/parochial/vocational high school in the State of Delaware. The applicant must be admitted to or seeking admission into a four-year college or university. If selected for a scholarship the recipient must provide proof of admission and enrollment.
               </span>
             </label>
 
-            <label className="flex items-start gap-3 p-2.5 rounded-lg hover:bg-slate-900/60 transition cursor-pointer border border-transparent hover:border-slate-800">
-              {/* Item 2 */}
-              <label className={`flex items-start gap-3 p-2.5 rounded-lg border transition cursor-pointer ${isEligibleDescent ? 'bg-blue-950/30 border-blue-900/60 text-white' : 'border-slate-800/80 hover:bg-slate-900/60'}`}>
-                <input
-                  id="eligibility-descent"
-                  id="eligibility-item-2"
-                  type="checkbox"
-                  checked={isEligibleDescent}
-                  onChange={(e) => setIsEligibleDescent(e.target.checked)}
-                  className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-700 bg-slate-900 text-blue-600 focus:ring-blue-500"
-                />
-                <span className="leading-relaxed">
-                  <strong>2.</strong> The applicant must be of African American, Hispanic or Native American descent.
-                  <strong className="text-blue-400">2.</strong> The applicant must be of African American, Hispanic or Native American descent.
-                </span>
-              </label>
+            {/* Item 2 */}
+            <label className={`flex items-start gap-3 p-2.5 rounded-lg border transition cursor-pointer ${isEligibleDescent ? 'bg-blue-950/30 border-blue-900/60 text-white' : 'border-slate-800/80 hover:bg-slate-900/60'}`}>
+              <input
+                id="eligibility-item-2"
+                type="checkbox"
+                checked={isEligibleDescent}
+                onChange={(e) => setIsEligibleDescent(e.target.checked)}
+                className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-700 bg-slate-900 text-blue-600 focus:ring-blue-500"
+              />
+              <span className="leading-relaxed">
+                <strong className="text-blue-400">2.</strong> The applicant must be of African American, Hispanic or Native American descent.
+              </span>
+            </label>
 
-              <label className="flex items-start gap-3 p-2.5 rounded-lg hover:bg-slate-900/60 transition cursor-pointer border border-transparent hover:border-slate-800">
-                {/* Item 3 */}
-                <label className={`flex items-start gap-3 p-2.5 rounded-lg border transition cursor-pointer ${isTypedLegibly ? 'bg-blue-950/30 border-blue-900/60 text-white' : 'border-slate-800/80 hover:bg-slate-900/60'}`}>
-                  <input
-                    id="eligibility-gpa"
-                    id="eligibility-item-3"
-                    type="checkbox"
-                    checked={isTypedLegibly}
-                    onChange={(e) => setIsTypedLegibly(e.target.checked)}
-                    className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-700 bg-slate-900 text-blue-600 focus:ring-blue-500"
-                  />
-                  <span className="leading-relaxed">
-                    <strong className="text-blue-400">3.</strong> The completed application must be typed or printed legibly!
-                  </span>
-                </label>
+            {/* Item 3 */}
+            <label className={`flex items-start gap-3 p-2.5 rounded-lg border transition cursor-pointer ${isTypedLegibly ? 'bg-blue-950/30 border-blue-900/60 text-white' : 'border-slate-800/80 hover:bg-slate-900/60'}`}>
+              <input
+                id="eligibility-item-3"
+                type="checkbox"
+                checked={isTypedLegibly}
+                onChange={(e) => setIsTypedLegibly(e.target.checked)}
+                className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-700 bg-slate-900 text-blue-600 focus:ring-blue-500"
+              />
+              <span className="leading-relaxed">
+                <strong className="text-blue-400">3.</strong> The completed application must be typed or printed legibly!
+              </span>
+            </label>
 
-                {/* Item 4 */}
-                <label className={`flex items-start gap-3 p-2.5 rounded-lg border transition cursor-pointer ${isRecLettersSubmitted ? 'bg-blue-950/30 border-blue-900/60 text-white' : 'border-slate-800/80 hover:bg-slate-900/60'}`}>
-                  <input
-                    id="eligibility-item-4"
-                    type="checkbox"
-                    checked={isRecLettersSubmitted}
-                    onChange={(e) => setIsRecLettersSubmitted(e.target.checked)}
-                    className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-700 bg-slate-900 text-blue-600 focus:ring-blue-500"
-                  />
-                  <span className="leading-relaxed">
-                    <strong className="text-blue-400">4.</strong> The applicant must submit three letters of recommendations (two from non-relatives) each in a sealed envelope with signature of the sender/writer over the flap of each envelope. These letters are to be submitted with completed application.
-                  </span>
-                </label>
+            {/* Item 4 */}
+            <label className={`flex items-start gap-3 p-2.5 rounded-lg border transition cursor-pointer ${isRecLettersSubmitted ? 'bg-blue-950/30 border-blue-900/60 text-white' : 'border-slate-800/80 hover:bg-slate-900/60'}`}>
+              <input
+                id="eligibility-item-4"
+                type="checkbox"
+                checked={isRecLettersSubmitted}
+                onChange={(e) => setIsRecLettersSubmitted(e.target.checked)}
+                className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-700 bg-slate-900 text-blue-600 focus:ring-blue-500"
+              />
+              <span className="leading-relaxed">
+                <strong className="text-blue-400">4.</strong> The applicant must submit three letters of recommendations (two from non-relatives) each in a sealed envelope with signature of the sender/writer over the flap of each envelope. These letters are to be submitted with completed application.
+              </span>
+            </label>
 
-                {/* Item 5 */}
-                <label className={`flex items-start gap-3 p-2.5 rounded-lg border transition cursor-pointer ${isMinGpa ? 'bg-blue-950/30 border-blue-900/60 text-white' : 'border-slate-800/80 hover:bg-slate-900/60'}`}>
-                  <input
-                    id="eligibility-item-5"
-                    type="checkbox"
-                    checked={isMinGpa}
-                    onChange={(e) => setIsMinGpa(e.target.checked)}
-                    className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-700 bg-slate-900 text-blue-600 focus:ring-blue-500"
-                  />
-                  <span className="leading-relaxed">
-                    <strong>5.</strong> The applicant must have a grade point average of at least 2.75 on a 4.00 scale (official transcript through first semester required).
-                    <strong className="text-blue-400">5.</strong> The applicant must have a grade point average of at least: 2.75 on a 4.00 scale; An official copy of your transcript, through the first semester of the 2025-2026 school year (i.e., January 2026), must be submitted with the application packet. See your counselor NOW! Completion of requirements for high school graduation will be verified if selected as a scholarship recipient.
-                  </span>
-                </label>
+            {/* Item 5 */}
+            <label className={`flex items-start gap-3 p-2.5 rounded-lg border transition cursor-pointer ${isMinGpa ? 'bg-blue-950/30 border-blue-900/60 text-white' : 'border-slate-800/80 hover:bg-slate-900/60'}`}>
+              <input
+                id="eligibility-item-5"
+                type="checkbox"
+                checked={isMinGpa}
+                onChange={(e) => setIsMinGpa(e.target.checked)}
+                className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-700 bg-slate-900 text-blue-600 focus:ring-blue-500"
+              />
+              <span className="leading-relaxed">
+                <strong className="text-blue-400">5.</strong> The applicant must have a grade point average of at least: 2.75 on a 4.00 scale; An official copy of your transcript, through the first semester of the 2025-2026 school year (i.e., January 2026), must be submitted with the application packet. See your counselor NOW! Completion of requirements for high school graduation will be verified if selected as a scholarship recipient.
+              </span>
+            </label>
 
-                {/* Item 6 */}
-                <label className={`flex items-start gap-3 p-2.5 rounded-lg border transition cursor-pointer ${isEssayAcknowledged ? 'bg-blue-950/30 border-blue-900/60 text-white' : 'border-slate-800/80 hover:bg-slate-900/60'}`}>
-                  <input
-                    id="eligibility-item-6"
-                    type="checkbox"
-                    checked={isEssayAcknowledged}
-                    onChange={(e) => setIsEssayAcknowledged(e.target.checked)}
-                    className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-700 bg-slate-900 text-blue-600 focus:ring-blue-500"
-                  />
-                  <span className="leading-relaxed">
-                    <strong className="text-blue-400">6.</strong> <strong>Essay Submission (minimum of 200 words):</strong> The applicant is to describe his/her community involvement (church, volunteering &amp; tutorial efforts), school activities (student government, honor society, band, sports, etc.) and proposed goals the applicant wants to accomplish in the next 10 years. The essay must be typed, double-spaced and in 12-point font. The essay will be evaluated on clarity, language usage, content, organization, and topic development. The essays will not be returned.
-                  </span>
-                </label>
+            {/* Item 6 */}
+            <label className={`flex items-start gap-3 p-2.5 rounded-lg border transition cursor-pointer ${isEssayAcknowledged ? 'bg-blue-950/30 border-blue-900/60 text-white' : 'border-slate-800/80 hover:bg-slate-900/60'}`}>
+              <input
+                id="eligibility-item-6"
+                type="checkbox"
+                checked={isEssayAcknowledged}
+                onChange={(e) => setIsEssayAcknowledged(e.target.checked)}
+                className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-700 bg-slate-900 text-blue-600 focus:ring-blue-500"
+              />
+              <span className="leading-relaxed">
+                <strong className="text-blue-400">6.</strong> <strong>Essay Submission (minimum of 200 words):</strong> The applicant is to describe his/her community involvement (church, volunteering &amp; tutorial efforts), school activities (student government, honor society, band, sports, etc.) and proposed goals the applicant wants to accomplish in the next 10 years. The essay must be typed, double-spaced and in 12-point font. The essay will be evaluated on clarity, language usage, content, organization, and topic development. The essays will not be returned.
+              </span>
+            </label>
 
-                {/* Item 7 */}
-                <label className={`flex items-start gap-3 p-2.5 rounded-lg border transition cursor-pointer ${isSarAcknowledged ? 'bg-blue-950/30 border-blue-900/60 text-white' : 'border-slate-800/80 hover:bg-slate-900/60'}`}>
-                  <input
-                    id="eligibility-item-7"
-                    type="checkbox"
-                    checked={isSarAcknowledged}
-                    onChange={(e) => setIsSarAcknowledged(e.target.checked)}
-                    className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-700 bg-slate-900 text-blue-600 focus:ring-blue-500"
-                  />
-                  <span className="leading-relaxed">
-                    <strong className="text-blue-400">7.</strong> Submission of a completed and processed copy of the Student Aid Report (SAR). (if available)
-                  </span>
-                </label>
+            {/* Item 7 */}
+            <label className={`flex items-start gap-3 p-2.5 rounded-lg border transition cursor-pointer ${isSarAcknowledged ? 'bg-blue-950/30 border-blue-900/60 text-white' : 'border-slate-800/80 hover:bg-slate-900/60'}`}>
+              <input
+                id="eligibility-item-7"
+                type="checkbox"
+                checked={isSarAcknowledged}
+                onChange={(e) => setIsSarAcknowledged(e.target.checked)}
+                className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-700 bg-slate-900 text-blue-600 focus:ring-blue-500"
+              />
+              <span className="leading-relaxed">
+                <strong className="text-blue-400">7.</strong> Submission of a completed and processed copy of the Student Aid Report (SAR). (if available)
+              </span>
+            </label>
 
-                {/* Item 8 */}
-                <label className={`flex items-start gap-3 p-2.5 rounded-lg border transition cursor-pointer ${isInterviewAgreed ? 'bg-blue-950/30 border-blue-900/60 text-white' : 'border-slate-800/80 hover:bg-slate-900/60'}`}>
-                  <input
-                    id="eligibility-item-8"
-                    type="checkbox"
-                    checked={isInterviewAgreed}
-                    onChange={(e) => setIsInterviewAgreed(e.target.checked)}
-                    className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-700 bg-slate-900 text-blue-600 focus:ring-blue-500"
-                  />
-                  <span className="leading-relaxed">
-                    <strong className="text-blue-400">8.</strong> The finalists of the scholarships may be asked to participate in an interview with members of The Monday Club. The finalists will be notified, and an interview will be held virtually by members of the Monday Club Scholarship Committee
-                  </span>
-                </label>
+            {/* Item 8 */}
+            <label className={`flex items-start gap-3 p-2.5 rounded-lg border transition cursor-pointer ${isInterviewAgreed ? 'bg-blue-950/30 border-blue-900/60 text-white' : 'border-slate-800/80 hover:bg-slate-900/60'}`}>
+              <input
+                id="eligibility-item-8"
+                type="checkbox"
+                checked={isInterviewAgreed}
+                onChange={(e) => setIsInterviewAgreed(e.target.checked)}
+                className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-700 bg-slate-900 text-blue-600 focus:ring-blue-500"
+              />
+              <span className="leading-relaxed">
+                <strong className="text-blue-400">8.</strong> The finalists of the scholarships may be asked to participate in an interview with members of The Monday Club. The finalists will be notified, and an interview will be held virtually by members of the Monday Club Scholarship Committee
+              </span>
+            </label>
 
-                {/* Item 9 */}
-                <label className={`flex items-start gap-3 p-2.5 rounded-lg border transition cursor-pointer ${isWinnerNotificationUnderstood ? 'bg-blue-950/30 border-blue-900/60 text-white' : 'border-slate-800/80 hover:bg-slate-900/60'}`}>
-                  <input
-                    id="eligibility-item-9"
-                    type="checkbox"
-                    checked={isWinnerNotificationUnderstood}
-                    onChange={(e) => setIsWinnerNotificationUnderstood(e.target.checked)}
-                    className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-700 bg-slate-900 text-blue-600 focus:ring-blue-500"
-                  />
-                  <span className="leading-relaxed">
-                    <strong className="text-blue-400">9.</strong> Scholarship winners will be notified by May 1, 2026. All application packet documents submitted become the property of The Monday Club and will not be returned.
-                  </span>
-                </label>
+            {/* Item 9 */}
+            <label className={`flex items-start gap-3 p-2.5 rounded-lg border transition cursor-pointer ${isWinnerNotificationUnderstood ? 'bg-blue-950/30 border-blue-900/60 text-white' : 'border-slate-800/80 hover:bg-slate-900/60'}`}>
+              <input
+                id="eligibility-item-9"
+                type="checkbox"
+                checked={isWinnerNotificationUnderstood}
+                onChange={(e) => setIsWinnerNotificationUnderstood(e.target.checked)}
+                className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-700 bg-slate-900 text-blue-600 focus:ring-blue-500"
+              />
+              <span className="leading-relaxed">
+                <strong className="text-blue-400">9.</strong> Scholarship winners will be notified by May 1, 2026. All application packet documents submitted become the property of The Monday Club and will not be returned.
+              </span>
+            </label>
 
-                {/* Item 10 */}
-                <label className={`flex items-start gap-3 p-2.5 rounded-lg border transition cursor-pointer ${isContactAndMailingAcknowledged ? 'bg-blue-950/30 border-blue-900/60 text-white' : 'border-slate-800/80 hover:bg-slate-900/60'}`}>
-                  <input
-                    id="eligibility-item-10"
-                    type="checkbox"
-                    checked={isContactAndMailingAcknowledged}
-                    onChange={(e) => setIsContactAndMailingAcknowledged(e.target.checked)}
-                    className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-700 bg-slate-900 text-blue-600 focus:ring-blue-500"
-                  />
-                  <span className="leading-relaxed">
-                    <strong className="text-blue-400">10.</strong> If you have questions, you may contact Mr. Ken Snell call (302) 521-3798 TheMCscholarships@gmail.com
-                  </span>
-                </label>
-              </div>
-
-              {/* Official Mailing Footnote from Document */}
-              <div className="mt-4 p-3 rounded-lg bg-blue-950/40 border border-blue-900/70 text-xs text-blue-200">
-                <span className="font-bold text-white">** All application materials must be mailed to </span>
-                <span className="font-mono text-emerald-400 font-bold">TheMCscholarships@gmail.com</span>
-                <span className="font-bold text-white"> or mailed to </span>
-                <span className="text-amber-300 font-semibold">4020 New Castle Ave Wilmington, DE 19720</span>
-              </div>
+            {/* Item 10 */}
+            <label className={`flex items-start gap-3 p-2.5 rounded-lg border transition cursor-pointer ${isContactAndMailingAcknowledged ? 'bg-blue-950/30 border-blue-900/60 text-white' : 'border-slate-800/80 hover:bg-slate-900/60'}`}>
+              <input
+                id="eligibility-item-10"
+                type="checkbox"
+                checked={isContactAndMailingAcknowledged}
+                onChange={(e) => setIsContactAndMailingAcknowledged(e.target.checked)}
+                className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-700 bg-slate-900 text-blue-600 focus:ring-blue-500"
+              />
+              <span className="leading-relaxed">
+                <strong className="text-blue-400">10.</strong> If you have questions, you may contact Mr. Ken Snell call (302) 521-3798 TheMCscholarships@gmail.com
+              </span>
+            </label>
           </div>
+        </div>
 
           {/* ======================================================== */}
           {/* 2. APPLICANT (Page 1) */}
