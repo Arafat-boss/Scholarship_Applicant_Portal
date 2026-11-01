@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useState } from 'react';
 import Image from 'next/image';
@@ -1642,7 +1642,7 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
           {/* ======================================================== */}
           {/* 7. ESSAY SUBMISSION (Requirement #6, Page 3: Min 200 Words) */}
           {/* ======================================================== */}
-          <div className="rounded-xl border border-slate-800 bg-[#0f172a] p-5 sm:p-6 shadow-md">
+          <div className="rounded-xl border border-slate-800 bg-[#0f172a] p-4 sm:p-6 shadow-md">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 mb-3">
               <h3 className="text-sm sm:text-base font-bold text-white flex items-center gap-2">
                 <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-600/20 text-xs font-bold text-blue-400 border border-blue-500/30 shrink-0">
@@ -1650,20 +1650,23 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
                 </span>
                 <span>Essay Submission (Requirement #6 &ndash; Min 200 words)</span>
               </h3>
-              {/* Live Word Count Indicator - Always single line with whitespace-nowrap */}
+              {/* Live Word Count Indicator: single line on desktop (sm:), clean two lines on mobile */}
               {(() => {
                 const count = essayText.trim() ? essayText.trim().split(/\s+/).filter(Boolean).length : 0;
                 const isMet = count >= 200;
                 return (
                   <span
-                    className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] sm:text-xs font-mono font-bold border whitespace-nowrap shrink-0 self-start sm:self-auto shadow-sm ${isMet
+                    className={`inline-flex items-center gap-2 px-2.5 sm:px-3 py-1.5 sm:py-1 rounded-lg sm:rounded-full text-[11px] sm:text-xs font-mono font-bold border shrink-0 self-start sm:self-auto shadow-sm max-w-full ${isMet
                       ? 'bg-emerald-950/80 text-emerald-300 border-emerald-700/60'
                       : 'bg-amber-950/80 text-amber-300 border-amber-700/60'
                       }`}
                   >
                     <CheckCircle2 className={`h-3.5 w-3.5 shrink-0 ${isMet ? 'text-emerald-400' : 'text-amber-400'}`} />
-                    <span className="whitespace-nowrap">
-                      {count} / 200 words required {isMet ? '(Criteria Met)' : `(${200 - count} words left)`}
+                    <span className="flex flex-col sm:flex-row sm:items-center sm:gap-1.5 leading-tight">
+                      <span>{count} / 200 words required</span>
+                      <span className="text-[10px] sm:text-xs font-normal sm:font-bold opacity-90">
+                        {isMet ? '(Criteria Met)' : `(${200 - count} words left)`}
+                      </span>
                     </span>
                   </span>
                 );
