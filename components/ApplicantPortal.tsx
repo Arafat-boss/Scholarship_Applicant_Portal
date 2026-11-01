@@ -805,15 +805,15 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
         <div className="rounded-xl border border-slate-800 bg-[#0f172a] p-4 sm:p-6 shadow-md">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4 border-b border-slate-800 pb-3.5">
             <div>
-              <div className="flex items-center gap-2">
-                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-600/20 text-xs font-bold text-blue-400 border border-blue-500/30 shrink-0">
+              <div className="flex items-start gap-2.5">
+                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-600/20 text-xs font-bold text-blue-400 border border-blue-500/30 mt-0.5">
                   1
                 </span>
-                <h3 className="text-base font-bold text-white tracking-wide uppercase">
+                <h3 className="text-sm sm:text-base font-bold text-white tracking-wide uppercase leading-snug">
                   Scholarship Requirements and Checklist 2026
                 </h3>
               </div>
-              <p className="text-xs font-serif italic text-amber-400 mt-1 ml-8">
+              <p className="text-xs font-serif italic text-amber-400 mt-1 ml-8.5">
                 &ldquo;Spanning Three Centuries!&rdquo; &ndash; Official 10-Item Application Packet Verification
               </p>
             </div>
@@ -976,11 +976,11 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
           {/* 2. APPLICANT (Page 1) */}
           {/* ======================================================== */}
           <div className="rounded-xl border border-slate-800 bg-[#0f172a] p-4 sm:p-6 shadow-md">
-            <h3 className="text-base font-bold text-white mb-4 flex items-center gap-2">
-              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-600/20 text-xs font-bold text-blue-400 border border-blue-500/30 shrink-0">
+            <h3 className="text-sm sm:text-base font-bold text-white mb-4 flex items-start gap-2.5">
+              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-600/20 text-xs font-bold text-blue-400 border border-blue-500/30 mt-0.5">
                 2
               </span>
-              <span>Applicant Information (Form Page 1)</span>
+              <span className="leading-snug">Applicant Information (Form Page 1)</span>
             </h3>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs sm:text-sm">
@@ -1122,12 +1122,12 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
           {/* ======================================================== */}
           {/* 3. PARENT / GUARDIAN (Page 1) */}
           {/* ======================================================== */}
-          <div className="rounded-xl border border-slate-800 bg-[#0f172a] p-5 sm:p-6 shadow-md">
-            <h3 className="text-base font-bold text-white mb-4 flex items-center gap-2">
-              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-600/20 text-xs font-bold text-blue-400 border border-blue-500/30">
+          <div className="rounded-xl border border-slate-800 bg-[#0f172a] p-4 sm:p-6 shadow-md">
+            <h3 className="text-sm sm:text-base font-bold text-white mb-4 flex items-start gap-2.5">
+              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-600/20 text-xs font-bold text-blue-400 border border-blue-500/30 mt-0.5">
                 3
               </span>
-              <span>Parent(s) / Guardian(s) Information (Form Page 1)</span>
+              <span className="leading-snug">Parent(s) / Guardian(s) Information (Form Page 1)</span>
             </h3>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs sm:text-sm">
@@ -1173,12 +1173,12 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
           {/* ======================================================== */}
           {/* 4. SCHOOL & FAMILY CONTEXT (Page 1) */}
           {/* ======================================================== */}
-          <div className="rounded-xl border border-slate-800 bg-[#0f172a] p-5 sm:p-6 shadow-md">
-            <h3 className="text-base font-bold text-white mb-4 flex items-center gap-2">
-              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-600/20 text-xs font-bold text-blue-400 border border-blue-500/30">
+          <div className="rounded-xl border border-slate-800 bg-[#0f172a] p-4 sm:p-6 shadow-md">
+            <h3 className="text-sm sm:text-base font-bold text-white mb-4 flex items-start gap-2.5">
+              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-600/20 text-xs font-bold text-blue-400 border border-blue-500/30 mt-0.5">
                 4
               </span>
-              <span>School & Family Demographics (Form Page 1)</span>
+              <span className="leading-snug">School &amp; Family Demographics (Form Page 1)</span>
             </h3>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs sm:text-sm">
@@ -1252,15 +1252,15 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
           {/* ======================================================== */}
           {/* 5. ACTIVITIES, SERVICE, EMPLOYMENT & COLLEGES */}
           {/* ======================================================== */}
-          <div className="rounded-xl border border-slate-800 bg-[#0f172a] p-5 sm:p-6 shadow-md space-y-6">
+          <div className="rounded-xl border border-slate-800 bg-[#0f172a] p-4 sm:p-6 shadow-md space-y-6">
             <div>
-              <h3 className="text-base font-bold text-white flex items-center gap-2">
-                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-600/20 text-xs font-bold text-blue-400 border border-blue-500/30">
+              <h3 className="text-sm sm:text-base font-bold text-white flex items-start gap-2.5">
+                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-600/20 text-xs font-bold text-blue-400 border border-blue-500/30 mt-0.5">
                   5
                 </span>
-                <span>Activities, Community Service, Employment & Colleges</span>
+                <span className="leading-snug">Activities, Community Service, Employment &amp; Colleges</span>
               </h3>
-              <p className="text-xs text-slate-400 mt-1">
+              <p className="text-xs text-slate-400 mt-1 ml-8.5">
                 Directly aligned with Page 1 and Page 2 of the official physical form.
               </p>
             </div>
@@ -1580,12 +1580,12 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
           {/* ======================================================== */}
           {/* 6. REFERRAL SOURCE (Page 2) */}
           {/* ======================================================== */}
-          <div className="rounded-xl border border-slate-800 bg-[#0f172a] p-5 sm:p-6 shadow-md">
-            <h3 className="text-base font-bold text-white mb-2 flex items-center gap-2">
-              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-600/20 text-xs font-bold text-blue-400 border border-blue-500/30">
+          <div className="rounded-xl border border-slate-800 bg-[#0f172a] p-4 sm:p-6 shadow-md">
+            <h3 className="text-sm sm:text-base font-bold text-white mb-2 flex items-start gap-2.5">
+              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-600/20 text-xs font-bold text-blue-400 border border-blue-500/30 mt-0.5">
                 6
               </span>
-              <span>How did you find out about this scholarship? (Check all that apply &ndash; Page 2)</span>
+              <span className="leading-snug">How did you find out about this scholarship? (Check all that apply &ndash; Page 2)</span>
             </h3>
             <p className="text-xs text-slate-400 mb-4">
               Select all sources where you learned about The Monday Club Scholarship.
@@ -1644,11 +1644,11 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
           {/* ======================================================== */}
           <div className="rounded-xl border border-slate-800 bg-[#0f172a] p-4 sm:p-6 shadow-md">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 mb-3">
-              <h3 className="text-sm sm:text-base font-bold text-white flex items-center gap-2">
-                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-600/20 text-xs font-bold text-blue-400 border border-blue-500/30 shrink-0">
+              <h3 className="text-sm sm:text-base font-bold text-white flex items-start gap-2.5">
+                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-600/20 text-xs font-bold text-blue-400 border border-blue-500/30 mt-0.5">
                   7
                 </span>
-                <span>Essay Submission (Requirement #6 &ndash; Min 200 words)</span>
+                <span className="leading-snug">Essay Submission (Requirement #6 &ndash; Min 200 words)</span>
               </h3>
               {/* Live Word Count Indicator: single line on desktop (sm:), clean two lines on mobile */}
               {(() => {
@@ -1696,12 +1696,12 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
           {/* ======================================================== */}
           {/* 8. SUPPORTING DOCUMENTS & CHECKLIST (Page 3) */}
           {/* ======================================================== */}
-          <div className="rounded-xl border border-slate-800 bg-[#0f172a] p-5 sm:p-6 shadow-md">
-            <h3 className="text-base font-bold text-white mb-2 flex items-center gap-2">
-              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-600/20 text-xs font-bold text-blue-400 border border-blue-500/30">
+          <div className="rounded-xl border border-slate-800 bg-[#0f172a] p-4 sm:p-6 shadow-md">
+            <h3 className="text-sm sm:text-base font-bold text-white mb-2 flex items-start gap-2.5">
+              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-600/20 text-xs font-bold text-blue-400 border border-blue-500/30 mt-0.5">
                 8
               </span>
-              <span>Supporting Documents &amp; Official Checklist (Form Page 3)</span>
+              <span className="leading-snug">Supporting Documents &amp; Official Checklist (Form Page 3)</span>
             </h3>
             <p className="text-xs text-slate-400 mb-4">
               Upload digital files or verify that documents will be submitted with your completed application packet.
@@ -1729,12 +1729,15 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
                       });
                     }
                   }}
-                  className="w-full text-slate-300 text-xs file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border file:border-slate-700 file:text-xs file:font-semibold file:bg-slate-800 file:text-slate-200 hover:file:bg-slate-700 file:cursor-pointer"
+                  className="w-full max-w-full text-slate-300 text-xs file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border file:border-slate-700 file:text-xs file:font-semibold file:bg-slate-800 file:text-slate-200 hover:file:bg-slate-700 file:cursor-pointer"
                 />
                 {transcript && (
-                  <div className="mt-1.5 flex items-center gap-2 text-xs text-emerald-400 font-medium">
-                    <CheckCircle2 className="h-3.5 w-3.5" />
-                    <span>Attached: {transcript.name}</span>
+                  <div className="mt-2 flex items-start gap-2 text-xs text-emerald-400 font-medium bg-emerald-950/40 border border-emerald-800/40 px-2.5 py-1.5 rounded-lg min-w-0">
+                    <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-emerald-400 mt-0.5" />
+                    <div className="min-w-0 flex-1 leading-relaxed">
+                      <span className="font-semibold text-emerald-300 mr-1.5">Attached:</span>
+                      <span className="break-all font-mono text-[11px] text-emerald-200">{transcript.name}</span>
+                    </div>
                   </div>
                 )}
               </div>
@@ -1759,12 +1762,15 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
                       });
                     }
                   }}
-                  className="w-full text-slate-300 text-xs file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border file:border-slate-700 file:text-xs file:font-semibold file:bg-slate-800 file:text-slate-200 hover:file:bg-slate-700 file:cursor-pointer"
+                  className="w-full max-w-full text-slate-300 text-xs file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border file:border-slate-700 file:text-xs file:font-semibold file:bg-slate-800 file:text-slate-200 hover:file:bg-slate-700 file:cursor-pointer"
                 />
                 {studentAidReport && (
-                  <div className="mt-1.5 flex items-center gap-2 text-xs text-emerald-400 font-medium">
-                    <CheckCircle2 className="h-3.5 w-3.5" />
-                    <span>Attached: {studentAidReport.name}</span>
+                  <div className="mt-2 flex items-start gap-2 text-xs text-emerald-400 font-medium bg-emerald-950/40 border border-emerald-800/40 px-2.5 py-1.5 rounded-lg min-w-0">
+                    <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-emerald-400 mt-0.5" />
+                    <div className="min-w-0 flex-1 leading-relaxed">
+                      <span className="font-semibold text-emerald-300 mr-1.5">Attached:</span>
+                      <span className="break-all font-mono text-[11px] text-emerald-200">{studentAidReport.name}</span>
+                    </div>
                   </div>
                 )}
               </div>
@@ -1792,12 +1798,17 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
                       setRecLetters(mapped);
                     }
                   }}
-                  className="w-full text-slate-300 text-xs file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border file:border-slate-700 file:text-xs file:font-semibold file:bg-slate-800 file:text-slate-200 hover:file:bg-slate-700 file:cursor-pointer"
+                  className="w-full max-w-full text-slate-300 text-xs file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border file:border-slate-700 file:text-xs file:font-semibold file:bg-slate-800 file:text-slate-200 hover:file:bg-slate-700 file:cursor-pointer"
                 />
                 {recLetters.length > 0 && (
-                  <div className="mt-1.5 flex items-center gap-2 text-xs text-emerald-400 font-medium">
-                    <CheckCircle2 className="h-3.5 w-3.5" />
-                    <span>{recLetters.length} recommendation letter(s) attached</span>
+                  <div className="mt-2 flex items-start gap-2 text-xs text-emerald-400 font-medium bg-emerald-950/40 border border-emerald-800/40 px-2.5 py-1.5 rounded-lg min-w-0">
+                    <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-emerald-400 mt-0.5" />
+                    <div className="min-w-0 flex-1 leading-relaxed">
+                      <span className="font-semibold text-emerald-300 mr-1.5">Attached:</span>
+                      <span className="break-all font-mono text-[11px] text-emerald-200">
+                        {recLetters.length} recommendation letter(s) ({recLetters.map((f) => f.name).join(', ')})
+                      </span>
+                    </div>
                   </div>
                 )}
               </div>
@@ -1824,12 +1835,17 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
                       setExtraDocs(mapped);
                     }
                   }}
-                  className="w-full text-slate-300 text-xs file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border file:border-slate-700 file:text-xs file:font-semibold file:bg-slate-800 file:text-slate-200 hover:file:bg-slate-700 file:cursor-pointer"
+                  className="w-full max-w-full text-slate-300 text-xs file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border file:border-slate-700 file:text-xs file:font-semibold file:bg-slate-800 file:text-slate-200 hover:file:bg-slate-700 file:cursor-pointer"
                 />
                 {extraDocs.length > 0 && (
-                  <div className="mt-1.5 flex items-center gap-2 text-xs text-emerald-400 font-medium">
-                    <CheckCircle2 className="h-3.5 w-3.5" />
-                    <span>{extraDocs.length} supplemental document(s) uploaded</span>
+                  <div className="mt-2 flex items-start gap-2 text-xs text-emerald-400 font-medium bg-emerald-950/40 border border-emerald-800/40 px-2.5 py-1.5 rounded-lg min-w-0">
+                    <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-emerald-400 mt-0.5" />
+                    <div className="min-w-0 flex-1 leading-relaxed">
+                      <span className="font-semibold text-emerald-300 mr-1.5">Attached:</span>
+                      <span className="break-all font-mono text-[11px] text-emerald-200">
+                        {extraDocs.length} supplemental document(s) ({extraDocs.map((f) => f.name).join(', ')})
+                      </span>
+                    </div>
                   </div>
                 )}
               </div>
@@ -1850,12 +1866,12 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
           {/* ======================================================== */}
           {/* 9. THE MONDAY CLUB RULES AND REGULATIONS & DUAL SIGNATURES (Page 2) */}
           {/* ======================================================== */}
-          <div className="rounded-xl border border-slate-800 bg-[#0f172a] p-5 sm:p-6 shadow-md">
-            <h3 className="text-base font-bold text-white mb-3 flex items-center gap-2">
-              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-600/20 text-xs font-bold text-blue-400 border border-blue-500/30">
+          <div className="rounded-xl border border-slate-800 bg-[#0f172a] p-4 sm:p-6 shadow-md">
+            <h3 className="text-sm sm:text-base font-bold text-white mb-3 flex items-start gap-2.5">
+              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-600/20 text-xs font-bold text-blue-400 border border-blue-500/30 mt-0.5">
                 9
               </span>
-              <span>THE MONDAY CLUB Scholarship Rules and Regulations &amp; Official Signatures (Page 2)</span>
+              <span className="leading-snug">THE MONDAY CLUB Scholarship Rules and Regulations &amp; Official Signatures (Page 2)</span>
             </h3>
 
             {/* Rules Statement verbatim from physical form */}

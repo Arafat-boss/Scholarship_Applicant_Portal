@@ -124,6 +124,10 @@ select {
 }
 
 /* Custom file input styling */
+input[type="file"] {
+  max-width: 100%;
+}
+
 input[type="file"]::file-selector-button {
   background-color: #1e293b;
   color: #e2e8f0;
