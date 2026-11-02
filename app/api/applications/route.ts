@@ -2,6 +2,16 @@ import { NextRequest, NextResponse } from 'next/server';
 import { ScholarshipApplication } from '@/types/scholarship';
 import fs from 'fs';
 import path from 'path';
+import { AUTH_COOKIE_NAME, verifySessionToken } from '@/lib/auth';
+
+/**
+ * Committee authentication verification helper:
+ * Verifies that the incoming request includes a valid HttpOnly session cookie
+ */
+function isAuthorizedCommittee(req: NextRequest): boolean {
+  const token = req.cookies.get(AUTH_COOKIE_NAME)?.value;
+  return verifySessionToken(token);
+}
 
 // File-based persistence in /tmp (or OS temporary directory)
 const DATA_FILE = path.join(
@@ -46,9 +56,21 @@ function saveApplications(apps: ScholarshipApplication[]): void {
 }
 
 // --------------------------------------------------------------------------
-// GET: Return all submitted applications
+// GET: Return all submitted applications (Protected: Committee only)
 // --------------------------------------------------------------------------
-export async function GET() {
+export async function GET(req: NextRequest) {
+  // Restrict access to authenticated committee members only
+  if (!isAuthorizedCommittee(req)) {
+    return NextResponse.json(
+      {
+        success: false,
+        error: 'Unauthorized: Committee authentication required.',
+        applications: [],
+      },
+      { status: 401 }
+    );
+  }
+
   const apps = loadApplications();
   return NextResponse.json(
     {
@@ -131,9 +153,16 @@ export async function POST(req: NextRequest) {
 }
 
 // --------------------------------------------------------------------------
-// PUT: Update committee review status, reviewer score, or notes
+// PUT: Update committee review status, reviewer score, or notes (Protected)
 // --------------------------------------------------------------------------
 export async function PUT(req: NextRequest) {
+  if (!isAuthorizedCommittee(req)) {
+    return NextResponse.json(
+      { success: false, error: 'Unauthorized: Committee authentication required.' },
+      { status: 401 }
+    );
+  }
+
   try {
     const body = await req.json();
     const { applicationId, review } = body;
@@ -176,9 +205,16 @@ export async function PUT(req: NextRequest) {
 }
 
 // --------------------------------------------------------------------------
-// DELETE: Delete an application
+// DELETE: Delete an application (Protected)
 // --------------------------------------------------------------------------
 export async function DELETE(req: NextRequest) {
+  if (!isAuthorizedCommittee(req)) {
+    return NextResponse.json(
+      { success: false, error: 'Unauthorized: Committee authentication required.' },
+      { status: 401 }
+    );
+  }
+
   try {
     const { searchParams } = new URL(req.url);
     const id = searchParams.get('id');

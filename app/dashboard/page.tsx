@@ -9,7 +9,7 @@ import CommitteeLoginGate from '@/components/CommitteeLoginGate';
 import RubricInfoModal from '@/components/RubricInfoModal';
 import { ScholarshipApplication } from '@/types/scholarship';
 import { getStoredApplications, saveApplicationsToStorage } from '@/lib/storage';
-import { ShieldCheck } from 'lucide-react';
+import { ShieldCheck, LogOut, Loader2 } from 'lucide-react';
 
 const emptySubscribe = () => () => {};
 
@@ -17,48 +17,84 @@ export default function DashboardPage() {
   const router = useRouter();
   const isMounted = useSyncExternalStore(emptySubscribe, () => true, () => false);
 
-  const [authOverride, setAuthOverride] = useState<boolean | null>(null);
+  // Session state:
+  // null = Verifying HttpOnly cookie with server
+  // true = Authenticated (render dashboard)
+  // false = Unauthenticated (render passcode gate)
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
 
+  const [storedApps, setStoredApps] = useState<ScholarshipApplication[] | null>(null);
+  const applications = storedApps !== null ? storedApps : (isMounted ? getStoredApplications() : []);
+  const [isRubricModalOpen, setIsRubricModalOpen] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  // Set document title
   useEffect(() => {
     if (typeof document !== 'undefined') {
       document.title = 'Committee Reviewer Dashboard | The Monday Club';
     }
   }, []);
 
-  const isClientAuthenticated = useSyncExternalStore(
-    emptySubscribe,
-    () => {
-      if (typeof window === 'undefined') return false;
-      const params = new URLSearchParams(window.location.search);
-      const authParam = params.get('auth')?.toLowerCase();
-      const currentYearAuth = `monday${new Date().getFullYear()}`;
-      if (authParam === 'monday2026' || authParam === currentYearAuth) {
-        sessionStorage.setItem('mc_committee_auth', 'true');
-        localStorage.setItem('mc_committee_auth', 'true');
-        window.history.replaceState({}, '', window.location.pathname);
-        return true;
-      }
-      return (
-        sessionStorage.getItem('mc_committee_auth') === 'true' ||
-        localStorage.getItem('mc_committee_auth') === 'true'
-      );
-    },
-    () => false
-  );
-
-  const isAuthenticated = authOverride !== null ? authOverride : isClientAuthenticated;
-
-  const [storedApps, setStoredApps] = useState<ScholarshipApplication[] | null>(null);
-  const applications = storedApps !== null ? storedApps : (isMounted ? getStoredApplications() : []);
-  const [isRubricModalOpen, setIsRubricModalOpen] = useState(false);
-
-  // Synchronize applications with server API (/api/applications) and cross-tab BroadcastChannel
+  // Verify HttpOnly session cookie on initial page mount
   useEffect(() => {
+    let isCancelled = false;
+
+    const verifySession = async () => {
+      try {
+        const res = await fetch('/api/auth/verify', { cache: 'no-store' });
+        const data = await res.json();
+        if (!isCancelled) {
+          setIsAuthenticated(Boolean(data.authenticated));
+        }
+      } catch {
+        if (!isCancelled) {
+          setIsAuthenticated(false);
+        }
+      }
+    };
+
+    verifySession();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, []);
+
+  // Logout handler: clear server cookie and reset client state
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' });
+    } catch (err) {
+      console.warn('Logout notice:', err);
+    }
+
+    if (typeof window !== 'undefined') {
+      sessionStorage.removeItem('mc_committee_auth');
+      localStorage.removeItem('mc_committee_auth');
+    }
+
+    setIsAuthenticated(false);
+    setStoredApps(null);
+    setIsLoggingOut(false);
+  };
+
+  // Sync applications from server API when authenticated
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
     let isCancelled = false;
 
     const syncFromServer = async () => {
       try {
         const res = await fetch('/api/applications', { cache: 'no-store' });
+        
+        // Handle session expiration
+        if (res.status === 401) {
+          if (!isCancelled) setIsAuthenticated(false);
+          return;
+        }
+
         const data = await res.json();
         if (!isCancelled && data.success && Array.isArray(data.applications)) {
           const local = getStoredApplications();
@@ -83,14 +119,14 @@ export default function DashboardPage() {
     // Immediate initial sync
     syncFromServer();
 
-    // Re-check periodically every 3 seconds for new student submissions
+    // Periodically poll every 3 seconds for new submissions
     const interval = setInterval(syncFromServer, 3000);
 
-    // Re-sync whenever the reviewer switches focus to this browser tab
+    // Re-sync when switching focus back to tab
     const handleFocus = () => syncFromServer();
     window.addEventListener('focus', handleFocus);
 
-    // Listen to cross-tab BroadcastChannel
+    // Cross-tab broadcast channel sync
     let channel: BroadcastChannel | null = null;
     try {
       channel = new BroadcastChannel('mc_scholarship_sync');
@@ -107,9 +143,9 @@ export default function DashboardPage() {
       window.removeEventListener('focus', handleFocus);
       channel?.close();
     };
-  }, []);
+  }, [isAuthenticated]);
 
-  // Broadcast dynamic height to Wix / parent iframe so container fits content
+  // Broadcast dynamic iframe height to parent container
   useEffect(() => {
     const notifyHeight = () => {
       if (typeof window === 'undefined') return;
@@ -166,12 +202,45 @@ export default function DashboardPage() {
               </div>
             </div>
           </Link>
+
+          {/* Authorized status badge and logout button */}
+          {isAuthenticated && (
+            <div className="flex items-center gap-2 sm:gap-3">
+              <div className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-950/60 border border-emerald-800/60 text-[11px] font-medium text-emerald-300">
+                <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+                <span>Authorized Session</span>
+              </div>
+              <button
+                type="button"
+                onClick={handleLogout}
+                disabled={isLoggingOut}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-red-900/60 bg-red-950/40 hover:bg-red-900/60 text-red-300 hover:text-white text-xs font-semibold transition cursor-pointer disabled:opacity-50"
+                title="Log out and terminate session"
+              >
+                {isLoggingOut ? (
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  <LogOut className="h-3.5 w-3.5" />
+                )}
+                <span>Log Out</span>
+              </button>
+            </div>
+          )}
         </div>
       </header>
 
-      {/* Main Protected Content */}
+      {/* Main Content Area */}
       <main className="w-full flex-1 pb-10">
-        {!isMounted || !isAuthenticated ? (
+        {!isMounted || isAuthenticated === null ? (
+          // Session verification loading state
+          <div className="py-20 flex flex-col items-center justify-center gap-3 text-center">
+            <Loader2 className="h-8 w-8 text-blue-500 animate-spin" />
+            <span className="text-xs text-slate-400 font-mono tracking-wide">
+              Verifying secure session...
+            </span>
+          </div>
+        ) : !isAuthenticated ? (
+          // Render login gate if not authenticated or session expired
           <div className="py-6 sm:py-10">
             <div className="text-center mb-2">
               <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-950/80 px-3 py-1 text-xs font-bold text-amber-300 border border-amber-700/70">
@@ -181,11 +250,12 @@ export default function DashboardPage() {
             </div>
             <CommitteeLoginGate
               openInNewTab={false}
-              onAuthenticated={() => setAuthOverride(true)}
+              onAuthenticated={() => setIsAuthenticated(true)}
               onBackToApplication={() => router.push('/')}
             />
           </div>
         ) : (
+          // Render dashboard when authenticated with valid cookie
           <div className="w-full">
             <ReviewerDashboard
               applications={applications}
@@ -204,4 +274,3 @@ export default function DashboardPage() {
     </div>
   );
 }
-

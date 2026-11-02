@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
-import { KeyRound, ShieldAlert, Eye, EyeOff, ArrowLeft, CheckCircle2 } from 'lucide-react';
+import { KeyRound, ShieldAlert, Eye, EyeOff, ArrowLeft, CheckCircle2, Loader2 } from 'lucide-react';
 
 interface CommitteeLoginGateProps {
   onAuthenticated: () => void;
@@ -18,48 +18,69 @@ export default function CommitteeLoginGate({
   const [passcode, setPasscode] = useState('');
   const [showPasscode, setShowPasscode] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Committee Passcode (supports dynamic year & original Monday2026)
   const currentYear = new Date().getFullYear();
   const CORRECT_PASSCODE = `Monday${currentYear}`;
-  const validPasscodes = ['monday2026', `monday${currentYear}`];
 
-  const handleLogin = (e: React.FormEvent) => {
+  /**
+   * Secure login submission:
+   * 1. Sends passcode in POST body to /api/auth/login (not via URL query params)
+   * 2. Server sets an HttpOnly session cookie on successful verification
+   * 3. Opens a clean URL with no query parameters, preventing credential leakage on copy-paste
+   */
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg(null);
+    setIsLoading(true);
 
-    const entered = passcode.trim().toLowerCase();
-    if (validPasscodes.includes(entered)) {
-      if (typeof window !== 'undefined') {
-        sessionStorage.setItem('mc_committee_auth', 'true');
-        localStorage.setItem('mc_committee_auth', 'true');
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ passcode: passcode.trim() }),
+      });
 
-        if (openInNewTab) {
-          // Pre-sync all locally stored applications to the server before opening new tab
-          try {
-            const raw = localStorage.getItem('monday_club_scholarship_applications_v3');
-            if (raw) {
-              const apps = JSON.parse(raw);
-              if (Array.isArray(apps) && apps.length > 0) {
-                fetch('/api/applications', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ applications: apps }),
-                  keepalive: true,
-                }).catch(() => { });
+      const data = await res.json();
+
+      if (res.ok && data.success) {
+        if (typeof window !== 'undefined') {
+          sessionStorage.setItem('mc_committee_auth', 'true');
+          localStorage.setItem('mc_committee_auth', 'true');
+
+          if (openInNewTab) {
+            // Pre-sync all locally stored applications to the server before opening new tab
+            try {
+              const raw = localStorage.getItem('monday_club_scholarship_applications_v3');
+              if (raw) {
+                const apps = JSON.parse(raw);
+                if (Array.isArray(apps) && apps.length > 0) {
+                  fetch('/api/applications', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ applications: apps }),
+                    keepalive: true,
+                  }).catch(() => { });
+                }
               }
+            } catch {
+              // ignore
             }
-          } catch {
-            // ignore
-          }
 
-          const targetUrl = `${window.location.origin}/dashboard?auth=monday${currentYear}`;
-          window.open(targetUrl, '_blank', 'noopener,noreferrer');
+            // Clean URL destination with no credentials or query parameters
+            const targetUrl = `${window.location.origin}/dashboard`;
+            window.open(targetUrl, '_blank', 'noopener,noreferrer');
+          }
         }
+        onAuthenticated();
+      } else {
+        setErrorMsg(data.error || 'Invalid passcode. Access restricted to authorized committee reviewers.');
       }
-      onAuthenticated();
-    } else {
-      setErrorMsg('Invalid committee passcode. Access restricted to authorized reviewers.');
+    } catch {
+      setErrorMsg('Network error connecting to authentication server. Please check your connection and try again.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -145,11 +166,20 @@ export default function CommitteeLoginGate({
           <button
             id="btn-unlock-reviewer"
             type="submit"
-            disabled={!passcode.trim()}
+            disabled={!passcode.trim() || isLoading}
             className="w-full flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-blue-600/30 hover:bg-blue-500 disabled:opacity-50 transition cursor-pointer"
           >
-            <CheckCircle2 className="h-4 w-4" />
-            <span>Unlock Reviewer Portal</span>
+            {isLoading ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                <span>Verifying...</span>
+              </>
+            ) : (
+              <>
+                <CheckCircle2 className="h-4 w-4" />
+                <span>Unlock Reviewer Portal</span>
+              </>
+            )}
           </button>
         </form>
 

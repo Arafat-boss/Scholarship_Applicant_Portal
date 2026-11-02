@@ -140,7 +140,7 @@ export default function Home() {
 
               <div className="flex flex-col gap-2.5">
                 <a
-                  href="/dashboard?auth=monday2026"
+                  href="/dashboard"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-5 py-3 text-xs sm:text-sm font-bold text-white hover:bg-blue-500 shadow-lg shadow-blue-600/30 transition cursor-pointer"
