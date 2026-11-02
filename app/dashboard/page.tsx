@@ -1,9 +1,5 @@
 'use client';
 
-// Force dynamic execution on Vercel so edge cache is never stale
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
-
 import React, { useState, useEffect, useSyncExternalStore } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
