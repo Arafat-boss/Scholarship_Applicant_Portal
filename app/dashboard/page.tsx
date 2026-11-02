@@ -1,5 +1,9 @@
 'use client';
 
+// Force dynamic execution on Vercel so edge cache is never stale
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 import React, { useState, useEffect, useSyncExternalStore } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
@@ -177,19 +181,19 @@ export default function DashboardPage() {
       {/* Top Navigation Bar */}
       <header className="sticky top-0 z-40 w-full border-b border-slate-800/80 bg-[#090d16]/95 backdrop-blur-md px-3 sm:px-6 py-2.5">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-3">
-          {/* Logo & Portal Branding (Static non-link header) */}
-          <div className="flex items-center gap-2.5">
+          {/* Logo & Portal Branding (Static non-clickable element) */}
+          <div className="flex items-center gap-2.5 pointer-events-none select-none cursor-default" role="presentation">
             <div className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-slate-900 border border-slate-700/80 p-1 shadow-md">
               <Image
                 src="/Logo.png"
                 alt="The Monday Club Logo"
                 width={40}
                 height={40}
-                className="h-full w-full object-contain"
+                className="h-full w-full object-contain pointer-events-none"
                 priority
               />
             </div>
-            <div>
+            <div className="pointer-events-none">
               <div className="text-xs sm:text-sm font-bold text-white leading-tight">
                 The Monday Club, Inc.
               </div>
