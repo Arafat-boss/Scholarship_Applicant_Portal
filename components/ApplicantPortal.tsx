@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import {
   CheckCircle2,
@@ -36,8 +36,18 @@ export default function ApplicantPortal({
   onSuccessSubmit,
   initialAutofill = false,
 }: ApplicantPortalProps) {
-  const dates = getScholarshipDates();
-  const todayStr = new Date().toISOString().split('T')[0];
+  const [dates, setDates] = useState(() => getScholarshipDates(2026));
+  const [todayStr, setTodayStr] = useState('2026-01-01');
+
+  // Synchronize client-side dynamic dates after mount to ensure deterministic SSR prerendering
+  useEffect(() => {
+    const now = new Date();
+    const today = now.toISOString().split('T')[0];
+    setTodayStr(today);
+    setDates(getScholarshipDates(now.getFullYear()));
+    setApplicantSignatureDate((prev) => (prev === '2026-01-01' ? today : prev));
+    setParentSignatureDate((prev) => (prev === '2026-01-01' ? today : prev));
+  }, []);
 
   // 1. Scholarship Requirements & Checklist (Official 10 Items)
   const [isDelawareSenior, setIsDelawareSenior] = useState(initialAutofill); // #1
@@ -141,7 +151,7 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
         name: `Official_Transcript_Madison_Rae_Tymes_${dates.currentYear}.pdf`,
         size: 2150000,
         type: 'application/pdf',
-        uploadedAt: new Date().toISOString(),
+        uploadedAt: '2026-01-01T00:00:00.000Z',
       }
       : null
   );
@@ -152,7 +162,7 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
         name: `Student_Aid_Report_${dates.currentYear}_SAR_Processed.pdf`,
         size: 1120000,
         type: 'application/pdf',
-        uploadedAt: new Date().toISOString(),
+        uploadedAt: '2026-01-01T00:00:00.000Z',
       }
       : null
   );
@@ -160,16 +170,16 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
   const [recLetters, setRecLetters] = useState<UploadedDocument[]>(
     initialAutofill
       ? [
-        { name: 'Letter_Padua_Academy_Teacher.pdf', size: 450000, type: 'application/pdf', uploadedAt: new Date().toISOString() },
-        { name: 'Letter_Boys_Girls_Club_Director.pdf', size: 380000, type: 'application/pdf', uploadedAt: new Date().toISOString() },
-        { name: 'Letter_Community_Leader_Rotary.pdf', size: 420000, type: 'application/pdf', uploadedAt: new Date().toISOString() },
+        { name: 'Letter_Padua_Academy_Teacher.pdf', size: 450000, type: 'application/pdf', uploadedAt: '2026-01-01T00:00:00.000Z' },
+        { name: 'Letter_Boys_Girls_Club_Director.pdf', size: 380000, type: 'application/pdf', uploadedAt: '2026-01-01T00:00:00.000Z' },
+        { name: 'Letter_Community_Leader_Rotary.pdf', size: 420000, type: 'application/pdf', uploadedAt: '2026-01-01T00:00:00.000Z' },
       ]
       : []
   );
 
   const [extraDocs, setExtraDocs] = useState<UploadedDocument[]>(
     initialAutofill
-      ? [{ name: 'Varsity_Soccer_Captain_Award.pdf', size: 680000, type: 'application/pdf', uploadedAt: new Date().toISOString() }]
+      ? [{ name: 'Varsity_Soccer_Captain_Award.pdf', size: 680000, type: 'application/pdf', uploadedAt: '2026-01-01T00:00:00.000Z' }]
       : []
   );
 
@@ -177,10 +187,10 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
   const [rulesAcknowledged, setRulesAcknowledged] = useState(initialAutofill);
   const [isInfoAccurate, setIsInfoAccurate] = useState(initialAutofill);
   const [applicantSignature, setApplicantSignature] = useState(initialAutofill ? 'Madison Rae Tymes' : '');
-  const [applicantSignatureDate, setApplicantSignatureDate] = useState(todayStr);
+  const [applicantSignatureDate, setApplicantSignatureDate] = useState('2026-01-01');
   const [parentGrantsPermission, setParentGrantsPermission] = useState(initialAutofill);
   const [parentSignature, setParentSignature] = useState(initialAutofill ? 'Shira Tymes' : '');
-  const [parentSignatureDate, setParentSignatureDate] = useState(todayStr);
+  const [parentSignatureDate, setParentSignatureDate] = useState('2026-01-01');
 
   // UI States
   const [isSubmitting, setIsSubmitting] = useState(false);

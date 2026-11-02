@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { AUTH_COOKIE_NAME, verifySessionToken } from '@/lib/auth';
 
+// Ensure this route is always dynamically evaluated and never prerendered at build time
+export const dynamic = 'force-dynamic';
+
 /**
  * GET /api/auth/verify
  * ----------------------------------------------------------------------------

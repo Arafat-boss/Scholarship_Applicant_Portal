@@ -18,8 +18,13 @@ export interface ScholarshipDateConfig {
   applicationHeader: string;    // e.g. "SCHOLARSHIP APPLICATION – 2026"
 }
 
+// Default baseline year for deterministic static prerendering
+const DEFAULT_CYCLE_YEAR = 2026;
+
 export function getScholarshipDates(targetYear?: number): ScholarshipDateConfig {
-  const currentYear = targetYear ?? new Date().getFullYear();
+  const currentYear =
+    targetYear ??
+    (typeof window !== 'undefined' ? new Date().getFullYear() : DEFAULT_CYCLE_YEAR);
   const previousYear = currentYear - 1;
 
   return {

@@ -4,6 +4,9 @@ import fs from 'fs';
 import path from 'path';
 import { AUTH_COOKIE_NAME, verifySessionToken } from '@/lib/auth';
 
+// Ensure this route handler is evaluated dynamically and never prerendered at build time
+export const dynamic = 'force-dynamic';
+
 /**
  * Committee authentication verification helper:
  * Verifies that the incoming request includes a valid HttpOnly session cookie

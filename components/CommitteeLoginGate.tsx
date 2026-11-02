@@ -20,10 +20,6 @@ export default function CommitteeLoginGate({
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Committee Passcode (supports dynamic year & original Monday2026)
-  const currentYear = new Date().getFullYear();
-  const CORRECT_PASSCODE = `Monday${currentYear}`;
-
   /**
    * Secure login submission:
    * 1. Sends passcode in POST body to /api/auth/login (not via URL query params)
@@ -85,7 +81,8 @@ export default function CommitteeLoginGate({
   };
 
   const handleQuickDemoFill = () => {
-    setPasscode(CORRECT_PASSCODE);
+    const yr = typeof window !== 'undefined' ? new Date().getFullYear() : 2026;
+    setPasscode(`Monday${yr}`);
     setErrorMsg(null);
   };
 
