@@ -3,7 +3,6 @@
 import React, { useState, useEffect, useSyncExternalStore } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import Link from 'next/link';
 import ReviewerDashboard from '@/components/ReviewerDashboard';
 import CommitteeLoginGate from '@/components/CommitteeLoginGate';
 import RubricInfoModal from '@/components/RubricInfoModal';
@@ -178,11 +177,8 @@ export default function DashboardPage() {
       {/* Top Navigation Bar */}
       <header className="sticky top-0 z-40 w-full border-b border-slate-800/80 bg-[#090d16]/95 backdrop-blur-md px-3 sm:px-6 py-2.5">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-3">
-          {/* Logo & Portal Branding */}
-          <Link
-            href="/"
-            className="flex items-center gap-2.5 group hover:opacity-90 transition cursor-pointer"
-          >
+          {/* Logo & Portal Branding (Static non-link header) */}
+          <div className="flex items-center gap-2.5">
             <div className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-slate-900 border border-slate-700/80 p-1 shadow-md">
               <Image
                 src="/Logo.png"
@@ -194,14 +190,14 @@ export default function DashboardPage() {
               />
             </div>
             <div>
-              <div className="text-xs sm:text-sm font-bold text-white group-hover:text-blue-400 transition leading-tight">
+              <div className="text-xs sm:text-sm font-bold text-white leading-tight">
                 The Monday Club, Inc.
               </div>
               <div className="text-[10px] sm:text-[11px] text-slate-400 font-medium">
                 Reviewer Committee Dashboard
               </div>
             </div>
-          </Link>
+          </div>
 
           {/* Authorized status badge and logout button */}
           {isAuthenticated && (
