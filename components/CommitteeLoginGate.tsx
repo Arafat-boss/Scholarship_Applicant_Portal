@@ -2,17 +2,15 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
-import { KeyRound, ShieldAlert, Eye, EyeOff, ArrowLeft, CheckCircle2, Loader2 } from 'lucide-react';
+import { KeyRound, ShieldAlert, Eye, EyeOff, CheckCircle2, Loader2 } from 'lucide-react';
 
 interface CommitteeLoginGateProps {
   onAuthenticated: () => void;
-  onBackToApplication: () => void;
   openInNewTab?: boolean;
 }
 
 export default function CommitteeLoginGate({
   onAuthenticated,
-  onBackToApplication,
   openInNewTab = false,
 }: CommitteeLoginGateProps) {
   const [passcode, setPasscode] = useState('');
@@ -179,17 +177,6 @@ export default function CommitteeLoginGate({
             )}
           </button>
         </form>
-
-        <div className="mt-6 pt-4 border-t border-slate-800 text-center">
-          <button
-            type="button"
-            onClick={onBackToApplication}
-            className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-white transition"
-          >
-            <ArrowLeft className="h-3.5 w-3.5" />
-            <span>Return to Student Application</span>
-          </button>
-        </div>
       </div>
     </div>
   );

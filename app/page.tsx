@@ -169,7 +169,6 @@ export default function Home() {
             onAuthenticated={() => {
               setOpenedInNewTab(true);
             }}
-            onBackToApplication={() => setActiveTab('applicant')}
           />
         )}
       </main>

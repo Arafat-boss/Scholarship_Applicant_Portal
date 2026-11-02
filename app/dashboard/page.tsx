@@ -247,7 +247,6 @@ export default function DashboardPage() {
             <CommitteeLoginGate
               openInNewTab={false}
               onAuthenticated={() => setIsAuthenticated(true)}
-              onBackToApplication={() => router.push('/')}
             />
           </div>
         ) : (
