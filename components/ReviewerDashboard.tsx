@@ -26,6 +26,7 @@ import {
 } from '@/lib/storage';
 import { evaluateApplicationWithAI } from '@/lib/aiScoring';
 import { downloadScholarshipPDF } from '@/lib/pdfExport';
+import { getScholarshipDates } from '@/lib/scholarshipDates';
 
 interface ReviewerDashboardProps {
   applications: ScholarshipApplication[];
@@ -38,6 +39,8 @@ export default function ReviewerDashboard({
   onRefreshApplications,
   onOpenRubricInfo,
 }: ReviewerDashboardProps) {
+  const dates = getScholarshipDates();
+
   // Search & Filter state
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('ALL');
@@ -466,12 +469,12 @@ export default function ReviewerDashboard({
               </div>
             </div>
 
-            {/* 6. Uploaded Documents & Official 2026 Checklist Verification */}
+            {/* 6. Uploaded Documents & Official Checklist Verification */}
             <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-4">
               <div className="flex items-center justify-between mb-2.5">
                 <h3 className="text-xs font-bold uppercase tracking-wider text-blue-400 flex items-center gap-1.5">
                   <FileText className="h-4 w-4" />
-                  <span>Scholarship Requirements &amp; Checklist 2026 (10 Items)</span>
+                  <span>{dates.checklistTitle} (10 Items)</span>
                 </h3>
                 <span className="text-[10px] font-mono text-emerald-400 bg-emerald-950/60 border border-emerald-800/60 px-2 py-0.5 rounded">
                   10/10 Verified
@@ -497,7 +500,7 @@ export default function ReviewerDashboard({
                   </span>
                 </div>
                 <div className="flex items-center justify-between p-2 rounded bg-slate-950/60 border border-slate-800/80">
-                  <span className="text-white font-medium">5. GPA &ge; 2.75 &amp; Official Jan 2026 Transcript</span>
+                  <span className="text-white font-medium">5. GPA &ge; 2.75 &amp; Official {dates.transcriptSemesterShort} Transcript</span>
                   <span className="text-emerald-400 text-[11px] font-mono">
                     {selectedApp.schoolFamily.gpa} &bull; Transcript Attached
                   </span>
@@ -519,7 +522,7 @@ export default function ReviewerDashboard({
                   <span className="text-emerald-400 text-[11px] font-mono">✓ Agreed</span>
                 </div>
                 <div className="flex items-center justify-between p-2 rounded bg-slate-950/60 border border-slate-800/80">
-                  <span className="text-white font-medium">9. Winners Notified by May 1, 2026 &amp; Property Notice</span>
+                  <span className="text-white font-medium">9. Winners Notified by {dates.notificationDate} &amp; Property Notice</span>
                   <span className="text-emerald-400 text-[11px] font-mono">✓ Acknowledged</span>
                 </div>
                 <div className="flex items-center justify-between p-2 rounded bg-slate-950/60 border border-slate-800/80">

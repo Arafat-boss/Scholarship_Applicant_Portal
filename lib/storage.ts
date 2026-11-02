@@ -2,6 +2,7 @@
 
 import { ScholarshipApplication } from '@/types/scholarship';
 import { evaluateApplicationWithAI } from './aiScoring';
+import { getScholarshipDates } from './scholarshipDates';
 
 const STORAGE_KEY = 'monday_club_scholarship_applications_v3';
 
@@ -74,7 +75,8 @@ export function saveNewApplication(
 ): ScholarshipApplication {
   const existing = getStoredApplications();
   const nextNum = existing.length + 1;
-  const applicationNumber = `MC-2026-${String(nextNum).padStart(3, '0')}`;
+  const currentYear = getScholarshipDates().currentYear;
+  const applicationNumber = `MC-${currentYear}-${String(nextNum).padStart(3, '0')}`;
   const id = `app-${Date.now()}`;
   const submittedAt = new Date().toISOString();
 

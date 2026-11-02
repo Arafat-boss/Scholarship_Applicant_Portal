@@ -25,6 +25,7 @@ import {
 } from '@/types/scholarship';
 import { saveNewApplication } from '@/lib/storage';
 import { downloadScholarshipPDF } from '@/lib/pdfExport';
+import { getScholarshipDates } from '@/lib/scholarshipDates';
 
 interface ApplicantPortalProps {
   onSuccessSubmit: (app: ScholarshipApplication) => void;
@@ -35,7 +36,10 @@ export default function ApplicantPortal({
   onSuccessSubmit,
   initialAutofill = false,
 }: ApplicantPortalProps) {
-  // 1. Scholarship Requirements & Checklist 2026 (Official 10 Items)
+  const dates = getScholarshipDates();
+  const todayStr = new Date().toISOString().split('T')[0];
+
+  // 1. Scholarship Requirements & Checklist (Official 10 Items)
   const [isDelawareSenior, setIsDelawareSenior] = useState(initialAutofill); // #1
   const [isEligibleDescent, setIsEligibleDescent] = useState(initialAutofill); // #2
   const [isTypedLegibly, setIsTypedLegibly] = useState(initialAutofill); // #3
@@ -134,7 +138,7 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
   const [transcript, setTranscript] = useState<UploadedDocument | null>(
     initialAutofill
       ? {
-        name: 'Official_Transcript_Madison_Rae_Tymes_2026.pdf',
+        name: `Official_Transcript_Madison_Rae_Tymes_${dates.currentYear}.pdf`,
         size: 2150000,
         type: 'application/pdf',
         uploadedAt: new Date().toISOString(),
@@ -145,7 +149,7 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
   const [studentAidReport, setStudentAidReport] = useState<UploadedDocument | null>(
     initialAutofill
       ? {
-        name: 'Student_Aid_Report_2026_SAR_Processed.pdf',
+        name: `Student_Aid_Report_${dates.currentYear}_SAR_Processed.pdf`,
         size: 1120000,
         type: 'application/pdf',
         uploadedAt: new Date().toISOString(),
@@ -173,10 +177,10 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
   const [rulesAcknowledged, setRulesAcknowledged] = useState(initialAutofill);
   const [isInfoAccurate, setIsInfoAccurate] = useState(initialAutofill);
   const [applicantSignature, setApplicantSignature] = useState(initialAutofill ? 'Madison Rae Tymes' : '');
-  const [applicantSignatureDate, setApplicantSignatureDate] = useState(initialAutofill ? '2026-03-10' : '2026-03-10');
+  const [applicantSignatureDate, setApplicantSignatureDate] = useState(todayStr);
   const [parentGrantsPermission, setParentGrantsPermission] = useState(initialAutofill);
   const [parentSignature, setParentSignature] = useState(initialAutofill ? 'Shira Tymes' : '');
-  const [parentSignatureDate, setParentSignatureDate] = useState(initialAutofill ? '2026-03-11' : '2026-03-11');
+  const [parentSignatureDate, setParentSignatureDate] = useState(todayStr);
 
   // UI States
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -266,10 +270,10 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
     setRulesAcknowledged(false);
     setIsInfoAccurate(false);
     setApplicantSignature('');
-    setApplicantSignatureDate('2026-03-10');
+    setApplicantSignatureDate(todayStr);
     setParentGrantsPermission(false);
     setParentSignature('');
-    setParentSignatureDate('2026-03-11');
+    setParentSignatureDate(todayStr);
 
     setFormError(null);
     setSubmittedApp(null);
@@ -343,14 +347,14 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
     setEssayText(MADISON_SAMPLE_ESSAY);
 
     setTranscript({
-      name: 'Official_Transcript_Madison_Rae_Tymes_2026.pdf',
+      name: `Official_Transcript_Madison_Rae_Tymes_${dates.currentYear}.pdf`,
       size: 2150000,
       type: 'application/pdf',
       uploadedAt: new Date().toISOString(),
     });
 
     setStudentAidReport({
-      name: 'Student_Aid_Report_2026_SAR_Processed.pdf',
+      name: `Student_Aid_Report_${dates.currentYear}_SAR_Processed.pdf`,
       size: 1120000,
       type: 'application/pdf',
       uploadedAt: new Date().toISOString(),
@@ -369,10 +373,10 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
     setRulesAcknowledged(true);
     setIsInfoAccurate(true);
     setApplicantSignature('Madison Rae Tymes');
-    setApplicantSignatureDate('2026-03-10');
+    setApplicantSignatureDate(todayStr);
     setParentGrantsPermission(true);
     setParentSignature('Shira Tymes');
-    setParentSignatureDate('2026-03-11');
+    setParentSignatureDate(todayStr);
     setFormError(null);
   };
 
@@ -505,10 +509,10 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
             isInfoAccurate,
             rulesAcknowledged,
             applicantSignature: applicantSignature.trim(),
-            applicantSignatureDate: applicantSignatureDate.trim() || '2026-03-10',
+            applicantSignatureDate: applicantSignatureDate.trim() || todayStr,
             parentGrantsPermission,
             parentSignature: parentSignature.trim(),
-            parentSignatureDate: parentSignatureDate.trim() || '2026-03-11',
+            parentSignatureDate: parentSignatureDate.trim() || todayStr,
           },
         });
 
@@ -788,7 +792,7 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
           </h2>
           <div className="flex flex-wrap items-center gap-2.5 mt-3">
             <span className="rounded-md border border-blue-600/70 bg-blue-950/80 px-3 py-1 font-mono text-xs font-black tracking-wider text-blue-300 uppercase shadow-inner">
-              SCHOLARSHIP APPLICATION &ndash; 2026
+              {dates.applicationHeader}
             </span>
             <span className="text-xs sm:text-sm font-medium text-slate-400">
               &bull; Official Delaware Senior Scholarship Entry
@@ -810,7 +814,7 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
                   1
                 </span>
                 <h3 className="text-sm sm:text-base font-bold text-white tracking-wide uppercase leading-snug">
-                  Scholarship Requirements and Checklist 2026
+                  {dates.checklistTitle}
                 </h3>
               </div>
               <p className="text-xs font-serif italic text-amber-400 mt-1 ml-8.5">
@@ -896,7 +900,7 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
                 className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-700 bg-slate-900 text-blue-600 focus:ring-blue-500"
               />
               <span className="leading-relaxed">
-                <strong className="text-blue-400">5.</strong> The applicant must have a grade point average of at least: 2.75 on a 4.00 scale; An official copy of your transcript, through the first semester of the 2025-2026 school year (i.e., January 2026), must be submitted with the application packet. See your counselor NOW! Completion of requirements for high school graduation will be verified if selected as a scholarship recipient.
+                <strong className="text-blue-400">5.</strong> The applicant must have a grade point average of at least: 2.75 on a 4.00 scale; An official copy of your transcript, through the first semester of the {dates.academicYear} school year (i.e., {dates.transcriptDate}), must be submitted with the application packet. See your counselor NOW! Completion of requirements for high school graduation will be verified if selected as a scholarship recipient.
               </span>
             </label>
 
@@ -952,7 +956,7 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
                 className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-700 bg-slate-900 text-blue-600 focus:ring-blue-500"
               />
               <span className="leading-relaxed">
-                <strong className="text-blue-400">9.</strong> Scholarship winners will be notified by May 1, 2026. All application packet documents submitted become the property of The Monday Club and will not be returned.
+                <strong className="text-blue-400">9.</strong> Scholarship winners will be notified by {dates.notificationDate}. All application packet documents submitted become the property of The Monday Club and will not be returned.
               </span>
             </label>
 
@@ -1195,7 +1199,7 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
                 />
               </div>
               <div>
-                <label className="block text-slate-400 font-medium mb-1.5">Grade Point Average (as of 1/31/2026)</label>
+                <label className="block text-slate-400 font-medium mb-1.5">Grade Point Average (as of {dates.gpaAsOfDate})</label>
                 <input
                   id="school-gpa"
                   type="text"
@@ -1234,7 +1238,7 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
 
               <div className="sm:col-span-2">
                 <label className="block text-slate-400 font-medium mb-1.5">
-                  Number of Immediate Family Members (including yourself) attending college/university for the 2025-2026 academic year
+                  Number of Immediate Family Members (including yourself) attending college/university for the {dates.academicYear} academic year
                 </label>
                 <input
                   id="family-in-college"
@@ -1711,7 +1715,7 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
               {/* Official transcript */}
               <div className="p-3 rounded-lg bg-slate-950/60 border border-slate-800/80">
                 <label className="block text-slate-300 font-semibold mb-1">
-                  Requirement #5: Official copy of your transcript through 1st semester (Jan 2026)
+                  Requirement #5: Official copy of your transcript through 1st semester ({dates.transcriptSemesterShort})
                 </label>
                 <p className="text-[11px] text-slate-400 mb-2">Must verify GPA of at least 2.75 on a 4.00 scale.</p>
                 <input
@@ -1857,7 +1861,7 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
                   All application materials must be emailed to <strong className="text-white">TheMCscholarships@gmail.com</strong> or mailed to <strong className="text-white">4020 New Castle Ave, Wilmington, DE 19720</strong>.
                 </p>
                 <p className="text-[11px] text-slate-400">
-                  Questions? Contact Mr. Ken Snell: (302) 521-3798 &bull; Winners notified by May 1, 2026.
+                  Questions? Contact Mr. Ken Snell: (302) 521-3798 &bull; Winners notified by {dates.notificationDate}.
                 </p>
               </div>
             </div>
@@ -1880,7 +1884,7 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
                 The Monday Club Scholarship Rules and Regulations:
               </div>
               <p>
-                The signatures of the persons below indicate accurate and honest information has been submitted and that the completion of this application and the accompanying materials are the work of the applicant. Furthermore, the applicant understands that if selected for a scholarship, the scholarship monies will be disbursed after August 15, 2026. All scholarship checks will be made payable to and sent directly to the college/university where the recipient will be admitted and enrolled, to matriculate. A notation on the scholarship check will indicate the name of the student to which the scholarship money is to be credited and the institution of attendance. Each scholarship recipient will be requested to supply the complete name, address, and telephone number of the business or bursar&apos;s office of the college/university that the recipient will be attending in Fall 2026 to The Monday Club.
+                The signatures of the persons below indicate accurate and honest information has been submitted and that the completion of this application and the accompanying materials are the work of the applicant. Furthermore, the applicant understands that if selected for a scholarship, the scholarship monies will be disbursed after {dates.disbursementDate}. All scholarship checks will be made payable to and sent directly to the college/university where the recipient will be admitted and enrolled, to matriculate. A notation on the scholarship check will indicate the name of the student to which the scholarship money is to be credited and the institution of attendance. Each scholarship recipient will be requested to supply the complete name, address, and telephone number of the business or bursar&apos;s office of the college/university that the recipient will be attending in {dates.collegeTerm} to The Monday Club.
               </p>
             </div>
 

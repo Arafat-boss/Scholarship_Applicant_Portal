@@ -2,6 +2,7 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { ScholarshipApplication } from '@/types/scholarship';
 import { evaluateApplicationWithAI } from './aiScoring';
+import { getScholarshipDates } from './scholarshipDates';
 
 export interface PDFExportResult {
   success: boolean;
@@ -171,8 +172,9 @@ export function generateScholarshipJsPdf(applications: ScholarshipApplication[])
     const tier = app.aiScoring?.ratingCategory || 'N/A';
     const status = app.committeeReview?.status || 'Under Review';
 
+    const dates = getScholarshipDates();
     return [
-      app.applicationNumber || 'MC-2026',
+      app.applicationNumber || `MC-${dates.currentYear}`,
       `${app.applicant?.firstName || ''} ${app.applicant?.lastName || ''}`.trim(),
       app.schoolFamily?.currentHighSchool || 'Delaware High School',
       app.schoolFamily?.gpa || '3.00',
@@ -369,13 +371,15 @@ export function generateScholarshipJsPdf(applications: ScholarshipApplication[])
             .join('\n')
         : '• Howard University (Washington DC) - ACCEPTED\n• Duquesne University (Pittsburgh PA) - APPLIED';
 
+    const dates = getScholarshipDates();
+    const todayStr = new Date().toISOString().split('T')[0];
     const appSig = app.certification?.applicantSignature || appName;
-    const appSigDate = app.certification?.applicantSignatureDate || '2026-03-10';
+    const appSigDate = app.certification?.applicantSignatureDate || todayStr;
     const parentSig = app.certification?.parentSignature || app.parentGuardian?.fullName || 'Parent Signature';
-    const parentSigDate = app.certification?.parentSignatureDate || '2026-03-11';
+    const parentSigDate = app.certification?.parentSignatureDate || todayStr;
     const essayCount = app.essay?.wordCount || (app.essay?.text ? app.essay.text.split(/\s+/).length : 224);
 
-    const docsText = `• 2026 Checklist: All 10 Official Requirements Verified & Acknowledged\n• Req #1 & #2: DE Senior, 4-Yr College & African American/Hispanic/Native American\n• Req #3 & #4: Typed legibly; 3 Sealed Rec Letters on file\n• Req #5: GPA ${app.schoolFamily?.gpa || '3.77'} & Official Jan 2026 Transcript Attached\n• Req #6: 200+ Word Essay Submitted (${essayCount} words)\n• Req #7: Student Aid Report (SAR) on file\n• Req #8 & #9: Virtual Interview Agreed; May 1 Winners Notice\n• Dual Signatures: "${appSig}" (${appSigDate}) | "${parentSig}" (${parentSigDate})`;
+    const docsText = `• ${dates.currentYear} Checklist: All 10 Official Requirements Verified & Acknowledged\n• Req #1 & #2: DE Senior, 4-Yr College & African American/Hispanic/Native American\n• Req #3 & #4: Typed legibly; 3 Sealed Rec Letters on file\n• Req #5: GPA ${app.schoolFamily?.gpa || '3.77'} & Official ${dates.transcriptSemesterShort} Transcript Attached\n• Req #6: 200+ Word Essay Submitted (${essayCount} words)\n• Req #7: Student Aid Report (SAR) on file\n• Req #8 & #9: Virtual Interview Agreed; ${dates.notificationDate} Winners Notice\n• Dual Signatures: "${appSig}" (${appSigDate}) | "${parentSig}" (${parentSigDate})`;
 
     autoTable(doc, {
       startY: curY,

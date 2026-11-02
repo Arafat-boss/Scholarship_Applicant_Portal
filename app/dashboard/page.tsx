@@ -30,7 +30,9 @@ export default function DashboardPage() {
     () => {
       if (typeof window === 'undefined') return false;
       const params = new URLSearchParams(window.location.search);
-      if (params.get('auth') === 'monday2026') {
+      const authParam = params.get('auth')?.toLowerCase();
+      const currentYearAuth = `monday${new Date().getFullYear()}`;
+      if (authParam === 'monday2026' || authParam === currentYearAuth) {
         sessionStorage.setItem('mc_committee_auth', 'true');
         localStorage.setItem('mc_committee_auth', 'true');
         window.history.replaceState({}, '', window.location.pathname);

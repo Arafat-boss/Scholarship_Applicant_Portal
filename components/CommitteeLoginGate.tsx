@@ -19,14 +19,17 @@ export default function CommitteeLoginGate({
   const [showPasscode, setShowPasscode] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  // Default Committee Passcode
-  const CORRECT_PASSCODE = 'Monday2026';
+  // Committee Passcode (supports dynamic year & original Monday2026)
+  const currentYear = new Date().getFullYear();
+  const CORRECT_PASSCODE = `Monday${currentYear}`;
+  const validPasscodes = ['monday2026', `monday${currentYear}`];
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg(null);
 
-    if (passcode.trim() === CORRECT_PASSCODE) {
+    const entered = passcode.trim().toLowerCase();
+    if (validPasscodes.includes(entered)) {
       if (typeof window !== 'undefined') {
         sessionStorage.setItem('mc_committee_auth', 'true');
         localStorage.setItem('mc_committee_auth', 'true');
@@ -50,7 +53,7 @@ export default function CommitteeLoginGate({
             // ignore
           }
 
-          const targetUrl = `${window.location.origin}/dashboard?auth=monday2026`;
+          const targetUrl = `${window.location.origin}/dashboard?auth=monday${currentYear}`;
           window.open(targetUrl, '_blank', 'noopener,noreferrer');
         }
       }
