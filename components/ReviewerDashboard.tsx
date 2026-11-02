@@ -74,7 +74,6 @@ export default function ReviewerDashboard({
 
   // Direct 1-Click In-Place PDF Download states
   const [isDownloadingPdf, setIsDownloadingPdf] = useState(false);
-  const [isDownloadingSinglePdf, setIsDownloadingSinglePdf] = useState(false);
 
   const handleDownloadAllPdf = () => {
     setIsDownloadingPdf(true);
@@ -83,15 +82,6 @@ export default function ReviewerDashboard({
       downloadScholarshipPDF(toExport);
     } finally {
       setTimeout(() => setIsDownloadingPdf(false), 600);
-    }
-  };
-
-  const handleDownloadSinglePdf = (app: ScholarshipApplication) => {
-    setIsDownloadingSinglePdf(true);
-    try {
-      downloadScholarshipPDF([app]);
-    } finally {
-      setTimeout(() => setIsDownloadingSinglePdf(false), 600);
     }
   };
 
@@ -258,25 +248,6 @@ export default function ReviewerDashboard({
               </p>
             </div>
             <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={() => handleDownloadSinglePdf(selectedApp)}
-                disabled={isDownloadingSinglePdf}
-                className="inline-flex items-center gap-1.5 rounded-xl border border-slate-700 bg-slate-800/90 px-3.5 py-2 text-xs font-bold text-slate-200 hover:bg-slate-700 hover:text-white disabled:opacity-50 transition cursor-pointer"
-                title="Download this applicant's dossier immediately as PDF"
-              >
-                {isDownloadingSinglePdf ? (
-                  <>
-                    <Loader2 className="h-4 w-4 animate-spin text-indigo-400" />
-                    <span>Generating PDF...</span>
-                  </>
-                ) : (
-                  <>
-                    <FileDown className="h-4 w-4 text-indigo-400" />
-                    <span>Download Dossier (PDF)</span>
-                  </>
-                )}
-              </button>
               <button
                 onClick={handleSaveDecision}
                 className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-xs font-bold text-white shadow-lg shadow-blue-600/30 hover:bg-blue-500 transition cursor-pointer"
