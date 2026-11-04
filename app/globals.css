@@ -145,3 +145,14 @@ input[type="file"]::file-selector-button:hover {
   background-color: #334155;
   color: #ffffff;
 }
+
+/* Enhanced mobile touch ergonomics and smooth scrolling */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+@supports (-webkit-touch-callout: none) {
+  body {
+    -webkit-overflow-scrolling: touch;
+  }
+}
