@@ -23,8 +23,9 @@ export function downloadScholarshipPDF(
 
   try {
     const { doc, fileName } = generateScholarshipJsPdf(applications);
-    doc.save(fileName);
-    return { success: true, fileName };
+    const sanitizedFileName = fileName.replace(/[^a-zA-Z0-9_.-]/g, '_');
+    doc.save(sanitizedFileName);
+    return { success: true, fileName: sanitizedFileName };
   } catch (err) {
     console.error('Direct PDF download error:', err);
     if (typeof window !== 'undefined') {
