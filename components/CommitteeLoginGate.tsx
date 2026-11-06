@@ -144,6 +144,7 @@ export default function CommitteeLoginGate({
               <button
                 type="button"
                 onClick={() => setShowPasscode(!showPasscode)}
+                aria-label={showPasscode ? 'Hide passcode' : 'Show passcode'}
                 className="absolute right-3 top-3 text-slate-400 hover:text-white transition"
               >
                 {showPasscode ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
