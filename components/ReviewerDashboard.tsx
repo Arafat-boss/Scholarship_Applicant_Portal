@@ -794,6 +794,7 @@ export default function ReviewerDashboard({
           <input
             type="text"
             placeholder="Search by student name, high school, or email..."
+            aria-label="Search applications by student name, high school, or email"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full rounded-lg bg-slate-900 pl-9 pr-4 py-2 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none"
@@ -804,6 +805,7 @@ export default function ReviewerDashboard({
           {/* Status filter */}
           <select
             value={statusFilter}
+            aria-label="Filter applications by status"
             onChange={(e) => setStatusFilter(e.target.value)}
             className="w-full sm:w-auto rounded-lg bg-slate-900 px-2.5 py-2 text-xs text-slate-300 border border-slate-800"
           >
@@ -818,6 +820,7 @@ export default function ReviewerDashboard({
           {/* AI Tier filter */}
           <select
             value={tierFilter}
+            aria-label="Filter applications by AI tier"
             onChange={(e) => setTierFilter(e.target.value)}
             className="w-full sm:w-auto rounded-lg bg-slate-900 px-2.5 py-2 text-xs text-slate-300 border border-slate-800"
           >
