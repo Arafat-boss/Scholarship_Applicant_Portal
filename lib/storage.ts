@@ -126,6 +126,7 @@ export function updateCommitteeReview(
     committeeNotes?: string;
   }
 ): ScholarshipApplication[] {
+  if (!applicationId) return getStoredApplications();
   const existing = getStoredApplications();
   const updated = existing.map((app) => {
     if (app.id === applicationId) {
@@ -158,6 +159,7 @@ export function updateCommitteeReview(
 }
 
 export function deleteApplication(applicationId: string): ScholarshipApplication[] {
+  if (!applicationId) return getStoredApplications();
   const existing = getStoredApplications();
   const updated = existing.filter((app) => app.id !== applicationId);
   if (typeof window !== 'undefined') {
