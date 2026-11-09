@@ -751,12 +751,15 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
       )}
 
       {/* Title & Organization Header matching Client Mockup with Logo */}
-      <div className="mb-6 rounded-2xl border border-slate-800 bg-[#090f1d] p-5 sm:p-7 shadow-2xl text-slate-100">
+      <div className="mb-6 rounded-2xl border border-slate-800/80 bg-gradient-to-b from-[#0f172a] via-[#0c1424] to-[#090f1d] p-4 sm:p-7 shadow-2xl text-slate-100 relative overflow-hidden">
+        {/* Subtle decorative glow accent */}
+        <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-blue-500/0 via-blue-500/60 to-blue-500/0 pointer-events-none" />
+
         {/* Top Row: Logo + Org Info (Left) & Pre-fill Sample Button (Right) */}
         <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
-          <div className="flex items-center sm:items-start gap-4">
+          <div className="flex items-start gap-3.5 sm:gap-4.5 text-left">
             {/* Logo Container */}
-            <div className="relative flex h-20 w-20 sm:h-24 sm:w-24 items-center justify-center rounded-2xl border border-slate-700/60 bg-[#0d1629] p-2 shrink-0 shadow-md">
+            <div className="relative flex h-16 w-16 sm:h-24 sm:w-24 items-center justify-center rounded-xl sm:rounded-2xl border border-blue-500/30 bg-gradient-to-br from-[#131f37] to-[#0d1629] p-2 shrink-0 shadow-lg shadow-blue-950/60">
               <Image
                 src="/Logo.png"
                 alt="The Monday Club Logo"
@@ -767,17 +770,17 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
               />
             </div>
 
-            {/* Organization Identity */}
-            <div className="flex flex-col justify-center">
-              <h1 className="text-lg sm:text-xl font-black uppercase tracking-wider text-white">
+            {/* Organization Identity - strictly left-aligned */}
+            <div className="flex flex-col justify-start text-left min-w-0 flex-1">
+              <h1 className="text-base sm:text-xl font-black uppercase tracking-wide text-white leading-tight">
                 THE MONDAY CLUB, INC.
               </h1>
               <p className="text-xs sm:text-sm font-serif italic text-amber-400 mt-0.5">
                 &ldquo;Spanning Three Centuries!&rdquo;
               </p>
-              <div className="mt-1 text-xs sm:text-sm font-semibold tracking-wide text-slate-200 leading-snug">
-                <p>4020 NEW CASTLE AVENUE</p>
-                <p>WILMINGTON, DE 19720</p>
+              <div className="mt-1 text-xs text-slate-300 font-medium leading-snug space-y-0.5">
+                <p className="tracking-wide">4020 NEW CASTLE AVENUE</p>
+                <p className="tracking-wide text-slate-400">WILMINGTON, DE 19720</p>
               </div>
             </div>
           </div>
@@ -787,24 +790,29 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
             <button
               type="button"
               onClick={handleAutofill}
-              className="w-full md:w-auto inline-flex items-center justify-center gap-2 rounded-xl border border-blue-500/40 bg-blue-950/40 px-4 py-2.5 text-xs sm:text-sm font-semibold text-blue-300 shadow-sm shadow-blue-950/40 hover:bg-blue-900/60 hover:text-white transition cursor-pointer text-center"
+              className="w-full md:w-auto inline-flex items-center justify-start sm:justify-center gap-2.5 rounded-xl border border-blue-500/40 bg-gradient-to-r from-blue-950/70 via-indigo-950/50 to-blue-950/70 px-3.5 sm:px-4 py-2.5 text-xs sm:text-sm font-semibold text-blue-200 shadow-md shadow-blue-950/50 hover:border-blue-400 hover:text-white hover:from-blue-900/80 hover:to-indigo-900/80 transition-all cursor-pointer group text-left"
             >
-              <Sparkles className="h-4 w-4 text-amber-400 shrink-0" />
-              <span>Pre-fill Sample Data (Madison Rae Tymes)</span>
+              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-amber-400/10 border border-amber-400/30 text-amber-400 shrink-0 group-hover:scale-110 transition-transform">
+                <Sparkles className="h-4 w-4" />
+              </div>
+              <div className="flex flex-col text-left">
+                <span className="font-bold text-white text-xs sm:text-sm">Pre-fill Sample Data</span>
+                <span className="text-[10px] sm:text-xs text-blue-300/80 font-normal">Autofill with Madison Rae Tymes record</span>
+              </div>
             </button>
           </div>
         </div>
 
         {/* Bottom Section: Scholarship Names & Application Badge */}
-        <div className="mt-6">
-          <h2 className="text-lg sm:text-xl font-bold tracking-tight text-white leading-snug">
+        <div className="mt-5 sm:mt-6 pt-4 sm:pt-5 border-t border-slate-800/80 text-left">
+          <h2 className="text-sm sm:text-lg font-bold tracking-tight text-white leading-snug">
             Senator Herman M. Holloway Sr. / Dr. Woodrow Wilson / James H. Sills, Jr. / Delaware State University / The Monday Club Scholarship
           </h2>
-          <div className="flex flex-wrap items-center gap-2.5 mt-3">
-            <span className="rounded-md border border-blue-600/70 bg-blue-950/80 px-3 py-1 font-mono text-xs font-black tracking-wider text-blue-300 uppercase shadow-inner">
+          <div className="flex flex-wrap items-center gap-2 mt-2.5">
+            <span className="rounded-md border border-blue-600/70 bg-blue-950/80 px-2.5 py-1 font-mono text-[11px] sm:text-xs font-black tracking-wider text-blue-300 uppercase shadow-inner">
               {dates.applicationHeader}
             </span>
-            <span className="text-xs sm:text-sm font-medium text-slate-400">
+            <span className="text-xs font-medium text-slate-400">
               &bull; Official Delaware Senior Scholarship Entry
             </span>
           </div>
