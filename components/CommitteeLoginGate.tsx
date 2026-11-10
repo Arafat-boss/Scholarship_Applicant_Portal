@@ -163,7 +163,7 @@ export default function CommitteeLoginGate({
             id="btn-unlock-reviewer"
             type="submit"
             disabled={!passcode.trim() || isLoading}
-            className="w-full flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-blue-600/30 hover:bg-blue-500 disabled:opacity-50 transition cursor-pointer"
+            className="w-full flex items-center justify-start sm:justify-center gap-2.5 rounded-xl bg-blue-600 px-4.5 sm:px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-blue-600/30 hover:bg-blue-500 disabled:opacity-50 transition cursor-pointer text-left sm:text-center"
           >
             {isLoading ? (
               <>

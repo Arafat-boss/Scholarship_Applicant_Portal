@@ -139,9 +139,9 @@ export default function Home() {
                   href="/dashboard"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-5 py-3 text-xs sm:text-sm font-bold text-white hover:bg-blue-500 shadow-lg shadow-blue-600/30 transition cursor-pointer"
+                  className="w-full inline-flex items-center justify-start sm:justify-center gap-2.5 rounded-xl bg-blue-600 px-4.5 sm:px-5 py-3 text-xs sm:text-sm font-bold text-white hover:bg-blue-500 shadow-lg shadow-blue-600/30 transition cursor-pointer text-left sm:text-center"
                 >
-                  <ExternalLink className="h-4 w-4" />
+                  <ExternalLink className="h-4 w-4 shrink-0" />
                   <span>Open Reviewer Dashboard (New Tab)</span>
                 </a>
 
@@ -151,9 +151,9 @@ export default function Home() {
                     setOpenedInNewTab(false);
                     setActiveTab('applicant');
                   }}
-                  className="w-full inline-flex items-center justify-center gap-2 rounded-xl border border-slate-700 bg-slate-800/80 px-4 py-2.5 text-xs font-semibold text-slate-300 hover:text-white hover:bg-slate-700 transition cursor-pointer"
+                  className="w-full inline-flex items-center justify-start sm:justify-center gap-2.5 rounded-xl border border-slate-700 bg-slate-800/80 px-4 py-2.5 text-xs font-semibold text-slate-300 hover:text-white hover:bg-slate-700 transition cursor-pointer text-left sm:text-center"
                 >
-                  <ArrowLeft className="h-3.5 w-3.5" />
+                  <ArrowLeft className="h-3.5 w-3.5 shrink-0" />
                   <span>Return to Student Application</span>
                 </button>
               </div>

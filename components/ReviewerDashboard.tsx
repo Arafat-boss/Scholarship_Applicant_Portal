@@ -247,10 +247,10 @@ export default function ReviewerDashboard({
                 {selectedApp.schoolFamily.currentHighSchool} &bull; GPA: <strong className="text-emerald-400">{selectedApp.schoolFamily.gpa}</strong> &bull; Sex: <strong className="text-white">{selectedApp.applicant.sex || 'F'}</strong> &bull; {selectedApp.applicant.email} &bull; {selectedApp.applicant.telephone}
               </p>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 w-full sm:w-auto">
               <button
                 onClick={handleSaveDecision}
-                className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-xs font-bold text-white shadow-lg shadow-blue-600/30 hover:bg-blue-500 transition cursor-pointer"
+                className="w-full sm:w-auto inline-flex items-center justify-start sm:justify-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-xs font-bold text-white shadow-lg shadow-blue-600/30 hover:bg-blue-500 transition cursor-pointer text-left sm:text-center"
               >
                 <CheckCircle2 className="h-4 w-4" />
                 <span>Save Decision</span>
@@ -652,9 +652,9 @@ export default function ReviewerDashboard({
 
                 <button
                   onClick={handleSaveDecision}
-                  className="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-xs font-bold text-white shadow-lg shadow-blue-600/30 hover:bg-blue-500 transition cursor-pointer"
+                  className="w-full inline-flex items-center justify-start sm:justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-xs font-bold text-white shadow-lg shadow-blue-600/30 hover:bg-blue-500 transition cursor-pointer text-left sm:text-center"
                 >
-                  <CheckCircle2 className="h-4 w-4" />
+                  <CheckCircle2 className="h-4 w-4 shrink-0" />
                   <span>Save Committee Decision</span>
                 </button>
 
@@ -669,23 +669,23 @@ export default function ReviewerDashboard({
         </div>
 
         {/* Bottom Actions */}
-        <div className="flex items-center justify-between pt-6 border-t border-slate-800 mt-6">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-6 border-t border-slate-800 mt-6">
           <button
             type="button"
             onClick={() => {
               setSelectedApp(null);
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
-            className="inline-flex items-center gap-2 rounded-xl bg-slate-800 px-4 py-2.5 text-xs font-bold text-slate-200 border border-slate-700 hover:bg-slate-700 hover:text-white transition cursor-pointer"
+            className="w-full sm:w-auto inline-flex items-center justify-start sm:justify-center gap-2 rounded-xl bg-slate-800 px-4 py-2.5 text-xs font-bold text-slate-200 border border-slate-700 hover:bg-slate-700 hover:text-white transition cursor-pointer text-left sm:text-center"
           >
-            <ArrowLeft className="h-4 w-4" />
+            <ArrowLeft className="h-4 w-4 shrink-0" />
             <span>Back to Applications Queue</span>
           </button>
           <button
             onClick={handleSaveDecision}
-            className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-xs font-bold text-white shadow-lg shadow-blue-600/30 hover:bg-blue-500 transition cursor-pointer"
+            className="w-full sm:w-auto inline-flex items-center justify-start sm:justify-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-xs font-bold text-white shadow-lg shadow-blue-600/30 hover:bg-blue-500 transition cursor-pointer text-left sm:text-center"
           >
-            <CheckCircle2 className="h-4 w-4" />
+            <CheckCircle2 className="h-4 w-4 shrink-0" />
             <span>Save Committee Decision</span>
           </button>
         </div>
@@ -729,7 +729,7 @@ export default function ReviewerDashboard({
               id="btn-download-all-pdf"
               onClick={handleDownloadAllPdf}
               disabled={isDownloadingPdf || applications.length === 0}
-              className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-3.5 py-2 text-xs font-bold text-white shadow-md shadow-indigo-600/30 hover:bg-indigo-500 disabled:opacity-50 transition cursor-pointer"
+              className="w-full sm:w-auto inline-flex items-center justify-start sm:justify-center gap-2 rounded-lg bg-indigo-600 px-3.5 py-2 text-xs font-bold text-white shadow-md shadow-indigo-600/30 hover:bg-indigo-500 disabled:opacity-50 transition cursor-pointer text-left sm:text-center"
               title="Download all applications immediately into PDF"
             >
               {isDownloadingPdf ? (
