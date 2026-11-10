@@ -8,7 +8,7 @@ import { ScholarshipApplication } from '@/types/scholarship';
 import { getStoredApplications, fetchApplicationsFromServer } from '@/lib/storage';
 import { FileText, Sparkles, Lock, ExternalLink, CheckCircle2, ArrowLeft } from 'lucide-react';
 
-const emptySubscribe = () => () => {};
+const emptySubscribe = () => () => { };
 
 export default function Home() {
   const isMounted = useSyncExternalStore(emptySubscribe, () => true, () => false);
@@ -134,10 +134,6 @@ export default function Home() {
               <h3 className="text-lg sm:text-xl font-bold text-white mb-2">
                 Reviewer Dashboard Opened
               </h3>
-              <p className="text-xs sm:text-sm text-slate-400 mb-6 leading-relaxed">
-                The Reviewer Committee Portal has opened in a new browser tab outside of Wix at <span className="font-mono text-blue-400 font-semibold">/dashboard</span>.
-              </p>
-
               <div className="flex flex-col gap-2.5">
                 <a
                   href="/dashboard"
