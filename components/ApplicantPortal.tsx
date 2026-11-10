@@ -1731,8 +1731,8 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
 
             <div className="space-y-4 text-xs sm:text-sm">
               {/* Official transcript */}
-              <div className="p-3 rounded-lg bg-slate-950/60 border border-slate-800/80">
-                <label className="block text-slate-300 font-semibold mb-1">
+              <div className="p-3.5 rounded-xl bg-[#131b2e] border border-slate-700/80">
+                <label className="block text-slate-200 font-semibold mb-1">
                   Requirement #5: Official copy of your transcript through 1st semester ({dates.transcriptSemesterShort})
                 </label>
                 <p className="text-[11px] text-slate-400 mb-2">Must verify GPA of at least 2.75 on a 4.00 scale.</p>
@@ -1765,8 +1765,8 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
               </div>
 
               {/* Student Aid Report */}
-              <div className="p-3 rounded-lg bg-slate-950/60 border border-slate-800/80">
-                <label className="block text-slate-300 font-semibold mb-1">
+              <div className="p-3.5 rounded-xl bg-[#131b2e] border border-slate-700/80">
+                <label className="block text-slate-200 font-semibold mb-1">
                   Requirement #7: Completed and processed copy of the Student Aid Report (SAR) (if available)
                 </label>
                 <input
@@ -1798,8 +1798,8 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
               </div>
 
               {/* Three recommendation letters */}
-              <div className="p-3 rounded-lg bg-slate-950/60 border border-slate-800/80">
-                <label className="block text-slate-300 font-semibold mb-1">
+              <div className="p-3.5 rounded-xl bg-[#131b2e] border border-slate-700/80">
+                <label className="block text-slate-200 font-semibold mb-1">
                   Requirement #4: Three letters of recommendation (two from non-relatives)
                 </label>
                 <p className="text-[11px] text-slate-400 mb-2">Each with signature of the sender/writer over the flap of envelope.</p>
@@ -1836,8 +1836,8 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
               </div>
 
               {/* Extra Documents */}
-              <div className="p-3 rounded-lg bg-slate-950/60 border border-slate-800/80">
-                <label className="block text-slate-300 font-semibold mb-1">
+              <div className="p-3.5 rounded-xl bg-[#131b2e] border border-slate-700/80">
+                <label className="block text-slate-200 font-semibold mb-1">
                   Supplemental Documents &amp; Certificates (Optional)
                 </label>
                 <input
@@ -1897,7 +1897,7 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
             </h3>
 
             {/* Rules Statement verbatim from physical form */}
-            <div className="rounded-lg bg-slate-950 p-4 border border-slate-800 text-xs text-slate-300 leading-relaxed space-y-2 mb-4">
+            <div className="rounded-xl bg-[#131b2e] p-4 border border-slate-700/80 text-xs text-slate-300 leading-relaxed space-y-2 mb-4">
               <div className="font-bold text-white uppercase tracking-wider text-[11px]">
                 The Monday Club Scholarship Rules and Regulations:
               </div>
@@ -1936,9 +1936,9 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
             </div>
 
             {/* Applicant Signature & Date */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6 p-3.5 rounded-lg bg-slate-950/60 border border-slate-800">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6 p-3.5 rounded-xl bg-[#131b2e] border border-slate-700/80">
               <div className="sm:col-span-2">
-                <label className="block text-slate-400 font-medium mb-1.5 text-xs sm:text-sm">
+                <label className="block text-slate-300 font-medium mb-1.5 text-xs sm:text-sm">
                   Applicant&apos;s Signature (Type Full Legal Name)
                 </label>
                 <input
@@ -1947,12 +1947,12 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
                   value={applicantSignature}
                   onChange={(e) => setApplicantSignature(e.target.value)}
                   placeholder="e.g. Madison Rae Tymes"
-                  className="w-full rounded-lg px-3 py-2 text-sm text-white font-mono bg-slate-950 border border-slate-800"
+                  className="w-full rounded-lg px-3 py-2 text-sm text-white font-mono bg-[#162032] border border-slate-700"
                   required
                 />
               </div>
               <div>
-                <label className="block text-slate-400 font-medium mb-1.5 text-xs sm:text-sm">
+                <label className="block text-slate-300 font-medium mb-1.5 text-xs sm:text-sm">
                   Date (Applicant)
                 </label>
                 <input
@@ -1960,14 +1960,14 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
                   type="date"
                   value={applicantSignatureDate}
                   onChange={(e) => setApplicantSignatureDate(e.target.value)}
-                  className="w-full rounded-lg px-3 py-2 text-xs sm:text-sm text-white bg-slate-950 border border-slate-800 [color-scheme:dark] cursor-pointer focus:border-blue-500"
+                  className="w-full rounded-lg px-3 py-2 text-xs sm:text-sm text-white bg-[#162032] border border-slate-700 [color-scheme:dark] cursor-pointer focus:border-blue-500"
                   required
                 />
               </div>
             </div>
 
             {/* Parent/Guardian Permission Statement */}
-            <div className="rounded-lg bg-slate-950 p-4 border border-slate-800 text-xs text-slate-300 leading-relaxed mb-4">
+            <div className="rounded-xl bg-[#131b2e] p-4 border border-slate-700/80 text-xs text-slate-300 leading-relaxed mb-4">
               <div className="font-bold text-white uppercase tracking-wider text-[11px] mb-1">
                 Parent/Guardian Verification Statement:
               </div>
@@ -1992,9 +1992,9 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
             </div>
 
             {/* Parent Signature & Date */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6 p-3.5 rounded-lg bg-slate-950/60 border border-slate-800">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6 p-3.5 rounded-xl bg-[#131b2e] border border-slate-700/80">
               <div className="sm:col-span-2">
-                <label className="block text-slate-400 font-medium mb-1.5 text-xs sm:text-sm">
+                <label className="block text-slate-300 font-medium mb-1.5 text-xs sm:text-sm">
                   Parent/Guardian&apos;s Signature (Type Full Legal Name)
                 </label>
                 <input
@@ -2003,12 +2003,12 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
                   value={parentSignature}
                   onChange={(e) => setParentSignature(e.target.value)}
                   placeholder="e.g. Shira Tymes"
-                  className="w-full rounded-lg px-3 py-2 text-sm text-white font-mono bg-slate-950 border border-slate-800"
+                  className="w-full rounded-lg px-3 py-2 text-sm text-white font-mono bg-[#162032] border border-slate-700"
                   required
                 />
               </div>
               <div>
-                <label className="block text-slate-400 font-medium mb-1.5 text-xs sm:text-sm">
+                <label className="block text-slate-300 font-medium mb-1.5 text-xs sm:text-sm">
                   Date (Parent/Guardian)
                 </label>
                 <input
@@ -2016,7 +2016,7 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
                   type="date"
                   value={parentSignatureDate}
                   onChange={(e) => setParentSignatureDate(e.target.value)}
-                  className="w-full rounded-lg px-3 py-2 text-xs sm:text-sm text-white bg-slate-950 border border-slate-800 [color-scheme:dark] cursor-pointer focus:border-blue-500"
+                  className="w-full rounded-lg px-3 py-2 text-xs sm:text-sm text-white bg-[#162032] border border-slate-700 [color-scheme:dark] cursor-pointer focus:border-blue-500"
                   required
                 />
               </div>

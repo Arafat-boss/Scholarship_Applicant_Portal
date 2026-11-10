@@ -73,7 +73,7 @@ body::-webkit-scrollbar {
   border-color: rgba(59, 130, 246, 0.3);
 }
 
-/* Focus and input styling matching client's screenshot */
+/* High-contrast elevated field styling for enhanced visibility on dark surfaces */
 input[type="text"],
 input[type="email"],
 input[type="tel"],
@@ -81,10 +81,31 @@ input[type="date"],
 input[type="number"],
 select,
 textarea {
-  background-color: #0b1120;
-  border: 1px solid #1e293b;
-  color: #f8fafc;
+  background-color: #162032 !important;
+  border: 1.5px solid #334155 !important;
+  color: #ffffff !important;
   transition: all 0.2s ease;
+}
+
+input[type="text"]::placeholder,
+input[type="email"]::placeholder,
+input[type="tel"]::placeholder,
+input[type="date"]::placeholder,
+input[type="number"]::placeholder,
+textarea::placeholder {
+  color: #94a3b8 !important;
+  opacity: 1;
+}
+
+input[type="text"]:hover,
+input[type="email"]:hover,
+input[type="tel"]:hover,
+input[type="date"]:hover,
+input[type="number"]:hover,
+select:hover,
+textarea:hover {
+  border-color: #475569 !important;
+  background-color: #1b263b !important;
 }
 
 input[type="text"]:focus,
@@ -94,9 +115,10 @@ input[type="date"]:focus,
 input[type="number"]:focus,
 select:focus,
 textarea:focus {
-  border-color: #3b82f6;
-  outline: none;
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25);
+  background-color: #1b263b !important;
+  border-color: #3b82f6 !important;
+  outline: none !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25) !important;
 }
 
 /* Ensure native date picker calendar icon is clearly visible and light on dark backgrounds */
