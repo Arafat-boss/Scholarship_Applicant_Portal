@@ -18,7 +18,6 @@ import {
   Loader2,
   ArrowLeft,
   FileDown,
-  Database,
   RefreshCw,
 } from 'lucide-react';
 import { ScholarshipApplication } from '@/types/scholarship';
@@ -741,13 +740,6 @@ export default function ReviewerDashboard({
           </div>
 
           <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-            {/* MongoDB Live Status Pill */}
-            <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-950/70 border border-emerald-500/40 text-emerald-300 text-xs font-semibold shadow-inner">
-              <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-              <Database className="h-3.5 w-3.5 text-emerald-400 shrink-0" />
-              <span>MongoDB Live</span>
-            </div>
-
             {/* Manual Refresh from Database */}
             <button
               type="button"
