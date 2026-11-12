@@ -14,7 +14,12 @@ export const dynamic = 'force-dynamic';
 export async function GET(req: NextRequest) {
   try {
     const sessionCookie = req.cookies.get(AUTH_COOKIE_NAME)?.value;
-    const isAuthenticated = verifySessionToken(sessionCookie);
+    const authHeader = req.headers.get('authorization');
+    const headerToken = authHeader?.startsWith('Bearer ') ? authHeader.slice(7).trim() : null;
+    const customToken = req.headers.get('x-committee-token');
+
+    const tokenToVerify = sessionCookie || headerToken || customToken;
+    const isAuthenticated = verifySessionToken(tokenToVerify);
 
     return NextResponse.json(
       {

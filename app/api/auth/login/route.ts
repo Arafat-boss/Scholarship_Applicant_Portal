@@ -35,6 +35,7 @@ export async function POST(req: NextRequest) {
     // 3. Set secure HttpOnly cookie on response
     const response = NextResponse.json({
       success: true,
+      token: sessionToken,
       message: 'Authenticated successfully',
     });
 
