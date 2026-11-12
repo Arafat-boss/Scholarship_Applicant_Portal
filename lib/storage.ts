@@ -4,27 +4,25 @@ import { ScholarshipApplication } from '@/types/scholarship';
 import { evaluateApplicationWithAI } from './aiScoring';
 import { getScholarshipDates } from './scholarshipDates';
 
-const STORAGE_KEY = 'monday_club_scholarship_applications_v3';
-
-export function getStoredApplications(): ScholarshipApplication[] {
-  if (typeof window === 'undefined') {
-    return [];
-  }
-
+export function getStoredToken(): string | null {
+  if (typeof window === 'undefined') return null;
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) {
-      return [];
-    }
-    const parsed = JSON.parse(raw);
-    if (Array.isArray(parsed)) {
-      return parsed;
-    }
-    return [];
-  } catch (err) {
-    console.error('Failed to read from localStorage:', err);
-    return [];
+    return sessionStorage.getItem('mc_committee_token') || localStorage.getItem('mc_committee_token');
+  } catch {
+    return null;
   }
+}
+
+export function getAuthHeaders(): HeadersInit {
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+  };
+  const token = getStoredToken();
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+    headers['x-committee-token'] = token;
+  }
+  return headers;
 }
 
 function broadcastUpdate(action: string, payload?: unknown) {
@@ -38,47 +36,54 @@ function broadcastUpdate(action: string, payload?: unknown) {
   }
 }
 
-export async function fetchApplicationsFromServer(): Promise<ScholarshipApplication[]> {
-  if (typeof window === 'undefined') return [];
-  try {
-    const res = await fetch('/api/applications', { cache: 'no-store' });
-    const data = await res.json();
-    if (data.success && Array.isArray(data.applications)) {
-      const local = getStoredApplications();
-      const map = new Map<string, ScholarshipApplication>();
-      for (const a of local) {
-        if (a && a.id) map.set(a.id, a);
-      }
-      for (const a of data.applications) {
-        if (a && a.id) map.set(a.id, a);
-      }
-      const merged = Array.from(map.values()).sort(
-        (a, b) => new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime()
-      );
-      saveApplicationsToStorage(merged);
-      return merged;
-    }
-  } catch (err) {
-    console.warn('Could not sync from /api/applications:', err);
-  }
-  return getStoredApplications();
+// In-memory runtime cache for fast client navigation
+let runtimeApplicationsCache: ScholarshipApplication[] = [];
+
+/**
+ * Return applications from in-memory runtime cache (NO local storage persistence).
+ * Always backed by MongoDB Atlas.
+ */
+export function getStoredApplications(): ScholarshipApplication[] {
+  return runtimeApplicationsCache;
 }
 
 export function saveApplicationsToStorage(apps: ScholarshipApplication[]): void {
-  if (typeof window !== 'undefined') {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(apps));
-  }
+  runtimeApplicationsCache = apps;
 }
 
+/**
+ * Fetch applications directly from MongoDB Atlas backend API.
+ * Never merges with device local storage so every device sees the exact same data.
+ */
+export async function fetchApplicationsFromServer(): Promise<ScholarshipApplication[]> {
+  if (typeof window === 'undefined') return [];
+  try {
+    const res = await fetch('/api/applications', {
+      cache: 'no-store',
+      headers: getAuthHeaders(),
+    });
+    const data = await res.json();
+    if (data.success && Array.isArray(data.applications)) {
+      runtimeApplicationsCache = data.applications;
+      return data.applications;
+    }
+  } catch (err) {
+    console.warn('Could not fetch from MongoDB /api/applications:', err);
+  }
+  return runtimeApplicationsCache;
+}
+
+/**
+ * Save new student application directly to MongoDB Atlas.
+ */
 export function saveNewApplication(
   formData: Omit<ScholarshipApplication, 'id' | 'applicationNumber' | 'submittedAt' | 'aiScoring' | 'committeeReview'>
 ): ScholarshipApplication {
-  const existing = getStoredApplications();
-  const nextNum = existing.length + 1;
   const currentYear = getScholarshipDates().currentYear;
-  const applicationNumber = `MC-${currentYear}-${String(nextNum).padStart(3, '0')}`;
   const id = `app-${Date.now()}`;
   const submittedAt = new Date().toISOString();
+  const randomSuffix = String(Math.floor(100 + Math.random() * 900));
+  const applicationNumber = `MC-${currentYear}-${randomSuffix}`;
 
   // Run AI 10-Criterion Rubric evaluation
   const aiScoring = evaluateApplicationWithAI({
@@ -100,23 +105,33 @@ export function saveNewApplication(
     },
   };
 
-  const updated = [newApp, ...existing];
-  if (typeof window !== 'undefined') {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+  runtimeApplicationsCache = [newApp, ...runtimeApplicationsCache.filter((a) => a.id !== id)];
 
-    // Send to server backend with keepalive
+  if (typeof window !== 'undefined') {
+    // Send to MongoDB Atlas API
     fetch('/api/applications', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(newApp),
       keepalive: true,
-    }).catch((err) => console.warn('Background API sync notice:', err));
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success && Array.isArray(data.applications)) {
+          runtimeApplicationsCache = data.applications;
+        }
+      })
+      .catch((err) => console.warn('Background MongoDB sync notice:', err));
 
     broadcastUpdate('NEW_APPLICATION', newApp);
   }
+
   return newApp;
 }
 
+/**
+ * Update committee review decision in MongoDB Atlas.
+ */
 export function updateCommitteeReview(
   applicationId: string,
   review: {
@@ -126,9 +141,9 @@ export function updateCommitteeReview(
     committeeNotes?: string;
   }
 ): ScholarshipApplication[] {
-  if (!applicationId) return getStoredApplications();
-  const existing = getStoredApplications();
-  const updated = existing.map((app) => {
+  if (!applicationId) return runtimeApplicationsCache;
+
+  const updated = runtimeApplicationsCache.map((app) => {
     if (app.id === applicationId) {
       return {
         ...app,
@@ -142,45 +157,62 @@ export function updateCommitteeReview(
     return app;
   });
 
-  if (typeof window !== 'undefined') {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+  runtimeApplicationsCache = updated;
 
-    // Send update to server backend
+  if (typeof window !== 'undefined') {
+    // Send update to MongoDB Atlas backend
     fetch('/api/applications', {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: getAuthHeaders(),
       body: JSON.stringify({ applicationId, review }),
       keepalive: true,
-    }).catch((err) => console.warn('Background API review sync notice:', err));
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success && Array.isArray(data.applications)) {
+          runtimeApplicationsCache = data.applications;
+        }
+      })
+      .catch((err) => console.warn('Background API review sync notice:', err));
 
     broadcastUpdate('UPDATE_REVIEW', { applicationId, review });
   }
+
   return updated;
 }
 
+/**
+ * Delete application from MongoDB Atlas.
+ */
 export function deleteApplication(applicationId: string): ScholarshipApplication[] {
-  if (!applicationId) return getStoredApplications();
-  const existing = getStoredApplications();
-  const updated = existing.filter((app) => app.id !== applicationId);
-  if (typeof window !== 'undefined') {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+  if (!applicationId) return runtimeApplicationsCache;
 
-    // Send delete to server backend
-    fetch('/api/applications', {
+  const updated = runtimeApplicationsCache.filter((app) => app.id !== applicationId);
+  runtimeApplicationsCache = updated;
+
+  if (typeof window !== 'undefined') {
+    // Send delete to MongoDB Atlas backend
+    fetch(`/api/applications?id=${encodeURIComponent(applicationId)}`, {
       method: 'DELETE',
-      headers: { 'Content-Type': 'application/json' },
+      headers: getAuthHeaders(),
       body: JSON.stringify({ applicationId }),
       keepalive: true,
-    }).catch((err) => console.warn('Background API delete sync notice:', err));
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success && Array.isArray(data.applications)) {
+          runtimeApplicationsCache = data.applications;
+        }
+      })
+      .catch((err) => console.warn('Background API delete sync notice:', err));
 
     broadcastUpdate('DELETE_APPLICATION', { applicationId });
   }
+
   return updated;
 }
 
 export function clearAllApplications(): ScholarshipApplication[] {
-  if (typeof window !== 'undefined') {
-    localStorage.removeItem(STORAGE_KEY);
-  }
+  runtimeApplicationsCache = [];
   return [];
 }
