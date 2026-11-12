@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useSyncExternalStore } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import ReviewerDashboard from '@/components/ReviewerDashboard';
@@ -8,13 +8,11 @@ import CommitteeLoginGate from '@/components/CommitteeLoginGate';
 import RubricInfoModal from '@/components/RubricInfoModal';
 import { ScholarshipApplication } from '@/types/scholarship';
 import { getStoredApplications, saveApplicationsToStorage } from '@/lib/storage';
-import { ShieldCheck, LogOut, Loader2 } from 'lucide-react';
-
-const emptySubscribe = () => () => {};
+import { ShieldCheck, LogOut, Loader2, Database } from 'lucide-react';
 
 export default function DashboardPage() {
   const router = useRouter();
-  const isMounted = useSyncExternalStore(emptySubscribe, () => true, () => false);
+  const [mounted, setMounted] = useState(false);
 
   // Session state:
   // null = Verifying HttpOnly cookie with server
@@ -23,9 +21,13 @@ export default function DashboardPage() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
 
   const [storedApps, setStoredApps] = useState<ScholarshipApplication[] | null>(null);
-  const applications = storedApps !== null ? storedApps : (isMounted ? getStoredApplications() : []);
+  const applications = storedApps !== null ? storedApps : [];
   const [isRubricModalOpen, setIsRubricModalOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Set document title
   useEffect(() => {
@@ -34,13 +36,22 @@ export default function DashboardPage() {
     }
   }, []);
 
-  // Verify HttpOnly session cookie on initial page mount
+  // Verify HttpOnly session cookie or token on initial page mount
   useEffect(() => {
     let isCancelled = false;
 
     const verifySession = async () => {
       try {
-        const res = await fetch('/api/auth/verify', { cache: 'no-store' });
+        const token = typeof window !== 'undefined'
+          ? (sessionStorage.getItem('mc_committee_token') || localStorage.getItem('mc_committee_token'))
+          : null;
+        const headers: Record<string, string> = {};
+        if (token) {
+          headers['Authorization'] = `Bearer ${token}`;
+          headers['x-committee-token'] = token;
+        }
+
+        const res = await fetch('/api/auth/verify', { cache: 'no-store', headers });
         const data = await res.json();
         if (!isCancelled) {
           setIsAuthenticated(Boolean(data.authenticated));
@@ -71,6 +82,8 @@ export default function DashboardPage() {
     if (typeof window !== 'undefined') {
       sessionStorage.removeItem('mc_committee_auth');
       localStorage.removeItem('mc_committee_auth');
+      sessionStorage.removeItem('mc_committee_token');
+      localStorage.removeItem('mc_committee_token');
     }
 
     setIsAuthenticated(false);
@@ -78,7 +91,7 @@ export default function DashboardPage() {
     setIsLoggingOut(false);
   };
 
-  // Sync applications from server API when authenticated
+  // Sync applications from server API (MongoDB Atlas) when authenticated
   useEffect(() => {
     if (!isAuthenticated) return;
 
@@ -86,8 +99,17 @@ export default function DashboardPage() {
 
     const syncFromServer = async () => {
       try {
-        const res = await fetch('/api/applications', { cache: 'no-store' });
-        
+        const token = typeof window !== 'undefined'
+          ? (sessionStorage.getItem('mc_committee_token') || localStorage.getItem('mc_committee_token'))
+          : null;
+        const headers: Record<string, string> = {};
+        if (token) {
+          headers['Authorization'] = `Bearer ${token}`;
+          headers['x-committee-token'] = token;
+        }
+
+        const res = await fetch('/api/applications', { cache: 'no-store', headers });
+
         // Handle session expiration
         if (res.status === 401) {
           if (!isCancelled) setIsAuthenticated(false);
@@ -96,19 +118,7 @@ export default function DashboardPage() {
 
         const data = await res.json();
         if (!isCancelled && data.success && Array.isArray(data.applications)) {
-          const local = getStoredApplications();
-          const map = new Map<string, ScholarshipApplication>();
-          for (const a of local) {
-            if (a && a.id) map.set(a.id, a);
-          }
-          for (const a of data.applications) {
-            if (a && a.id) map.set(a.id, a);
-          }
-          const merged = Array.from(map.values()).sort(
-            (a, b) => new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime()
-          );
-          setStoredApps(merged);
-          saveApplicationsToStorage(merged);
+          setStoredApps(data.applications);
         }
       } catch (err) {
         console.warn('Dashboard sync notice:', err);
@@ -173,12 +183,25 @@ export default function DashboardPage() {
   }, [isAuthenticated, applications.length]);
 
   return (
-    <div className="min-h-screen w-full flex flex-col bg-[#090d16] text-slate-100 min-h-0 overflow-x-hidden">
+    <div
+      className="min-h-screen w-full flex flex-col bg-[#090d16] text-slate-100 min-h-0 overflow-x-hidden"
+      suppressHydrationWarning
+    >
       {/* Top Navigation Bar */}
-      <header className="sticky top-0 z-40 w-full border-b border-slate-800/80 bg-[#090d16]/95 backdrop-blur-md px-3 sm:px-6 py-2.5">
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-3">
+      <header
+        className="sticky top-0 z-40 w-full border-b border-slate-800/80 bg-[#090d16]/95 backdrop-blur-md px-3 sm:px-6 py-2.5"
+        suppressHydrationWarning
+      >
+        <div
+          className="mx-auto flex max-w-7xl items-center justify-between gap-3"
+          suppressHydrationWarning
+        >
           {/* Logo & Portal Branding (Static non-clickable element) */}
-          <div className="flex items-center gap-2.5 pointer-events-none select-none cursor-default" role="presentation">
+          <div
+            className="flex items-center gap-2.5 pointer-events-none select-none cursor-default"
+            role="presentation"
+            suppressHydrationWarning
+          >
             <div className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-slate-900 border border-slate-700/80 p-1 shadow-md">
               <Image
                 src="/Logo.png"
@@ -189,7 +212,7 @@ export default function DashboardPage() {
                 priority
               />
             </div>
-            <div className="pointer-events-none">
+            <div className="pointer-events-none" suppressHydrationWarning>
               <div className="text-xs sm:text-sm font-bold text-white leading-tight">
                 The Monday Club, Inc.
               </div>
@@ -201,7 +224,7 @@ export default function DashboardPage() {
 
           {/* Authorized status badge and logout button */}
           {isAuthenticated && (
-            <div className="flex items-center gap-2 sm:gap-3">
+            <div className="flex items-center gap-2 sm:gap-3" suppressHydrationWarning>
               <div className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-950/60 border border-emerald-800/60 text-[11px] font-medium text-emerald-300">
                 <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
                 <span>Authorized Session</span>
@@ -226,10 +249,13 @@ export default function DashboardPage() {
       </header>
 
       {/* Main Content Area */}
-      <main className="w-full flex-1 pb-10">
-        {!isMounted || isAuthenticated === null ? (
+      <main className="w-full flex-1 pb-10" suppressHydrationWarning>
+        {!mounted || isAuthenticated === null ? (
           // Session verification loading state
-          <div className="py-20 flex flex-col items-center justify-center gap-3 text-center">
+          <div
+            className="py-20 flex flex-col items-center justify-center gap-3 text-center"
+            suppressHydrationWarning
+          >
             <Loader2 className="h-8 w-8 text-blue-500 animate-spin" />
             <span className="text-xs text-slate-400 font-mono tracking-wide">
               Verifying secure session...
@@ -237,7 +263,7 @@ export default function DashboardPage() {
           </div>
         ) : !isAuthenticated ? (
           // Render login gate if not authenticated or session expired
-          <div className="py-6 sm:py-10">
+          <div className="py-6 sm:py-10" suppressHydrationWarning>
             <div className="text-center mb-2">
               <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-950/80 px-3 py-1 text-xs font-bold text-amber-300 border border-amber-700/70">
                 <ShieldCheck className="h-3.5 w-3.5" />
@@ -251,7 +277,7 @@ export default function DashboardPage() {
           </div>
         ) : (
           // Render dashboard when authenticated with valid cookie
-          <div className="w-full">
+          <div className="w-full" suppressHydrationWarning>
             <ReviewerDashboard
               applications={applications}
               onRefreshApplications={setStoredApps}
