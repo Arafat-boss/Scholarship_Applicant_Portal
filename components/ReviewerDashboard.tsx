@@ -739,39 +739,39 @@ export default function ReviewerDashboard({
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-            {/* Manual Refresh from Database */}
-            <button
-              type="button"
-              onClick={handleManualRefresh}
-              disabled={isRefreshing}
-              className="w-full sm:w-auto inline-flex items-center justify-start sm:justify-center gap-2 rounded-lg border border-slate-700 bg-slate-800/90 px-3.5 py-2 text-xs font-semibold text-slate-200 hover:bg-slate-700 hover:text-white transition cursor-pointer text-left sm:text-center shadow-sm disabled:opacity-50"
-              title="Refresh queue directly from MongoDB Atlas"
-            >
-              <RefreshCw className={`h-3.5 w-3.5 text-blue-400 shrink-0 ${isRefreshing ? 'animate-spin' : ''}`} />
-              <span>{isRefreshing ? 'Syncing...' : 'Refresh Queue'}</span>
-            </button>
-
+          <div className="flex flex-row items-center gap-2 sm:gap-2.5 w-full sm:w-auto shrink-0">
             {/* Direct 1-Click In-Place Instant Download Button */}
             <button
               type="button"
               id="btn-download-all-pdf"
               onClick={handleDownloadAllPdf}
               disabled={isDownloadingPdf || applications.length === 0}
-              className="w-full sm:w-auto inline-flex items-center justify-start sm:justify-center gap-2 rounded-lg bg-indigo-600 px-3.5 py-2 text-xs font-bold text-white shadow-md shadow-indigo-600/30 hover:bg-indigo-500 disabled:opacity-50 transition cursor-pointer text-left sm:text-center"
+              className="flex-1 sm:flex-initial inline-flex items-center justify-start sm:justify-center gap-1.5 sm:gap-2 rounded-lg bg-indigo-600 px-3 sm:px-3.5 py-2 text-xs font-bold text-white shadow-md shadow-indigo-600/30 hover:bg-indigo-500 disabled:opacity-50 transition cursor-pointer text-left sm:text-center whitespace-nowrap"
               title="Download all applications immediately into PDF"
             >
               {isDownloadingPdf ? (
                 <>
-                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <Loader2 className="h-3.5 w-3.5 animate-spin shrink-0" />
                   <span>Generating PDF...</span>
                 </>
               ) : (
                 <>
-                  <FileDown className="h-4 w-4" />
+                  <FileDown className="h-3.5 w-3.5 shrink-0" />
                   <span>Download All (PDF)</span>
                 </>
               )}
+            </button>
+
+            {/* Manual Refresh from Database */}
+            <button
+              type="button"
+              onClick={handleManualRefresh}
+              disabled={isRefreshing}
+              className="flex-1 sm:flex-initial inline-flex items-center justify-start sm:justify-center gap-1.5 sm:gap-2 rounded-lg border border-slate-700 bg-slate-800/90 px-3 sm:px-3.5 py-2 text-xs font-semibold text-slate-200 hover:bg-slate-700 hover:text-white transition cursor-pointer text-left sm:text-center shadow-sm disabled:opacity-50 whitespace-nowrap"
+              title="Refresh queue directly from MongoDB Atlas"
+            >
+              <RefreshCw className={`h-3.5 w-3.5 text-blue-400 shrink-0 ${isRefreshing ? 'animate-spin' : ''}`} />
+              <span>{isRefreshing ? 'Syncing...' : 'Refresh Queue'}</span>
             </button>
           </div>
         </div>
