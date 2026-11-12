@@ -18,6 +18,8 @@ import {
   Loader2,
   ArrowLeft,
   FileDown,
+  Database,
+  RefreshCw,
 } from 'lucide-react';
 import { ScholarshipApplication } from '@/types/scholarship';
 import {
@@ -74,6 +76,22 @@ export default function ReviewerDashboard({
 
   // Direct 1-Click In-Place PDF Download states
   const [isDownloadingPdf, setIsDownloadingPdf] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const handleManualRefresh = async () => {
+    setIsRefreshing(true);
+    try {
+      const res = await fetch('/api/applications', { cache: 'no-store' });
+      const data = await res.json();
+      if (data.success && Array.isArray(data.applications)) {
+        onRefreshApplications(data.applications);
+      }
+    } catch (err) {
+      console.warn('Manual refresh notice:', err);
+    } finally {
+      setTimeout(() => setIsRefreshing(false), 500);
+    }
+  };
 
   const handleDownloadAllPdf = () => {
     setIsDownloadingPdf(true);
@@ -184,7 +202,7 @@ export default function ReviewerDashboard({
   // ----------------------------------------------------
   if (selectedApp) {
     return (
-      <div ref={reviewModalRef} className="mx-auto max-w-7xl px-3 py-6 sm:px-6 sm:py-8 lg:px-8 text-slate-100 animate-in fade-in duration-200">
+      <div ref={reviewModalRef} className="mx-auto max-w-7xl px-3 py-6 sm:px-6 sm:py-8 lg:px-8 text-slate-100 animate-in fade-in duration-200" suppressHydrationWarning>
         {/* Navigation & Header Banner */}
         <div className="flex flex-wrap items-center justify-between gap-3 bg-slate-900/90 p-3 sm:p-4 rounded-2xl border border-slate-800 shadow-xl mb-6">
           <div className="flex items-center gap-3">
@@ -694,7 +712,7 @@ export default function ReviewerDashboard({
   }
 
   return (
-    <div className="mx-auto max-w-7xl px-3 py-6 sm:px-6 sm:py-8 lg:px-8">
+    <div className="mx-auto max-w-7xl px-3 py-6 sm:px-6 sm:py-8 lg:px-8" suppressHydrationWarning>
       {/* Committee Portal Banner */}
       <div className="mb-6 rounded-2xl border border-slate-800 bg-gradient-to-r from-[#131b2e] via-[#0f172a] to-[#111827] p-4 sm:p-6 shadow-xl text-slate-100">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -723,6 +741,25 @@ export default function ReviewerDashboard({
           </div>
 
           <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+            {/* MongoDB Live Status Pill */}
+            <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-950/70 border border-emerald-500/40 text-emerald-300 text-xs font-semibold shadow-inner">
+              <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+              <Database className="h-3.5 w-3.5 text-emerald-400 shrink-0" />
+              <span>MongoDB Live</span>
+            </div>
+
+            {/* Manual Refresh from Database */}
+            <button
+              type="button"
+              onClick={handleManualRefresh}
+              disabled={isRefreshing}
+              className="w-full sm:w-auto inline-flex items-center justify-start sm:justify-center gap-2 rounded-lg border border-slate-700 bg-slate-800/90 px-3.5 py-2 text-xs font-semibold text-slate-200 hover:bg-slate-700 hover:text-white transition cursor-pointer text-left sm:text-center shadow-sm disabled:opacity-50"
+              title="Refresh queue directly from MongoDB Atlas"
+            >
+              <RefreshCw className={`h-3.5 w-3.5 text-blue-400 shrink-0 ${isRefreshing ? 'animate-spin' : ''}`} />
+              <span>{isRefreshing ? 'Syncing...' : 'Refresh Queue'}</span>
+            </button>
+
             {/* Direct 1-Click In-Place Instant Download Button */}
             <button
               type="button"
