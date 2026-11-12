@@ -11,12 +11,16 @@ import { FileText, Sparkles, Lock, ExternalLink, CheckCircle2, ArrowLeft } from 
 const emptySubscribe = () => () => { };
 
 export default function Home() {
-  const isMounted = useSyncExternalStore(emptySubscribe, () => true, () => false);
+  const [mounted, setMounted] = useState(false);
   const [activeTab, setActiveTab] = useState<'applicant' | 'reviewer'>('applicant');
   const [openedInNewTab, setOpenedInNewTab] = useState(false);
   const [storedApps, setStoredApps] = useState<ScholarshipApplication[] | null>(null);
-  const applications = storedApps !== null ? storedApps : (isMounted ? getStoredApplications() : []);
+  const applications = storedApps !== null ? storedApps : [];
   const [isRubricModalOpen, setIsRubricModalOpen] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Fetch stored applications from server on mount
   useEffect(() => {
@@ -70,7 +74,7 @@ export default function Home() {
   };
 
   return (
-    <div className="w-full flex flex-col bg-[#090d16] text-slate-100 min-h-0 overflow-x-hidden">
+    <div className="w-full flex flex-col bg-[#090d16] text-slate-100 min-h-0 overflow-x-hidden" suppressHydrationWarning>
       {/* Inline Section Tab Switcher (Replaces Navbar for Seamless Wix Embedding) */}
       <section className="pt-4 sm:pt-6 pb-2 px-3 sm:px-6 w-full max-w-4xl mx-auto">
         <div className="mx-auto flex flex-wrap items-center justify-center gap-2 sm:gap-3">
