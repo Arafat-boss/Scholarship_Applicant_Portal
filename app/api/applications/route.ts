@@ -3,6 +3,7 @@ import { ScholarshipApplication } from '@/types/scholarship';
 import fs from 'fs';
 import path from 'path';
 import { AUTH_COOKIE_NAME, verifySessionToken } from '@/lib/auth';
+import { getApplicationsCollection } from '@/lib/mongodb';
 
 // Ensure this route handler is evaluated dynamically and never prerendered at build time
 export const dynamic = 'force-dynamic';
@@ -13,10 +14,21 @@ export const dynamic = 'force-dynamic';
  */
 function isAuthorizedCommittee(req: NextRequest): boolean {
   const token = req.cookies.get(AUTH_COOKIE_NAME)?.value;
-  return verifySessionToken(token);
+  if (token && verifySessionToken(token)) return true;
+
+  const authHeader = req.headers.get('authorization');
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    const headerToken = authHeader.slice(7).trim();
+    if (headerToken && verifySessionToken(headerToken)) return true;
+  }
+
+  const customToken = req.headers.get('x-committee-token');
+  if (customToken && verifySessionToken(customToken)) return true;
+
+  return false;
 }
 
-// File-based persistence in /tmp (or OS temporary directory)
+// File-based persistence in /tmp (or OS temporary directory) as fallback
 const DATA_FILE = path.join(
   process.env.TMPDIR || process.env.TEMP || '/tmp',
   'mc_scholarship_applications.json'
@@ -27,7 +39,7 @@ declare global {
   var __MC_APPLICATIONS_CACHE__: ScholarshipApplication[] | undefined;
 }
 
-function loadApplications(): ScholarshipApplication[] {
+function loadFallbackApplications(): ScholarshipApplication[] {
   if (global.__MC_APPLICATIONS_CACHE__ && Array.isArray(global.__MC_APPLICATIONS_CACHE__)) {
     return global.__MC_APPLICATIONS_CACHE__;
   }
@@ -49,7 +61,7 @@ function loadApplications(): ScholarshipApplication[] {
   return [];
 }
 
-function saveApplications(apps: ScholarshipApplication[]): void {
+function saveFallbackApplications(apps: ScholarshipApplication[]): void {
   global.__MC_APPLICATIONS_CACHE__ = apps;
   try {
     fs.writeFileSync(DATA_FILE, JSON.stringify(apps, null, 2), 'utf8');
@@ -74,10 +86,37 @@ export async function GET(req: NextRequest) {
     );
   }
 
-  const apps = loadApplications();
+  try {
+    const collection = await getApplicationsCollection();
+    if (collection) {
+      const docs = await collection
+        .find({}, { projection: { _id: 0 } })
+        .sort({ submittedAt: -1 })
+        .toArray();
+
+      return NextResponse.json(
+        {
+          success: true,
+          source: 'mongodb',
+          count: docs.length,
+          applications: docs,
+        },
+        {
+          headers: {
+            'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+          },
+        }
+      );
+    }
+  } catch (err) {
+    console.warn('[API Applications GET] MongoDB query failed, falling back to local cache:', err);
+  }
+
+  const apps = loadFallbackApplications();
   return NextResponse.json(
     {
       success: true,
+      source: 'local-fallback',
       count: apps.length,
       applications: apps,
     },
@@ -95,18 +134,49 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const currentApps = loadApplications();
+    const collection = await getApplicationsCollection();
 
     // Case 1: Bulk array of applications
     if (body && Array.isArray(body.applications)) {
       const incoming: ScholarshipApplication[] = body.applications;
+
+      if (collection) {
+        try {
+          for (const app of incoming) {
+            if (app && app.id) {
+              await collection.updateOne(
+                { id: app.id },
+                { $set: app },
+                { upsert: true }
+              );
+            }
+          }
+
+          const docs = await collection
+            .find({}, { projection: { _id: 0 } })
+            .sort({ submittedAt: -1 })
+            .toArray();
+
+          saveFallbackApplications(docs);
+
+          return NextResponse.json({
+            success: true,
+            source: 'mongodb',
+            count: docs.length,
+            applications: docs,
+          });
+        } catch (dbErr) {
+          console.warn('[API Applications POST] MongoDB bulk write error, using fallback:', dbErr);
+        }
+      }
+
+      // Fallback merge
+      const currentApps = loadFallbackApplications();
       const map = new Map<string, ScholarshipApplication>();
 
-      // Existing first
       for (const app of currentApps) {
         if (app && app.id) map.set(app.id, app);
       }
-      // Incoming updates or adds
       for (const app of incoming) {
         if (app && app.id) map.set(app.id, app);
       }
@@ -115,10 +185,11 @@ export async function POST(req: NextRequest) {
         (a, b) => new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime()
       );
 
-      saveApplications(merged);
+      saveFallbackApplications(merged);
 
       return NextResponse.json({
         success: true,
+        source: 'local-fallback',
         count: merged.length,
         applications: merged,
       });
@@ -133,15 +204,45 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    if (collection) {
+      try {
+        await collection.updateOne(
+          { id: newApp.id },
+          { $set: newApp },
+          { upsert: true }
+        );
+
+        const docs = await collection
+          .find({}, { projection: { _id: 0 } })
+          .sort({ submittedAt: -1 })
+          .toArray();
+
+        saveFallbackApplications(docs);
+
+        return NextResponse.json({
+          success: true,
+          source: 'mongodb',
+          count: docs.length,
+          application: newApp,
+          applications: docs,
+        });
+      } catch (dbErr) {
+        console.warn('[API Applications POST] MongoDB single write error, using fallback:', dbErr);
+      }
+    }
+
+    // Fallback single write
+    const currentApps = loadFallbackApplications();
     const filtered = currentApps.filter(
       (a) => a.id !== newApp.id && a.applicationNumber !== newApp.applicationNumber
     );
     const updated = [newApp, ...filtered];
 
-    saveApplications(updated);
+    saveFallbackApplications(updated);
 
     return NextResponse.json({
       success: true,
+      source: 'local-fallback',
       count: updated.length,
       application: newApp,
       applications: updated,
@@ -177,7 +278,44 @@ export async function PUT(req: NextRequest) {
       );
     }
 
-    const currentApps = loadApplications();
+    const reviewedAt = new Date().toISOString();
+    const collection = await getApplicationsCollection();
+
+    if (collection) {
+      try {
+        const existing = await collection.findOne({ id: applicationId });
+        if (existing) {
+          const mergedReview = {
+            ...(existing.committeeReview || {}),
+            ...review,
+            reviewedAt,
+          };
+
+          await collection.updateOne(
+            { id: applicationId },
+            { $set: { committeeReview: mergedReview } }
+          );
+
+          const docs = await collection
+            .find({}, { projection: { _id: 0 } })
+            .sort({ submittedAt: -1 })
+            .toArray();
+
+          saveFallbackApplications(docs);
+
+          return NextResponse.json({
+            success: true,
+            source: 'mongodb',
+            applications: docs,
+          });
+        }
+      } catch (dbErr) {
+        console.warn('[API Applications PUT] MongoDB update error, using fallback:', dbErr);
+      }
+    }
+
+    // Fallback update
+    const currentApps = loadFallbackApplications();
     const updated = currentApps.map((app) => {
       if (app.id === applicationId) {
         return {
@@ -185,17 +323,18 @@ export async function PUT(req: NextRequest) {
           committeeReview: {
             ...app.committeeReview,
             ...review,
-            reviewedAt: new Date().toISOString(),
+            reviewedAt,
           },
         };
       }
       return app;
     });
 
-    saveApplications(updated);
+    saveFallbackApplications(updated);
 
     return NextResponse.json({
       success: true,
+      source: 'local-fallback',
       applications: updated,
     });
   } catch (err) {
@@ -235,13 +374,39 @@ export async function DELETE(req: NextRequest) {
       );
     }
 
-    const currentApps = loadApplications();
+    const collection = await getApplicationsCollection();
+
+    if (collection) {
+      try {
+        await collection.deleteOne({ id: applicationId });
+
+        const docs = await collection
+          .find({}, { projection: { _id: 0 } })
+          .sort({ submittedAt: -1 })
+          .toArray();
+
+        saveFallbackApplications(docs);
+
+        return NextResponse.json({
+          success: true,
+          source: 'mongodb',
+          count: docs.length,
+          applications: docs,
+        });
+      } catch (dbErr) {
+        console.warn('[API Applications DELETE] MongoDB delete error, using fallback:', dbErr);
+      }
+    }
+
+    // Fallback delete
+    const currentApps = loadFallbackApplications();
     const updated = currentApps.filter((a) => a.id !== applicationId);
 
-    saveApplications(updated);
+    saveFallbackApplications(updated);
 
     return NextResponse.json({
       success: true,
+      source: 'local-fallback',
       count: updated.length,
       applications: updated,
     });
