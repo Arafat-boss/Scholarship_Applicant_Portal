@@ -1716,8 +1716,9 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
           </div>
 
           {/* ======================================================== */}
-          {/* 8. SUPPORTING DOCUMENTS & CHECKLIST (Page 3) */}
+          {/* 8. SUPPORTING DOCUMENTS & CHECKLIST (Page 3) - COMMENTED OUT */}
           {/* ======================================================== */}
+          {/*
           <div className="rounded-xl border border-slate-800 bg-[#0f172a] p-4 sm:p-6 shadow-md">
             <h3 className="text-sm sm:text-base font-bold text-white mb-2 flex items-start gap-2.5">
               <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-600/20 text-xs font-bold text-blue-400 border border-blue-500/30 mt-0.5">
@@ -1730,7 +1731,6 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
             </p>
 
             <div className="space-y-4 text-xs sm:text-sm">
-              {/* Official transcript */}
               <div className="p-3.5 rounded-xl bg-[#131b2e] border border-slate-700/80">
                 <label className="block text-slate-200 font-semibold mb-1">
                   Requirement #5: Official copy of your transcript through 1st semester ({dates.transcriptSemesterShort})
@@ -1764,7 +1764,6 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
                 )}
               </div>
 
-              {/* Student Aid Report */}
               <div className="p-3.5 rounded-xl bg-[#131b2e] border border-slate-700/80">
                 <label className="block text-slate-200 font-semibold mb-1">
                   Requirement #7: Completed and processed copy of the Student Aid Report (SAR) (if available)
@@ -1797,7 +1796,6 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
                 )}
               </div>
 
-              {/* Three recommendation letters */}
               <div className="p-3.5 rounded-xl bg-[#131b2e] border border-slate-700/80">
                 <label className="block text-slate-200 font-semibold mb-1">
                   Requirement #4: Three letters of recommendation (two from non-relatives)
@@ -1835,7 +1833,6 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
                 )}
               </div>
 
-              {/* Extra Documents */}
               <div className="p-3.5 rounded-xl bg-[#131b2e] border border-slate-700/80">
                 <label className="block text-slate-200 font-semibold mb-1">
                   Supplemental Documents &amp; Certificates (Optional)
@@ -1872,7 +1869,6 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
                 )}
               </div>
 
-              {/* Official Contact & Mailing Notice */}
               <div className="p-3 rounded-lg bg-blue-950/40 border border-blue-900/60 text-xs text-slate-300 space-y-1">
                 <div className="font-bold text-blue-300">Physical &amp; Email Delivery Instructions:</div>
                 <p>
@@ -1884,6 +1880,7 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
               </div>
             </div>
           </div>
+          */}
 
           {/* ======================================================== */}
           {/* 9. THE MONDAY CLUB RULES AND REGULATIONS & DUAL SIGNATURES (Page 2) */}
