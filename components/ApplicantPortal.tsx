@@ -1883,12 +1883,12 @@ Over the next ten years, my goal is to earn a Bachelor's degree in Public Health
           */}
 
           {/* ======================================================== */}
-          {/* 9. THE MONDAY CLUB RULES AND REGULATIONS & DUAL SIGNATURES (Page 2) */}
+          {/* 8. THE MONDAY CLUB RULES AND REGULATIONS & DUAL SIGNATURES (Page 2) */}
           {/* ======================================================== */}
           <div className="rounded-xl border border-slate-800 bg-[#0f172a] p-4 sm:p-6 shadow-md">
             <h3 className="text-sm sm:text-base font-bold text-white mb-3 flex items-start gap-2.5">
               <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-600/20 text-xs font-bold text-blue-400 border border-blue-500/30 mt-0.5">
-                9
+                8
               </span>
               <span className="leading-snug">THE MONDAY CLUB Scholarship Rules and Regulations &amp; Official Signatures (Page 2)</span>
             </h3>
